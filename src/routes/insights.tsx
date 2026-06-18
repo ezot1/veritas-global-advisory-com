@@ -11,7 +11,7 @@ import { Search } from "lucide-react";
 export const Route = createFileRoute("/insights")({
   head: () => ({
     meta: [
-      { title: "Global Insights — Veritas Global Advisory" },
+      { title: "Global Insights | Veritas Global Advisory" },
       { name: "description", content: "Research, intelligence briefings, and analysis from Veritas Global Advisory across global affairs, governance, business, and regional studies." },
     ],
   }),

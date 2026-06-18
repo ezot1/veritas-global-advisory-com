@@ -7,7 +7,7 @@ import { Search } from "lucide-react";
 export const Route = createFileRoute("/careers")({
   head: () => ({
     meta: [
-      { title: "Careers — Veritas Global Advisory" },
+      { title: "Careers | Veritas Global Advisory" },
       { name: "description", content: "Join Veritas Global Advisory. Open roles in research, political risk, governance, communications, and more." },
     ],
   }),

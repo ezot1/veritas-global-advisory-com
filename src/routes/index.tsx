@@ -14,7 +14,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Veritas Global Advisory — Navigating Complexity. Connecting Opportunities." },
+      { title: "Veritas Global Advisory | Navigating Complexity. Connecting Opportunities." },
       { name: "description", content: "International consulting, research, and advisory firm providing strategic intelligence, political risk assessment, governance advisory, and global talent solutions." },
       { property: "og:title", content: "Veritas Global Advisory" },
       { property: "og:description", content: "Global Insights. Strategic Solutions. Trusted Expertise." },
@@ -138,7 +138,7 @@ function Index() {
               </div>
               <h3 className="text-xl font-semibold leading-snug mb-5 text-[var(--navy-deep)]">{s.title}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">—</span>{i}</li>)}
+                {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">|</span>{i}</li>)}
               </ul>
               <Link to="/services" className="link-arrow mt-8">Explore</Link>
             </div>

@@ -6,7 +6,7 @@ import { Briefcase, Landmark, Shield, Activity, Scale, Search } from "lucide-rea
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — Veritas Global Advisory" },
+      { title: "Services | Veritas Global Advisory" },
       { name: "description", content: "Strategic intelligence, business consulting, governance, political risk, security advisory, human rights, and research services." },
     ],
   }),

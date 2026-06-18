@@ -5,8 +5,8 @@ import { Section } from "@/components/site/Section";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Who We Are — Veritas Global Advisory" },
-      { name: "description", content: "Mission, vision, and values of Veritas Global Advisory — an international consulting and advisory institution." },
+      { title: "Who We Are | Veritas Global Advisory" },
+      { name: "description", content: "Mission, vision, and values of Veritas Global Advisory | an international consulting and advisory institution." },
     ],
   }),
   component: AboutPage,
