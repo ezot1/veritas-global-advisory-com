@@ -138,7 +138,7 @@ function Index() {
               </div>
               <h3 className="text-xl font-semibold leading-snug mb-5 text-[var(--navy-deep)]">{s.title}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">|</span>{i}</li>)}
+                {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">·</span>{i}</li>)}
               </ul>
               <Link to="/services" className="link-arrow mt-8">Explore</Link>
             </div>
