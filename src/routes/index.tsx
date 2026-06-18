@@ -141,12 +141,35 @@ function Index() {
       {/* STATS */}
       <section className="border-y border-border bg-[var(--secondary)]">
         <div className="container-x py-20 grid grid-cols-2 md:grid-cols-4 gap-10">
-          <StatCounter value={50} suffix="+" label="Countries Covered" />
-          <StatCounter value={500} suffix="+" label="Experts Worldwide" />
-          <StatCounter value={1000} suffix="+" label="Research Publications" />
+          <StatCounter value={12} label="Countries Covered" />
+          <StatCounter value={40} label="Experts Worldwide" />
+          <StatCounter value={100} label="Research Publications" />
           <StatCounter value={5} label="Regional Divisions" />
         </div>
       </section>
+
+      {/* IN THE FIELD */}
+      <Section eyebrow="In the Field" title="Where our analysts work."
+        intro="From boardrooms in Miami to multilateral forums and intelligence operations centers worldwide.">
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { img: sceneBoardroom, cap: "Executive Briefings" },
+            { img: sceneIntelligence, cap: "Intelligence Operations" },
+            { img: sceneAssembly, cap: "Multilateral Forums" },
+            { img: sceneMiami, cap: "Miami Headquarters" },
+            { img: globeImg, cap: "Global Coverage" },
+            { img: heroAnimation, cap: "Live Data Network" },
+          ].slice(0, 3).map((s) => (
+            <figure key={s.cap} className="relative group overflow-hidden">
+              <img src={s.img} alt={s.cap} loading="lazy" className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105" />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--navy-deep)]/95 to-transparent text-white p-5 text-xs uppercase tracking-[0.2em]">
+                <span className="text-[var(--gold)]">·</span> {s.cap}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </Section>
+
 
       {/* SERVICES */}
       <Section eyebrow="Practices" title="Six interconnected disciplines. One global perspective." intro="Our advisory practices bring together rigorous analysis, cross-regional expertise, and field experience to support decisions of consequence.">
