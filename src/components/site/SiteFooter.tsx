@@ -14,7 +14,7 @@ export function SiteFooter() {
             research, and advisory firm connecting expertise across continents.
           </p>
           <div className="gold-rule mt-8" />
-          <p className="mt-4 text-xs uppercase tracking-[0.18em] text-white/55">Headquarters · London, United Kingdom</p>
+          <p className="mt-4 text-xs uppercase tracking-[0.18em] text-white/55">Headquarters · Miami, Florida, USA</p>
         </div>
 
         <FooterCol title="Navigate" links={[

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { LanguageBar } from "./LanguageBar";
 
 const nav = [
   { to: "/about", label: "Who We Are" },
@@ -38,7 +39,8 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex items-center gap-5">
+          <LanguageBar />
           <Link to="/contact" className="btn-primary !py-2.5 !px-5 !text-xs">Engage Us</Link>
         </div>
 
