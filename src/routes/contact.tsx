@@ -71,6 +71,7 @@ function ContactPage() {
           </form>
         </div>
       </Section>
+      <ImageStrip start={5} eyebrow="Our Presence" title="Miami headquarters and global reach." />
     </>
   );
 }

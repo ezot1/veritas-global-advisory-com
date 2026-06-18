@@ -90,6 +90,7 @@ function InsightsPage() {
           )}
         </div>
       </Section>
+      <ImageStrip start={0} eyebrow="Editorial Desks" title="Where our analysis is produced." />
     </>
   );
 }
