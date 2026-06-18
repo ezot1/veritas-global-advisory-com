@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -36,6 +37,7 @@ function AboutPage() {
           ))}
         </div>
       </Section>
+      <ImageStrip start={0} eyebrow="The Institution" title="A global advisory firm at work." />
     </>
   );
 }

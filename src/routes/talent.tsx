@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { useState } from "react";
 
 export const Route = createFileRoute("/talent")({
@@ -65,6 +66,7 @@ function TalentPage() {
           </div>
         </form>
       </Section>
+      <ImageStrip start={4} eyebrow="The Network" title="Experts working across continents." />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { Briefcase, Landmark, Shield, Activity, Scale, Search } from "lucide-react";
 
 export const Route = createFileRoute("/services")({
@@ -54,6 +55,7 @@ function ServicesPage() {
           ))}
         </div>
       </Section>
+      <ImageStrip start={1} eyebrow="Practice Areas" title="Six disciplines, one global perspective." />
     </>
   );
 }

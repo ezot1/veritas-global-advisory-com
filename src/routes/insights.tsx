@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { useMemo, useState } from "react";
 import insight1 from "@/assets/insight-1.jpg";
 import insight2 from "@/assets/insight-2.jpg";
@@ -22,12 +23,12 @@ const categories = ["All", "Global Affairs", "Politics & Governance", "Business 
 const regions = ["All Regions", "Africa", "Asia-Pacific", "Europe", "Middle East", "Americas"];
 
 const articles = [
-  { img: insight1, tag: "Global Affairs", region: "Europe", title: "The New Multipolar Order: Strategic Implications for 2026", author: "Dr. A. Hassan", date: "Mar 12, 2026" },
-  { img: insight2, tag: "Business & Investment", region: "Asia-Pacific", title: "Capital Flows Realign: Emerging Markets in Focus", author: "M. Chen", date: "Mar 8, 2026" },
-  { img: insight3, tag: "Politics & Governance", region: "Europe", title: "Election Cycles and Regulatory Risk in Europe", author: "L. Petrov", date: "Mar 4, 2026" },
-  { img: insight4, tag: "Middle East Insights", region: "Middle East", title: "Energy Transition and Geopolitics in the Gulf", author: "S. Al-Mansoori", date: "Feb 28, 2026" },
-  { img: insight1, tag: "Africa Watch", region: "Africa", title: "Sahel Security Outlook: Drivers and Trajectories", author: "K. Okafor", date: "Feb 22, 2026" },
-  { img: insight2, tag: "Americas Briefing", region: "Americas", title: "US-LatAm Nearshoring: Industrial Strategy Shifts", author: "R. Mendez", date: "Feb 18, 2026" },
+  { img: insight1, tag: "Global Affairs", region: "Europe", title: "BRICS+ Expansion in 2025: Strategic Implications of Saudi Arabia, UAE, and Egypt Joining the Bloc", author: "Dr. A. Hassan", date: "Feb 14, 2026" },
+  { img: insight2, tag: "Business & Investment", region: "Americas", title: "Mexico Overtakes China as Largest U.S. Trade Partner: Nearshoring Capital Flows Accelerate", author: "R. Mendez", date: "Feb 9, 2026" },
+  { img: insight3, tag: "Politics & Governance", region: "Europe", title: "Germany's 2025 Snap Election and the Return of CDU/CSU Under Friedrich Merz", author: "L. Petrov", date: "Feb 2, 2026" },
+  { img: insight4, tag: "Middle East Insights", region: "Middle East", title: "After the Gaza Ceasefire: Reconstruction Politics and the Abraham Accords Revival", author: "S. Al-Mansoori", date: "Jan 28, 2026" },
+  { img: insight1, tag: "Africa Watch", region: "Africa", title: "ECOWAS After the Niger, Mali, Burkina Faso Withdrawal: The Sahel Confederation's First Year", author: "K. Okafor", date: "Jan 20, 2026" },
+  { img: insight2, tag: "Asia Focus", region: "Asia-Pacific", title: "Japan Under Sanae Takaichi: Defense Spending, Energy Security, and the Taiwan Strait", author: "M. Chen", date: "Jan 12, 2026" },
 ];
 
 function InsightsPage() {
