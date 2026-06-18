@@ -62,7 +62,7 @@ function ContactPage() {
             </div>
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               {sent
-                ? <p className="text-[var(--navy-deep)] font-medium">Thank you | we'll respond shortly.</p>
+                ? <p className="text-[var(--navy-deep)] font-medium">Thank you. we'll respond shortly.</p>
                 : <span className="text-xs text-muted-foreground">Replies typically within two business days.</span>}
               <button type="submit" className="btn-primary">Send Inquiry</button>
             </div>

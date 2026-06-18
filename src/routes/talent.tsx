@@ -59,7 +59,7 @@ function TalentPage() {
           </div>
           <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-4">
             {sent ? (
-              <p className="text-[var(--navy-deep)] font-medium">Thank you | your application has been received.</p>
+              <p className="text-[var(--navy-deep)] font-medium">Thank you. your application has been received.</p>
             ) : <span className="text-xs text-muted-foreground">All applications are reviewed by our talent team.</span>}
             <button type="submit" className="btn-primary">Submit Application</button>
           </div>
