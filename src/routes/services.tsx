@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { Briefcase, Landmark, Shield, Activity, Scale, Search } from "lucide-react";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Services — Veritas Global Advisory" },
+      { title: "Services | Veritas Global Advisory" },
       { name: "description", content: "Strategic intelligence, business consulting, governance, political risk, security advisory, human rights, and research services." },
     ],
   }),
@@ -54,6 +55,7 @@ function ServicesPage() {
           ))}
         </div>
       </Section>
+      <ImageStrip start={1} eyebrow="Practice Areas" title="Six disciplines, one global perspective." />
     </>
   );
 }

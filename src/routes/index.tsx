@@ -1,10 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroWorld from "@/assets/hero-world.jpg";
+import heroAnimation from "@/assets/hero-animation.jpg";
 import globeImg from "@/assets/globe.jpg";
 import insight1 from "@/assets/insight-1.jpg";
 import insight2 from "@/assets/insight-2.jpg";
 import insight3 from "@/assets/insight-3.jpg";
 import insight4 from "@/assets/insight-4.jpg";
+import sceneBoardroom from "@/assets/scene-boardroom.jpg";
+import sceneMiami from "@/assets/scene-miami.jpg";
+import sceneIntelligence from "@/assets/scene-intelligence.jpg";
+import sceneAssembly from "@/assets/scene-assembly.jpg";
 import { Section } from "@/components/site/Section";
 import { StatCounter } from "@/components/site/StatCounter";
 import {
@@ -14,7 +19,7 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Veritas Global Advisory — Navigating Complexity. Connecting Opportunities." },
+      { title: "Veritas Global Advisory | Navigating Complexity. Connecting Opportunities." },
       { name: "description", content: "International consulting, research, and advisory firm providing strategic intelligence, political risk assessment, governance advisory, and global talent solutions." },
       { property: "og:title", content: "Veritas Global Advisory" },
       { property: "og:description", content: "Global Insights. Strategic Solutions. Trusted Expertise." },
@@ -33,23 +38,41 @@ const services = [
 ];
 
 const regions = [
-  { name: "Africa", experts: "120+ experts", reports: "240 reports" },
-  { name: "Asia-Pacific", experts: "150+ experts", reports: "310 reports" },
-  { name: "Europe", experts: "90+ experts", reports: "220 reports" },
-  { name: "Middle East", experts: "80+ experts", reports: "180 reports" },
-  { name: "Americas", experts: "100+ experts", reports: "200 reports" },
+  { name: "Africa", experts: "8 experts", reports: "20 reports" },
+  { name: "Asia-Pacific", experts: "10 experts", reports: "24 reports" },
+  { name: "Europe", experts: "9 experts", reports: "22 reports" },
+  { name: "Middle East", experts: "6 experts", reports: "16 reports" },
+  { name: "Americas", experts: "7 experts", reports: "18 reports" },
 ];
 
 const insights = [
-  { img: insight1, tag: "Global Affairs", title: "The New Multipolar Order: Strategic Implications for 2026", date: "Mar 12, 2026", featured: true },
-  { img: insight2, tag: "Business & Investment", title: "Capital Flows Realign: Emerging Markets in Focus", date: "Mar 8, 2026" },
-  { img: insight3, tag: "Politics & Governance", title: "Election Cycles and Regulatory Risk in Europe", date: "Mar 4, 2026" },
-  { img: insight4, tag: "Middle East Insights", title: "Energy Transition and Geopolitics in the Gulf", date: "Feb 28, 2026" },
+  { img: insight1, tag: "Global Affairs", title: "BRICS+ Expansion in 2025: Strategic Implications of Saudi Arabia, UAE, and Egypt Joining the Bloc", date: "Feb 14, 2026", featured: true },
+  { img: insight2, tag: "Business & Investment", title: "Mexico Overtakes China as Largest U.S. Trade Partner: Nearshoring Capital Flows Accelerate", date: "Feb 9, 2026" },
+  { img: insight3, tag: "Politics & Governance", title: "Germany's 2025 Snap Election and the Return of CDU/CSU Under Friedrich Merz", date: "Feb 2, 2026" },
+  { img: insight4, tag: "Middle East Insights", title: "After the Gaza Ceasefire: Reconstruction Politics and the Abraham Accords Revival", date: "Jan 28, 2026" },
 ];
 
 function Index() {
   return (
     <>
+      {/* ANIMATED TOP BANNER */}
+      <div className="relative h-28 md:h-36 overflow-hidden bg-[var(--navy-deep)]">
+        <img
+          src={heroAnimation}
+          alt="Global advisory network"
+          width={1920}
+          height={768}
+          className="absolute inset-0 h-full w-full object-cover opacity-80 animate-[kenburns_28s_ease-in-out_infinite_alternate]"
+          style={{ transformOrigin: "center" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-deep)] via-transparent to-[var(--navy-deep)]" />
+        <div className="container-x relative h-full flex items-center justify-between text-white/85 text-[11px] md:text-xs uppercase tracking-[0.28em]">
+          <span className="text-[var(--gold)]">Live · Global Intelligence Feed</span>
+          <span className="hidden md:inline">Miami · London · Singapore · Nairobi · Dubai · São Paulo</span>
+        </div>
+        <style>{`@keyframes kenburns{0%{transform:scale(1) translateX(0)}100%{transform:scale(1.12) translateX(-3%)}}`}</style>
+      </div>
+
       {/* HERO */}
       <section className="relative bg-[var(--navy-deep)] text-white overflow-hidden">
         <img
@@ -81,9 +104,9 @@ function Index() {
 
           <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/15 border border-white/15">
             {[
-              { v: "50+", l: "Countries Covered" },
-              { v: "500+", l: "Experts Worldwide" },
-              { v: "1,000+", l: "Research Publications" },
+              { v: "12", l: "Countries Covered" },
+              { v: "40", l: "Experts Worldwide" },
+              { v: "100", l: "Research Publications" },
               { v: "5", l: "Regional Divisions" },
             ].map((s) => (
               <div key={s.l} className="bg-[var(--navy-deep)] p-8">
@@ -118,12 +141,35 @@ function Index() {
       {/* STATS */}
       <section className="border-y border-border bg-[var(--secondary)]">
         <div className="container-x py-20 grid grid-cols-2 md:grid-cols-4 gap-10">
-          <StatCounter value={50} suffix="+" label="Countries Covered" />
-          <StatCounter value={500} suffix="+" label="Experts Worldwide" />
-          <StatCounter value={1000} suffix="+" label="Research Publications" />
+          <StatCounter value={12} label="Countries Covered" />
+          <StatCounter value={40} label="Experts Worldwide" />
+          <StatCounter value={100} label="Research Publications" />
           <StatCounter value={5} label="Regional Divisions" />
         </div>
       </section>
+
+      {/* IN THE FIELD */}
+      <Section eyebrow="In the Field" title="Where our analysts work."
+        intro="From boardrooms in Miami to multilateral forums and intelligence operations centers worldwide.">
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { img: sceneBoardroom, cap: "Executive Briefings" },
+            { img: sceneIntelligence, cap: "Intelligence Operations" },
+            { img: sceneAssembly, cap: "Multilateral Forums" },
+            { img: sceneMiami, cap: "Miami Headquarters" },
+            { img: globeImg, cap: "Global Coverage" },
+            { img: heroAnimation, cap: "Live Data Network" },
+          ].slice(0, 3).map((s) => (
+            <figure key={s.cap} className="relative group overflow-hidden">
+              <img src={s.img} alt={s.cap} loading="lazy" className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105" />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--navy-deep)]/95 to-transparent text-white p-5 text-xs uppercase tracking-[0.2em]">
+                <span className="text-[var(--gold)]">·</span> {s.cap}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </Section>
+
 
       {/* SERVICES */}
       <Section eyebrow="Practices" title="Six interconnected disciplines. One global perspective." intro="Our advisory practices bring together rigorous analysis, cross-regional expertise, and field experience to support decisions of consequence.">
@@ -138,7 +184,7 @@ function Index() {
               </div>
               <h3 className="text-xl font-semibold leading-snug mb-5 text-[var(--navy-deep)]">{s.title}</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">—</span>{i}</li>)}
+                {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">·</span>{i}</li>)}
               </ul>
               <Link to="/services" className="link-arrow mt-8">Explore</Link>
             </div>

@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/careers")({
   head: () => ({
     meta: [
-      { title: "Careers — Veritas Global Advisory" },
+      { title: "Careers | Veritas Global Advisory" },
       { name: "description", content: "Join Veritas Global Advisory. Open roles in research, political risk, governance, communications, and more." },
     ],
   }),
@@ -70,6 +71,7 @@ function CareersPage() {
           {filtered.length === 0 && <div className="bg-background py-20 text-center text-muted-foreground">No open positions match your filters.</div>}
         </div>
       </Section>
+      <ImageStrip start={3} eyebrow="Life at Veritas" title="A global team across five divisions." />
     </>
   );
 }

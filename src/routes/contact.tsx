@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { useState } from "react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact — Veritas Global Advisory" },
+      { title: "Contact | Veritas Global Advisory" },
       { name: "description", content: "Contact Veritas Global Advisory. Headquarters in London, United Kingdom." },
     ],
   }),
@@ -35,7 +36,8 @@ function ContactPage() {
             <h3 className="display-3 mb-4">Headquarters</h3>
             <p className="text-muted-foreground leading-relaxed">
               Veritas Global Advisory<br />
-              London, United Kingdom
+              1450 Brickell Avenue, Suite 2400<br />
+              Miami, Florida 33131, USA
             </p>
             <div className="mt-10 space-y-4">
               <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Direct contacts</div>
@@ -62,13 +64,14 @@ function ContactPage() {
             </div>
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               {sent
-                ? <p className="text-[var(--navy-deep)] font-medium">Thank you — we'll respond shortly.</p>
+                ? <p className="text-[var(--navy-deep)] font-medium">Thank you. we'll respond shortly.</p>
                 : <span className="text-xs text-muted-foreground">Replies typically within two business days.</span>}
               <button type="submit" className="btn-primary">Send Inquiry</button>
             </div>
           </form>
         </div>
       </Section>
+      <ImageStrip start={5} eyebrow="Our Presence" title="Miami headquarters and global reach." />
     </>
   );
 }

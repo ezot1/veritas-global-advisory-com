@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 
 export const Route = createFileRoute("/leadership")({
   head: () => ({
     meta: [
-      { title: "Leadership — Veritas Global Advisory" },
+      { title: "Leadership | Veritas Global Advisory" },
       { name: "description", content: "Board of directors, executive leadership, advisory council, and regional offices of Veritas Global Advisory." },
     ],
   }),
@@ -66,6 +67,7 @@ function LeadershipPage() {
           ))}
         </div>
       </Section>
+      <ImageStrip start={2} eyebrow="At Work" title="Our leadership in action." />
     </>
   );
 }

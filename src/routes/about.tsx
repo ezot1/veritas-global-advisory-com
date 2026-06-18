@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Who We Are — Veritas Global Advisory" },
-      { name: "description", content: "Mission, vision, and values of Veritas Global Advisory — an international consulting and advisory institution." },
+      { title: "Who We Are | Veritas Global Advisory" },
+      { name: "description", content: "Mission, vision, and values of Veritas Global Advisory | an international consulting and advisory institution." },
     ],
   }),
   component: AboutPage,
@@ -36,6 +37,7 @@ function AboutPage() {
           ))}
         </div>
       </Section>
+      <ImageStrip start={0} eyebrow="The Institution" title="A global advisory firm at work." />
     </>
   );
 }
