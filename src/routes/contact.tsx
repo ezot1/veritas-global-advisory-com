@@ -35,7 +35,8 @@ function ContactPage() {
             <h3 className="display-3 mb-4">Headquarters</h3>
             <p className="text-muted-foreground leading-relaxed">
               Veritas Global Advisory<br />
-              London, United Kingdom
+              1450 Brickell Avenue, Suite 2400<br />
+              Miami, Florida 33131, USA
             </p>
             <div className="mt-10 space-y-4">
               <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Direct contacts</div>
