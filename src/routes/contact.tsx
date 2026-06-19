@@ -15,11 +15,11 @@ export const Route = createFileRoute("/contact")({
 });
 
 const emails = [
-  ["General", "info@veritasglobaladvisory.com"],
-  ["Business", "business@veritasglobaladvisory.com"],
-  ["Research", "research@veritasglobaladvisory.com"],
-  ["Careers", "careers@veritasglobaladvisory.com"],
-  ["Media", "media@veritasglobaladvisory.com"],
+  ["General", "info@veritasglobaladvisory.org"],
+  ["Business", "business@veritasglobaladvisory.org"],
+  ["Research", "research@veritasglobaladvisory.org"],
+  ["Careers", "careers@veritasglobaladvisory.org"],
+  ["Media", "media@veritasglobaladvisory.org"],
 ];
 
 function ContactPage() {
