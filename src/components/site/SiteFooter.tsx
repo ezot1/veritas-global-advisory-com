@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { LogoMark } from "./Logo";
 
 export function SiteFooter() {
   return (
@@ -6,8 +7,8 @@ export function SiteFooter() {
       <div className="container-x py-20 grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3 mb-5">
-            <span className="grid place-items-center h-10 w-10 bg-[var(--gold)] text-[var(--navy-deep)] font-semibold">V</span>
-            <span className="text-lg font-semibold tracking-[0.16em] uppercase">Veritas</span>
+            <LogoMark size={44} variant="gold" />
+            <span className="text-lg font-semibold tracking-[0.22em] uppercase">Veritas</span>
           </div>
           <p className="text-sm leading-relaxed text-white/65 max-w-sm">
             Global Insights. Strategic Solutions. Trusted Expertise. An international consulting,

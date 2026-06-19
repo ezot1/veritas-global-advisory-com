@@ -63,7 +63,7 @@ function ArticlePage() {
             <img src={article.img} alt="" className="w-full h-full object-cover" loading="lazy" />
           </div>
           <div className="prose-veritas">
-            {article.body.map((p, i) => (
+            {article.body.map((p: string, i: number) => (
               <p key={i} className="text-[17px] leading-[1.85] text-foreground/90 mb-6">{p}</p>
             ))}
           </div>

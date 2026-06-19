@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
+import { ApplyDialog, type ApplyJob } from "@/components/site/ApplyDialog";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
@@ -15,9 +16,9 @@ export const Route = createFileRoute("/careers")({
   component: CareersPage,
 });
 
-const jobs = [
+const jobs: ApplyJob[] = [
   { title: "Research Associate", dept: "Research", region: "Europe" },
-  { title: "Country Analyst", dept: "Intelligence", region: "Africa" },
+  { title: "Country Analyst", dept: "Research", region: "Africa" },
   { title: "Political Risk Analyst", dept: "Risk Advisory", region: "Asia-Pacific" },
   { title: "Governance Consultant", dept: "Public Policy", region: "Middle East" },
   { title: "International Business Consultant", dept: "Consulting", region: "Americas" },
@@ -33,6 +34,7 @@ function CareersPage() {
   const [q, setQ] = useState("");
   const [dept, setDept] = useState("All Departments");
   const [reg, setReg] = useState("All Regions");
+  const [active, setActive] = useState<ApplyJob | null>(null);
 
   const filtered = useMemo(() => jobs.filter(j =>
     (dept === "All Departments" || j.dept === dept) &&
@@ -65,13 +67,14 @@ function CareersPage() {
                 <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--gold)]">{j.dept} · {j.region}</div>
                 <h3 className="mt-2 text-xl font-semibold text-[var(--navy-deep)]">{j.title}</h3>
               </div>
-              <a href="mailto:careers@veritasglobaladvisory.com" className="btn-ghost !text-[var(--navy-deep)]">Apply</a>
+              <button onClick={() => setActive(j)} className="btn-primary !text-xs !py-2.5 !px-5">Apply</button>
             </div>
           ))}
           {filtered.length === 0 && <div className="bg-background py-20 text-center text-muted-foreground">No open positions match your filters.</div>}
         </div>
       </Section>
       <ImageStrip start={3} eyebrow="Life at Veritas" title="A global team across five divisions." />
+      <ApplyDialog job={active} onClose={() => setActive(null)} />
     </>
   );
 }
