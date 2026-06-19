@@ -23,6 +23,39 @@ const categories = [
 
 function TalentPage() {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setSending(true);
+    const fd = new FormData(e.currentTarget);
+    try {
+      await submitForm({
+        formType: "talent",
+        formTitle: "New Global Talent Network application",
+        formSubtitle: "A specialist submitted the talent network form.",
+        replyTo: String(fd.get("email") || ""),
+        fields: [
+          { label: "Full name", value: String(fd.get("name") || "") },
+          { label: "Country", value: String(fd.get("country") || "") },
+          { label: "Email", value: String(fd.get("email") || "") },
+          { label: "LinkedIn", value: String(fd.get("linkedin") || "") },
+          { label: "Area of expertise", value: String(fd.get("expertise") || "") },
+          { label: "Years of experience", value: String(fd.get("years") || "") },
+          { label: "Languages spoken", value: String(fd.get("languages") || "") },
+          { label: "Professional biography", value: String(fd.get("bio") || "") },
+        ],
+      });
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Submission failed.");
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <>
       <PageHeader eyebrow="Global Talent Network" title="Join our international expert network."
@@ -40,10 +73,7 @@ function TalentPage() {
       </Section>
 
       <Section eyebrow="Application" title="Submit your profile." className="bg-[var(--secondary)]">
-        <form
-          onSubmit={(e) => { e.preventDefault(); setSent(true); }}
-          className="card-elevated p-8 md:p-12 max-w-4xl grid sm:grid-cols-2 gap-6"
-        >
+        <form onSubmit={handleSubmit} className="card-elevated p-8 md:p-12 max-w-4xl grid sm:grid-cols-2 gap-6">
           <Field label="Full Name" name="name" required />
           <Field label="Country" name="country" required />
           <Field label="Email" name="email" type="email" required />
@@ -53,17 +83,21 @@ function TalentPage() {
           <Field label="Languages Spoken" name="languages" className="sm:col-span-2" />
           <div className="sm:col-span-2">
             <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Professional Biography</label>
-            <textarea name="bio" rows={5} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+            <textarea name="bio" rows={5} maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">CV Upload (PDF)</label>
-            <input type="file" accept=".pdf,.doc,.docx" className="w-full text-sm" />
+            <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">CV Upload (PDF) — please email separately to research@veritasglobaladvisory.org</label>
+            <input type="file" accept=".pdf,.doc,.docx" className="w-full text-sm" disabled />
           </div>
           <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-4">
-            {sent ? (
-              <p className="text-[var(--navy-deep)] font-medium">Thank you. your application has been received.</p>
-            ) : <span className="text-xs text-muted-foreground">All applications are reviewed by our talent team.</span>}
-            <button type="submit" className="btn-primary">Submit Application</button>
+            {sent
+              ? <p className="text-[var(--navy-deep)] font-medium">Thank you. Your application has been received.</p>
+              : error
+                ? <p className="text-sm text-red-600">{error}</p>
+                : <span className="text-xs text-muted-foreground">All applications are reviewed by our talent team.</span>}
+            <button type="submit" disabled={sending || sent} className="btn-primary disabled:opacity-60">
+              {sending ? "Submitting…" : sent ? "Sent" : "Submit Application"}
+            </button>
           </div>
         </form>
       </Section>
