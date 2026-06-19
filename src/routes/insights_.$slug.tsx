@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
 import { findArticle, articles } from "@/data/articles";
 
-export const Route = createFileRoute("/insights/$slug")({
+export const Route = createFileRoute("/insights_/$slug")({
   loader: ({ params }) => {
     const article = findArticle(params.slug);
     if (!article) throw notFound();

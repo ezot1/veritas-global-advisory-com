@@ -18,7 +18,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as InsightsSlugRouteImport } from './routes/insights.$slug'
+import { Route as InsightsSlugRouteImport } from './routes/insights_.$slug'
 
 const TalentRoute = TalentRouteImport.update({
   id: '/talent',
@@ -66,9 +66,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsSlugRoute = InsightsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => InsightsRoute,
+  id: '/insights_/$slug',
+  path: '/insights/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -76,7 +76,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
-  '/insights': typeof InsightsRouteWithChildren
+  '/insights': typeof InsightsRoute
   '/leadership': typeof LeadershipRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -88,7 +88,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
-  '/insights': typeof InsightsRouteWithChildren
+  '/insights': typeof InsightsRoute
   '/leadership': typeof LeadershipRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -101,12 +101,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
-  '/insights': typeof InsightsRouteWithChildren
+  '/insights': typeof InsightsRoute
   '/leadership': typeof LeadershipRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/talent': typeof TalentRoute
-  '/insights/$slug': typeof InsightsSlugRoute
+  '/insights_/$slug': typeof InsightsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -144,7 +144,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/sitemap.xml'
     | '/talent'
-    | '/insights/$slug'
+    | '/insights_/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -152,11 +152,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
-  InsightsRoute: typeof InsightsRouteWithChildren
+  InsightsRoute: typeof InsightsRoute
   LeadershipRoute: typeof LeadershipRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TalentRoute: typeof TalentRoute
+  InsightsSlugRoute: typeof InsightsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -224,38 +225,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/insights/$slug': {
-      id: '/insights/$slug'
-      path: '/$slug'
+    '/insights_/$slug': {
+      id: '/insights_/$slug'
+      path: '/insights/$slug'
       fullPath: '/insights/$slug'
       preLoaderRoute: typeof InsightsSlugRouteImport
-      parentRoute: typeof InsightsRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface InsightsRouteChildren {
-  InsightsSlugRoute: typeof InsightsSlugRoute
-}
-
-const InsightsRouteChildren: InsightsRouteChildren = {
-  InsightsSlugRoute: InsightsSlugRoute,
-}
-
-const InsightsRouteWithChildren = InsightsRoute._addFileChildren(
-  InsightsRouteChildren,
-)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
-  InsightsRoute: InsightsRouteWithChildren,
+  InsightsRoute: InsightsRoute,
   LeadershipRoute: LeadershipRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TalentRoute: TalentRoute,
+  InsightsSlugRoute: InsightsSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
