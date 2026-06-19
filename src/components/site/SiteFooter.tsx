@@ -32,11 +32,11 @@ export function SiteFooter() {
         <div>
           <h4 className="text-xs uppercase tracking-[0.22em] text-[var(--gold)] mb-5">Direct</h4>
           <ul className="space-y-2 text-sm">
-            <li><a className="hover:text-white" href="mailto:info@veritasglobaladvisory.com">info@</a></li>
-            <li><a className="hover:text-white" href="mailto:business@veritasglobaladvisory.com">business@</a></li>
-            <li><a className="hover:text-white" href="mailto:research@veritasglobaladvisory.com">research@</a></li>
-            <li><a className="hover:text-white" href="mailto:careers@veritasglobaladvisory.com">careers@</a></li>
-            <li><a className="hover:text-white" href="mailto:media@veritasglobaladvisory.com">media@</a></li>
+            <li><a className="hover:text-white" href="mailto:info@veritasglobaladvisory.org">info@</a></li>
+            <li><a className="hover:text-white" href="mailto:business@veritasglobaladvisory.org">business@</a></li>
+            <li><a className="hover:text-white" href="mailto:research@veritasglobaladvisory.org">research@</a></li>
+            <li><a className="hover:text-white" href="mailto:careers@veritasglobaladvisory.org">careers@</a></li>
+            <li><a className="hover:text-white" href="mailto:media@veritasglobaladvisory.org">media@</a></li>
           </ul>
         </div>
       </div>
