@@ -34,7 +34,7 @@ const services = [
   { icon: Activity, title: "Political Risk Analysis", items: ["Country Risk Reports", "Election Monitoring", "Political Economy Analysis", "Regulatory Forecasting", "Geopolitical Briefings"] },
   { icon: Shield, title: "Security & Risk Advisory", items: ["Regional Security Assessments", "Conflict Analysis", "Crisis Monitoring", "Security Environment Reporting", "Risk Management Support"] },
   { icon: Scale, title: "Human Rights & Social Impact", items: ["Human Rights Assessments", "Social Impact Evaluations", "Community Engagement", "ESG Advisory Support"] },
-  { icon: Search, title: "Research & Intelligence", items: ["Country Studies", "Due Diligence Research", "Strategic Reports", "Sector Analysis", "Trend Forecasting"] },
+  { icon: Search, title: "Research & Analysis", items: ["Country Studies", "Due Diligence Research", "Strategic Reports", "Sector Analysis", "Trend Forecasting"] },
 ];
 
 const regions = [
@@ -46,10 +46,10 @@ const regions = [
 ];
 
 const insights = [
-  { img: insight1, tag: "Global Affairs", title: "BRICS+ Expansion in 2025: Strategic Implications of Saudi Arabia, UAE, and Egypt Joining the Bloc", date: "Feb 14, 2026", featured: true },
-  { img: insight2, tag: "Business & Investment", title: "Mexico Overtakes China as Largest U.S. Trade Partner: Nearshoring Capital Flows Accelerate", date: "Feb 9, 2026" },
-  { img: insight3, tag: "Politics & Governance", title: "Germany's 2025 Snap Election and the Return of CDU/CSU Under Friedrich Merz", date: "Feb 2, 2026" },
-  { img: insight4, tag: "Middle East Insights", title: "After the Gaza Ceasefire: Reconstruction Politics and the Abraham Accords Revival", date: "Jan 28, 2026" },
+  { slug: "brics-plus-expansion-2025", img: insight1, tag: "Global Affairs", title: "BRICS+ Expansion in 2025: Strategic Implications of Saudi Arabia, UAE, and Egypt Joining the Bloc", date: "Feb 14, 2026", featured: true },
+  { slug: "mexico-us-trade-nearshoring", img: insight2, tag: "Business & Investment", title: "Mexico Overtakes China as Largest U.S. Trade Partner: Nearshoring Capital Flows Accelerate", date: "Feb 9, 2026" },
+  { slug: "germany-snap-election-merz", img: insight3, tag: "Politics & Governance", title: "Germany's 2025 Snap Election and the Return of CDU/CSU Under Friedrich Merz", date: "Feb 2, 2026" },
+  { slug: "gaza-ceasefire-reconstruction", img: insight4, tag: "Middle East Insights", title: "After the Gaza Ceasefire: Reconstruction Politics and the Abraham Accords Revival", date: "Jan 28, 2026" },
 ];
 
 function Index() {
@@ -67,7 +67,10 @@ function Index() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-deep)] via-transparent to-[var(--navy-deep)]" />
         <div className="container-x relative h-full flex items-center justify-between text-white/85 text-[11px] md:text-xs uppercase tracking-[0.28em]">
-          <span className="text-[var(--gold)]">Live · Global Intelligence Feed</span>
+          <span className="flex items-center gap-2 text-[var(--gold)]">
+            <span className="inline-block h-2 w-2 rounded-full bg-[var(--gold)] animate-pulse" />
+            Live
+          </span>
           <span className="hidden md:inline">Miami · London · Singapore · Nairobi · Dubai · São Paulo</span>
         </div>
         <style>{`@keyframes kenburns{0%{transform:scale(1) translateX(0)}100%{transform:scale(1.12) translateX(-3%)}}`}</style>
