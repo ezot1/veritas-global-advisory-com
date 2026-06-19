@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
 import { useState } from "react";
+import { submitForm } from "@/lib/forms/submit";
 
 export const Route = createFileRoute("/talent")({
   head: () => ({
