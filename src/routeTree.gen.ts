@@ -24,6 +24,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as ApiPublicFormsSubmitRouteImport } from './routes/api/public/forms/submit'
 
 const TalentRoute = TalentRouteImport.update({
   id: '/talent',
@@ -103,6 +104,11 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicFormsSubmitRoute = ApiPublicFormsSubmitRouteImport.update({
+  id: '/api/public/forms/submit',
+  path: '/api/public/forms/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -134,6 +141,7 @@ export interface FileRoutesByTo {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/insights_/$slug': typeof InsightsSlugRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
+  '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/insights/$slug'
     | '/lovable/email/suppression'
+    | '/api/public/forms/submit'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/insights/$slug'
     | '/lovable/email/suppression'
+    | '/api/public/forms/submit'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/email/unsubscribe'
     | '/insights_/$slug'
     | '/lovable/email/suppression'
+    | '/api/public/forms/submit'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   InsightsSlugRoute: typeof InsightsSlugRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
+  ApiPublicFormsSubmitRoute: typeof ApiPublicFormsSubmitRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -335,6 +348,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/forms/submit': {
+      id: '/api/public/forms/submit'
+      path: '/api/public/forms/submit'
+      fullPath: '/api/public/forms/submit'
+      preLoaderRoute: typeof ApiPublicFormsSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -351,6 +371,7 @@ const rootRouteChildren: RootRouteChildren = {
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   InsightsSlugRoute: InsightsSlugRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
+  ApiPublicFormsSubmitRoute: ApiPublicFormsSubmitRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,
