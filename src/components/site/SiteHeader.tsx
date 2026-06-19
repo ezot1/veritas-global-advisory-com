@@ -2,11 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { LanguageBar } from "./LanguageBar";
+import { BrandLockup } from "./Logo";
 
 const nav = [
   { to: "/about", label: "Who We Are" },
   { to: "/services", label: "Services" },
-  { to: "/insights", label: "Insights" },
+  { to: "/insights", label: "Research" },
   { to: "/talent", label: "Global Talent" },
   { to: "/leadership", label: "Leadership" },
   { to: "/careers", label: "Careers" },
@@ -16,15 +17,9 @@ const nav = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 bg-background/85 backdrop-blur-md border-b border-border">
-      <div className="container-x flex items-center justify-between h-20">
-        <Link to="/" className="flex items-center gap-3 group" onClick={() => setOpen(false)}>
-          <span className="grid place-items-center h-9 w-9 bg-[var(--navy-deep)] text-[var(--gold)] font-semibold tracking-tight">V</span>
-          <span className="flex flex-col leading-tight">
-            <span className="text-sm font-semibold tracking-[0.16em] uppercase text-[var(--navy-deep)]">Veritas</span>
-            <span className="text-[10px] tracking-[0.28em] uppercase text-muted-foreground">Global Advisory</span>
-          </span>
-        </Link>
+    <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
+      <div className="container-x flex items-center justify-between gap-3 h-20">
+        <BrandLockup onClick={() => setOpen(false)} />
 
         <nav className="hidden lg:flex items-center gap-7">
           {nav.map((n) => (
@@ -44,13 +39,16 @@ export function SiteHeader() {
           <Link to="/contact" className="btn-primary !py-2.5 !px-5 !text-xs">Engage Us</Link>
         </div>
 
-        <button
-          aria-label="Toggle menu"
-          className="lg:hidden p-2 -mr-2"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-3 lg:hidden">
+          <LanguageBar compact />
+          <button
+            aria-label="Toggle menu"
+            className="p-2 -mr-2"
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (
