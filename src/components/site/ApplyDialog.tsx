@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { submitForm } from "@/lib/forms/submit";
 
 export type ApplyJob = { title: string; dept: string; region: string };
 
 export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: () => void }) {
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "",
     nationality: "", location: "", linkedin: "", portfolio: "",
@@ -15,6 +18,7 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
   useEffect(() => {
     if (!job) return;
     setSubmitted(false);
+    setError(null);
     setForm((f) => ({ ...f, firstName: "", lastName: "", email: "", phone: "", cover: "" }));
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
@@ -30,10 +34,40 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
   const handle = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Local-only confirmation. Backend wiring is intentionally out of scope.
-    setSubmitted(true);
+    setError(null);
+    setSending(true);
+    try {
+      await submitForm({
+        formType: "careers",
+        formTitle: `New application — ${job.title} (${job.dept}, ${job.region})`,
+        formSubtitle: "A candidate applied through the Veritas Global Advisory careers page.",
+        replyTo: form.email,
+        fields: [
+          { label: "Position", value: `${job.title} — ${job.dept} · ${job.region}` },
+          { label: "First name", value: form.firstName },
+          { label: "Last name", value: form.lastName },
+          { label: "Email", value: form.email },
+          { label: "Phone", value: form.phone },
+          { label: "Nationality", value: form.nationality },
+          { label: "Current location", value: form.location },
+          { label: "LinkedIn", value: form.linkedin },
+          { label: "Portfolio / website", value: form.portfolio },
+          { label: "Years of experience", value: form.yearsExp },
+          { label: "Highest education", value: form.education },
+          { label: "Languages spoken", value: form.languages },
+          { label: "Earliest availability", value: form.availability },
+          { label: "Work authorization", value: form.workAuth },
+          { label: "Cover note", value: form.cover },
+        ],
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Submission failed.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -109,9 +143,12 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
             <div className="text-xs text-muted-foreground">
               By submitting you consent to Veritas Global Advisory processing your details in accordance with our Privacy Policy.
             </div>
+            {error && <p className="text-sm text-red-600">{error}</p>}
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
               <button type="button" onClick={onClose} className="btn-ghost !text-[var(--navy-deep)]">Cancel</button>
-              <button type="submit" className="btn-primary">Submit application</button>
+              <button type="submit" disabled={sending} className="btn-primary disabled:opacity-60">
+                {sending ? "Submitting…" : "Submit application"}
+              </button>
             </div>
           </form>
         )}
