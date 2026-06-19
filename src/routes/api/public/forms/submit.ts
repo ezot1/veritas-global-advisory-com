@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { renderAsync } from '@react-email/components'
+import { render } from '@react-email/components'
 import { createClient } from '@supabase/supabase-js'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
@@ -79,8 +79,8 @@ export const Route = createFileRoute('/api/public/forms/submit')({
         }
 
         const element = React.createElement(template.component, templateData)
-        const html = await renderAsync(element)
-        const text = await renderAsync(element, { plainText: true })
+        const html = await render(element)
+        const text = await render(element, { plainText: true })
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
