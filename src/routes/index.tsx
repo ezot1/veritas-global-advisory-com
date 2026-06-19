@@ -257,9 +257,9 @@ function Pillar({ title, body }: { title: string; body: string }) {
   );
 }
 
-function FeaturedInsight({ item }: { item: { img: string; tag: string; title: string; date: string } }) {
+function FeaturedInsight({ item }: { item: { slug: string; img: string; tag: string; title: string; date: string } }) {
   return (
-    <Link to="/insights" className="card-elevated block group">
+    <Link to="/insights/$slug" params={{ slug: item.slug }} className="card-elevated block group">
       <div className="aspect-[4/3] overflow-hidden">
         <img src={item.img} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
       </div>
@@ -276,9 +276,9 @@ function FeaturedInsight({ item }: { item: { img: string; tag: string; title: st
   );
 }
 
-function InsightCard({ item }: { item: { img: string; tag: string; title: string; date: string } }) {
+function InsightCard({ item }: { item: { slug: string; img: string; tag: string; title: string; date: string } }) {
   return (
-    <Link to="/insights" className="card-elevated grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr]">
+    <Link to="/insights/$slug" params={{ slug: item.slug }} className="card-elevated grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr]">
       <div className="overflow-hidden">
         <img src={item.img} alt="" loading="lazy" className="w-full h-full object-cover" />
       </div>
