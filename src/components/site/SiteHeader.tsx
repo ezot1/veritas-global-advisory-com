@@ -17,6 +17,25 @@ const nav = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const check = async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) { if (mounted) setIsAdmin(false); return; }
+      const { data } = await supabase
+        .from("user_roles").select("role")
+        .eq("user_id", u.user.id).eq("role", "admin").maybeSingle();
+      if (mounted) setIsAdmin(!!data);
+    };
+    check();
+    const { data: sub } = supabase.auth.onAuthStateChange((e) => {
+      if (e === "SIGNED_IN" || e === "SIGNED_OUT" || e === "USER_UPDATED") check();
+    });
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
       <div className="container-x flex items-center justify-between gap-3 h-20">
