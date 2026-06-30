@@ -1,8 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { LanguageBar } from "./LanguageBar";
 import { BrandLockup } from "./Logo";
+import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
   { to: "/about", label: "Who We Are" },
