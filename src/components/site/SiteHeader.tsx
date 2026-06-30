@@ -56,6 +56,11 @@ export function SiteHeader() {
 
         <div className="hidden lg:flex items-center gap-5">
           <LanguageBar />
+          {isAdmin && (
+            <Link to="/admin" className="text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] hover:text-[var(--navy-deep)]">
+              Inbox
+            </Link>
+          )}
           <Link to="/contact" className="btn-primary !py-2.5 !px-5 !text-xs">Engage Us</Link>
         </div>
 
