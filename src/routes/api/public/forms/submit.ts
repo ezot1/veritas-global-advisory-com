@@ -88,6 +88,26 @@ export const Route = createFileRoute('/api/public/forms/submit')({
 
         const messageId = crypto.randomUUID()
 
+        // Helper to find a field value by label (case-insensitive contains)
+        const findField = (needle: string) =>
+          parsed.fields.find((f) => f.label.toLowerCase().includes(needle))?.value ?? null
+        const messageVal =
+          findField('message') ?? findField('cover') ?? findField('summary') ?? null
+
+        await supabase.from('form_submissions').insert({
+          form_type: parsed.formType,
+          department: parsed.department ?? null,
+          recipient_email: recipient,
+          subject: parsed.formTitle,
+          sender_name: findField('name'),
+          sender_email: parsed.replyTo ?? findField('email'),
+          sender_organization: findField('organization') ?? findField('company'),
+          sender_country: findField('country'),
+          message: messageVal,
+          fields: parsed.fields,
+          status: 'new',
+        })
+
         await supabase.from('email_send_log').insert({
           message_id: messageId,
           template_name: 'form-notification',
