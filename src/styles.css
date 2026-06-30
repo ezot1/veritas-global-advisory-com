@@ -138,12 +138,6 @@
   .eyebrow {
     @apply inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground;
   }
-  .eyebrow::before {
-    content: "";
-    width: 28px;
-    height: 1px;
-    background: var(--gold);
-  }
   .display-1 { @apply text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.02] tracking-tight; }
   .display-2 { @apply text-4xl md:text-5xl font-semibold leading-[1.05] tracking-tight; }
   .display-3 { @apply text-2xl md:text-3xl font-semibold leading-tight tracking-tight; }
