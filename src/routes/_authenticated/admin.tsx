@@ -61,7 +61,7 @@ function AdminPage() {
       .order("created_at", { ascending: false })
       .limit(200);
     if (error) setError(error.message);
-    setItems((data as Submission[]) ?? []);
+    setItems(((data as unknown) as Submission[]) ?? []);
     setLoading(false);
   }
 
