@@ -127,7 +127,6 @@ function Index() {
           <Pillar title="Our Mission" body="To deliver high-quality consulting, research, strategic intelligence, and global advisory services that create value for clients worldwide." />
           <Pillar title="Our Vision" body="To become a globally trusted consulting and advisory institution connecting expertise, knowledge, and solutions across continents." />
           <div>
-            <div className="gold-rule mb-6" />
             <h3 className="display-3 mb-6">Core Values</h3>
             <ul className="space-y-3 text-foreground/85">
               {["Integrity", "Professionalism", "Evidence-Based Analysis", "Global Perspective", "Confidentiality", "Excellence", "Diversity & Inclusion"].map((v) => (
@@ -249,9 +248,8 @@ function Index() {
 
 function Pillar({ title, body }: { title: string; body: string }) {
   return (
-    <div>
-      <div className="gold-rule mb-6" />
-      <h3 className="display-3 mb-5">{title}</h3>
+          <div>
+            <h3 className="display-3 mb-5">{title}</h3>
       <p className="text-foreground/80 leading-relaxed">{body}</p>
     </div>
   );

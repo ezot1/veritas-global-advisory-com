@@ -67,8 +67,7 @@ function ArticlePage() {
               <p key={i} className="text-[17px] leading-[1.85] text-foreground/90 mb-6">{p}</p>
             ))}
           </div>
-          <div className="gold-rule mt-12 mb-6 w-12" />
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-12">
             This research briefing is published by Veritas Global Advisory's editorial desks. Views expressed are those of the authors and do not constitute investment advice.
           </p>
         </article>
