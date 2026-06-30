@@ -78,7 +78,6 @@ function ContactPage() {
       <Section>
         <div className="grid lg:grid-cols-[1fr_1.4fr] gap-14">
           <aside>
-            <div className="gold-rule mb-6" />
             <h3 className="display-3 mb-4">Headquarters</h3>
             <p className="text-muted-foreground leading-relaxed">
               Veritas Global Advisory<br />

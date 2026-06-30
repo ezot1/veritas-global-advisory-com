@@ -35,7 +35,6 @@ export function StatCounter({ value, suffix = "", label }: { value: number; suff
       <div className="text-5xl md:text-6xl font-semibold tracking-tight text-[var(--navy-deep)]">
         {n.toLocaleString()}{suffix}
       </div>
-      <div className="gold-rule" />
       <div className="text-sm uppercase tracking-[0.16em] text-muted-foreground">{label}</div>
     </div>
   );

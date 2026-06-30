@@ -14,7 +14,6 @@ export function SiteFooter() {
             Global Insights. Strategic Solutions. Trusted Expertise. An international consulting,
             research, and advisory firm connecting expertise across continents.
           </p>
-          <div className="gold-rule mt-8" />
           <p className="mt-4 text-xs uppercase tracking-[0.18em] text-white/55">Headquarters · Miami, Florida, USA</p>
         </div>
 

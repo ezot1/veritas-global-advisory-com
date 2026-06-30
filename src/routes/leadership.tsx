@@ -78,7 +78,6 @@ function Profile({ name, role, bio }: { name: string; role: string; bio?: string
       <div className="aspect-[3/4] bg-gradient-to-br from-[var(--navy-deep)] to-[var(--navy)] mb-5 grid place-items-center text-[var(--gold)] text-5xl font-semibold">
         {name.split(" ").slice(-1)[0][0]}
       </div>
-      <div className="gold-rule mb-4" />
       <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{role}</div>
       <div className="mt-2 font-semibold text-[var(--navy-deep)]">{name}</div>
       {bio && <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{bio}</p>}

@@ -31,7 +31,6 @@ function AboutPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
           {["Integrity", "Professionalism", "Evidence-Based Analysis", "Global Perspective", "Confidentiality", "Excellence", "Diversity & Inclusion", "Independence"].map((v) => (
             <div key={v} className="bg-background p-8">
-              <div className="gold-rule mb-5" />
               <div className="text-lg font-semibold text-[var(--navy-deep)]">{v}</div>
             </div>
           ))}
@@ -45,7 +44,6 @@ function AboutPage() {
 function Block({ title, body }: { title: string; body: string }) {
   return (
     <div>
-      <div className="gold-rule mb-6" />
       <h3 className="display-2 mb-6">{title}</h3>
       <p className="text-lg text-muted-foreground leading-relaxed">{body}</p>
     </div>

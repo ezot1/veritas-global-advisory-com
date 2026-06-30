@@ -141,12 +141,6 @@
   .display-1 { @apply text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.02] tracking-tight; }
   .display-2 { @apply text-4xl md:text-5xl font-semibold leading-[1.05] tracking-tight; }
   .display-3 { @apply text-2xl md:text-3xl font-semibold leading-tight tracking-tight; }
-  .gold-rule {
-    height: 2px;
-    width: 56px;
-    background: var(--gold);
-    display: block;
-  }
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-medium tracking-wide uppercase transition-all;
     background: var(--navy-deep);

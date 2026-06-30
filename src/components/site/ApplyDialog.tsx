@@ -86,7 +86,6 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
 
         {submitted ? (
           <div className="p-10 text-center">
-            <div className="gold-rule mx-auto mb-6 w-12" />
             <h4 className="text-2xl font-semibold text-[var(--navy-deep)]">Application received.</h4>
             <p className="mt-3 text-muted-foreground max-w-md mx-auto">
               Thank you, {form.firstName || "candidate"}. Our talent team will review your submission and respond within 10 business days.
