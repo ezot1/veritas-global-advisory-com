@@ -17,6 +17,20 @@ const DEPARTMENT_INBOXES: Record<string, string> = {
   media: 'media@veritasglobaladvisory.org',
 }
 
+const DEPARTMENT_LABELS: Record<string, string> = {
+  general: 'Veritas Global Advisory — General',
+  business: 'Veritas Global Advisory — Business',
+  research: 'Veritas Global Advisory — Research',
+  careers: 'Veritas Global Advisory — Careers',
+  media: 'Veritas Global Advisory — Media',
+}
+
+function resolveDepartmentKey(parsed: z.infer<typeof bodySchema>): string {
+  if (parsed.formType === 'careers') return 'careers'
+  if (parsed.formType === 'talent') return 'research'
+  return parsed.department ?? 'general'
+}
+
 const fieldSchema = z.object({
   label: z.string().trim().min(1).max(80),
   value: z.string().trim().max(5000),
@@ -66,6 +80,9 @@ export const Route = createFileRoute('/api/public/forms/submit')({
         }
 
         const recipient = resolveRecipient(parsed)
+        const deptKey = resolveDepartmentKey(parsed)
+        const fromAddress = DEPARTMENT_INBOXES[deptKey]
+        const fromLabel = DEPARTMENT_LABELS[deptKey] ?? SITE_NAME
         const template = TEMPLATES['form-notification']
         if (!template) {
           return Response.json({ error: 'Template missing' }, { status: 500, headers: corsHeaders })
@@ -121,7 +138,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           payload: {
             message_id: messageId,
             to: recipient,
-            from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+            from: `${fromLabel} <${fromAddress}>`,
             sender_domain: SENDER_DOMAIN,
             subject: parsed.formTitle,
             html,
