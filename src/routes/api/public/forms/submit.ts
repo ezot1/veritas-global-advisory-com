@@ -17,6 +17,20 @@ const DEPARTMENT_INBOXES: Record<string, string> = {
   media: 'media@veritasglobaladvisory.org',
 }
 
+const DEPARTMENT_LABELS: Record<string, string> = {
+  general: 'Veritas Global Advisory — General',
+  business: 'Veritas Global Advisory — Business',
+  research: 'Veritas Global Advisory — Research',
+  careers: 'Veritas Global Advisory — Careers',
+  media: 'Veritas Global Advisory — Media',
+}
+
+function resolveDepartmentKey(parsed: z.infer<typeof bodySchema>): string {
+  if (parsed.formType === 'careers') return 'careers'
+  if (parsed.formType === 'talent') return 'research'
+  return parsed.department ?? 'general'
+}
+
 const fieldSchema = z.object({
   label: z.string().trim().min(1).max(80),
   value: z.string().trim().max(5000),
