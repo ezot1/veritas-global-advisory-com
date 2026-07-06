@@ -80,6 +80,9 @@ export const Route = createFileRoute('/api/public/forms/submit')({
         }
 
         const recipient = resolveRecipient(parsed)
+        const deptKey = resolveDepartmentKey(parsed)
+        const fromAddress = DEPARTMENT_INBOXES[deptKey]
+        const fromLabel = DEPARTMENT_LABELS[deptKey] ?? SITE_NAME
         const template = TEMPLATES['form-notification']
         if (!template) {
           return Response.json({ error: 'Template missing' }, { status: 500, headers: corsHeaders })
@@ -135,7 +138,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           payload: {
             message_id: messageId,
             to: recipient,
-            from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+            from: `${fromLabel} <${fromAddress}>`,
             sender_domain: SENDER_DOMAIN,
             subject: parsed.formTitle,
             html,
