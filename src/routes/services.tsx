@@ -4,11 +4,40 @@ import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
 import { Briefcase, Landmark, Shield, Activity, Scale, Search } from "lucide-react";
 
+const SERVICE_ITEMS = [
+  "International Business Consulting",
+  "Public Policy & Governance",
+  "Political Risk Analysis",
+  "Security & Risk Advisory",
+  "Human Rights & Social Impact",
+  "Research & Intelligence Services",
+];
+
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
       { title: "Services | Veritas Global Advisory" },
       { name: "description", content: "Strategic intelligence, business consulting, governance, political risk, security advisory, human rights, and research services." },
+      { property: "og:title", content: "Advisory Services — Veritas Global Advisory" },
+      { property: "og:description", content: "Six interconnected advisory practices: business consulting, governance, political risk, security, human rights, and research." },
+      { property: "og:url", content: "https://veritasglobaladvisory.org/services" },
+    ],
+    links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/services" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ProfessionalService",
+          name: "Veritas Global Advisory",
+          url: "https://veritasglobaladvisory.org/services",
+          areaServed: "Worldwide",
+          makesOffer: SERVICE_ITEMS.map((s) => ({
+            "@type": "Offer",
+            itemOffered: { "@type": "Service", name: s },
+          })),
+        }),
+      },
     ],
   }),
   component: ServicesPage,

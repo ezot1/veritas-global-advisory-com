@@ -72,7 +72,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Veritas Global Advisory | Strategic Intelligence & Advisory" },
-      { name: "description", content: "Veritas Global Advisory is an international consulting and advisory firm providing strategic intelligence, research, and global solutions." },
       { name: "twitter:description", content: "Veritas Global Advisory is an international consulting and advisory firm providing strategic intelligence, research, and global solutions." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3dfd51f1-c7bc-4b9c-8c93-1b81834a9127/id-preview-bed15bdc--18aef884-42a4-462a-8a37-0da9db485681.lovable.app-1781689847790.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3dfd51f1-c7bc-4b9c-8c93-1b81834a9127/id-preview-bed15bdc--18aef884-42a4-462a-8a37-0da9db485681.lovable.app-1781689847790.png" },
@@ -86,6 +85,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Veritas Global Advisory",
+          url: "https://veritasglobaladvisory.org",
+          logo: "https://veritasglobaladvisory.org/favicon.png",
+          description: "International consulting and advisory firm providing strategic intelligence, research, and governance advisory.",
+          sameAs: [],
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Veritas Global Advisory",
+          url: "https://veritasglobaladvisory.org",
+        }),
       },
     ],
   }),

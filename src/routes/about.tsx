@@ -7,8 +7,12 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "Who We Are | Veritas Global Advisory" },
-      { name: "description", content: "Mission, vision, and values of Veritas Global Advisory | an international consulting and advisory institution." },
+      { name: "description", content: "Mission, vision, and values of Veritas Global Advisory — an international consulting and advisory institution across five regions." },
+      { property: "og:title", content: "Who We Are — Veritas Global Advisory" },
+      { property: "og:description", content: "The mission, vision, and core values behind Veritas Global Advisory's international consulting and advisory work." },
+      { property: "og:url", content: "https://veritasglobaladvisory.org/about" },
     ],
+    links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/about" }],
   }),
   component: AboutPage,
 });

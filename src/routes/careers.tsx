@@ -50,12 +50,12 @@ function CareersPage() {
         <div className="card-elevated p-6 mb-12 grid lg:grid-cols-[1.4fr_1fr_1fr] gap-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search positions..." className="w-full h-12 pl-11 pr-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search positions..." aria-label="Search open positions" className="w-full h-12 pl-11 pr-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
           </div>
-          <select value={dept} onChange={(e) => setDept(e.target.value)} className="h-12 px-4 border border-border bg-background text-sm">
+          <select value={dept} onChange={(e) => setDept(e.target.value)} aria-label="Filter by department" className="h-12 px-4 border border-border bg-background text-sm">
             {departments.map((d) => <option key={d}>{d}</option>)}
           </select>
-          <select value={reg} onChange={(e) => setReg(e.target.value)} className="h-12 px-4 border border-border bg-background text-sm">
+          <select value={reg} onChange={(e) => setReg(e.target.value)} aria-label="Filter by region" className="h-12 px-4 border border-border bg-background text-sm">
             {regions.map((d) => <option key={d}>{d}</option>)}
           </select>
         </div>

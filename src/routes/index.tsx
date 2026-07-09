@@ -19,11 +19,13 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Veritas Global Advisory | Navigating Complexity. Connecting Opportunities." },
-      { name: "description", content: "International consulting, research, and advisory firm providing strategic intelligence, political risk assessment, governance advisory, and global talent solutions." },
-      { property: "og:title", content: "Veritas Global Advisory" },
-      { property: "og:description", content: "Global Insights. Strategic Solutions. Trusted Expertise." },
+      { title: "Veritas Global Advisory | Strategic Intelligence" },
+      { name: "description", content: "International consulting and advisory firm delivering strategic intelligence, political risk, governance, and market-entry advisory worldwide." },
+      { property: "og:title", content: "Veritas Global Advisory | Strategic Intelligence" },
+      { property: "og:description", content: "Global insights, strategic solutions, and trusted expertise across five regional divisions." },
+      { property: "og:url", content: "https://veritasglobaladvisory.org/" },
     ],
+    links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/" }],
   }),
   component: Index,
 });
@@ -83,6 +85,8 @@ function Index() {
           alt=""
           width={1920}
           height={1280}
+          fetchPriority="high"
+          decoding="async"
           className="absolute inset-0 h-full w-full object-cover opacity-50"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[var(--navy-deep)]/70 via-[var(--navy-deep)]/60 to-[var(--navy-deep)]" />

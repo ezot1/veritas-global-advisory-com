@@ -11,7 +11,11 @@ export const Route = createFileRoute("/insights")({
     meta: [
       { title: "Global Research | Veritas Global Advisory" },
       { name: "description", content: "Research briefings and analysis from Veritas Global Advisory across global affairs, governance, business, and regional studies." },
+      { property: "og:title", content: "Global Research — Veritas Global Advisory" },
+      { property: "og:description", content: "Featured reports, country studies, and briefings from our editorial desks and network of senior fellows." },
+      { property: "og:url", content: "https://veritasglobaladvisory.org/insights" },
     ],
+    links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/insights" }],
   }),
   component: InsightsPage,
 });
@@ -43,13 +47,14 @@ function InsightsPage() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search research, reports, regions..."
+              aria-label="Search research and briefings"
               className="w-full h-12 pl-11 pr-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]"
             />
           </div>
-          <select value={cat} onChange={(e) => setCat(e.target.value)} className="h-12 px-4 border border-border bg-background text-sm">
+          <select value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Filter by category" className="h-12 px-4 border border-border bg-background text-sm">
             {categories.map((c) => <option key={c}>{c}</option>)}
           </select>
-          <select value={reg} onChange={(e) => setReg(e.target.value)} className="h-12 px-4 border border-border bg-background text-sm">
+          <select value={reg} onChange={(e) => setReg(e.target.value)} aria-label="Filter by region" className="h-12 px-4 border border-border bg-background text-sm">
             {regions.map((c) => <option key={c}>{c}</option>)}
           </select>
         </div>
