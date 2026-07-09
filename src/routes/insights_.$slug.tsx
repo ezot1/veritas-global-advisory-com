@@ -8,15 +8,45 @@ export const Route = createFileRoute("/insights_/$slug")({
     if (!article) throw notFound();
     return { article };
   },
-  head: ({ loaderData }) => ({
+  head: ({ params, loaderData }) => ({
     meta: loaderData
       ? [
           { title: `${loaderData.article.title} | Veritas Global Advisory` },
           { name: "description", content: loaderData.article.summary },
           { property: "og:title", content: loaderData.article.title },
           { property: "og:description", content: loaderData.article.summary },
+          { property: "og:type", content: "article" },
+          { property: "og:url", content: `https://veritasglobaladvisory.org/insights/${params.slug}` },
+          { property: "og:image", content: `https://veritasglobaladvisory.org${loaderData.article.img}` },
+          { property: "article:author", content: loaderData.article.author },
+          { property: "article:published_time", content: loaderData.article.date },
         ]
       : [{ title: "Insight | Veritas Global Advisory" }],
+    links: loaderData
+      ? [{ rel: "canonical", href: `https://veritasglobaladvisory.org/insights/${params.slug}` }]
+      : [],
+    scripts: loaderData
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              headline: loaderData.article.title,
+              description: loaderData.article.summary,
+              author: { "@type": "Person", name: loaderData.article.author },
+              datePublished: loaderData.article.date,
+              image: `https://veritasglobaladvisory.org${loaderData.article.img}`,
+              publisher: {
+                "@type": "Organization",
+                name: "Veritas Global Advisory",
+                logo: { "@type": "ImageObject", url: "https://veritasglobaladvisory.org/favicon.png" },
+              },
+              mainEntityOfPage: `https://veritasglobaladvisory.org/insights/${params.slug}`,
+            }),
+          },
+        ]
+      : [],
   }),
   notFoundComponent: () => (
     <Section>

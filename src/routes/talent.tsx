@@ -10,7 +10,11 @@ export const Route = createFileRoute("/talent")({
     meta: [
       { title: "Global Talent Network | Veritas Global Advisory" },
       { name: "description", content: "Join the Veritas Global Advisory expert network of researchers, policy analysts, economists, and practitioners worldwide." },
+      { property: "og:title", content: "Global Talent Network — Veritas Global Advisory" },
+      { property: "og:description", content: "Apply to a global network of researchers, analysts, economists, and practitioners shaping strategic advisory across five regions." },
+      { property: "og:url", content: "https://veritasglobaladvisory.org/talent" },
     ],
+    links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/talent" }],
   }),
   component: TalentPage,
 });
@@ -82,8 +86,8 @@ function TalentPage() {
           <Field label="Years of Experience" name="years" type="number" />
           <Field label="Languages Spoken" name="languages" className="sm:col-span-2" />
           <div className="sm:col-span-2">
-            <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Professional Biography</label>
-            <textarea name="bio" rows={5} maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+            <label htmlFor="talent-bio" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Professional Biography</label>
+            <textarea id="talent-bio" name="bio" rows={5} maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
           </div>
           <div className="sm:col-span-2">
             <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">CV Upload (PDF) — please email separately to research@veritasglobaladvisory.org</label>
@@ -107,10 +111,11 @@ function TalentPage() {
 }
 
 function Field({ label, name, type = "text", required, className = "" }: { label: string; name: string; type?: string; required?: boolean; className?: string }) {
+  const id = `talent-${name}`;
   return (
     <div className={className}>
-      <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">{label}{required && <span className="text-[var(--gold)]"> *</span>}</label>
-      <input name={name} type={type} required={required} className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+      <label htmlFor={id} className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">{label}{required && <span className="text-[var(--gold)]"> *</span>}</label>
+      <input id={id} name={name} type={type} required={required} className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
     </div>
   );
 }

@@ -103,10 +103,10 @@ function ContactPage() {
             <Field label="Country" name="country" />
             <Field label="Email" name="email" type="email" required />
             <div className="sm:col-span-2">
-              <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">
+              <label htmlFor="contact-department" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">
                 Department <span className="text-[var(--gold)]">*</span>
               </label>
-              <select name="department" required defaultValue="general"
+              <select id="contact-department" name="department" required defaultValue="general"
                 className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]">
                 {DEPARTMENTS.map((d) => (
                   <option key={d.value} value={d.value}>{d.label}</option>
@@ -115,8 +115,8 @@ function ContactPage() {
             </div>
             <Field label="Subject" name="subject" required className="sm:col-span-2" />
             <div className="sm:col-span-2">
-              <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Message</label>
-              <textarea name="message" rows={6} required maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+              <label htmlFor="contact-message" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Message</label>
+              <textarea id="contact-message" name="message" rows={6} required maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
             </div>
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               {sent
@@ -137,10 +137,11 @@ function ContactPage() {
 }
 
 function Field({ label, name, type = "text", required, className = "" }: { label: string; name: string; type?: string; required?: boolean; className?: string }) {
+  const id = `contact-${name}`;
   return (
     <div className={className}>
-      <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">{label}{required && <span className="text-[var(--gold)]"> *</span>}</label>
-      <input name={name} type={type} required={required} maxLength={500} className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+      <label htmlFor={id} className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">{label}{required && <span className="text-[var(--gold)]"> *</span>}</label>
+      <input id={id} name={name} type={type} required={required} maxLength={500} className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
     </div>
   );
 }
