@@ -88,16 +88,31 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           return Response.json({ error: 'Template missing' }, { status: 500, headers: corsHeaders })
         }
 
+        const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+          auth: { persistSession: false, autoRefreshToken: false },
+        })
+
+        // Load branding overrides for this template
+        const { data: settingsRow } = await supabase
+          .from('email_template_settings')
+          .select('brand_color, header_text, intro_text, footer_text')
+          .eq('template_name', 'form-notification')
+          .maybeSingle()
+
         const templateData = {
           formTitle: parsed.formTitle,
-          formSubtitle: parsed.formSubtitle,
+          formSubtitle: settingsRow?.intro_text?.trim() ? settingsRow.intro_text : parsed.formSubtitle,
           fields: parsed.fields,
           submittedAt: new Date().toISOString(),
+          brandColor: settingsRow?.brand_color ?? '#b08838',
+          headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
+          footerText: settingsRow?.footer_text ?? 'Submitted via the Veritas Global Advisory website.',
         }
 
         const element = React.createElement(template.component, templateData)
         const html = await render(element)
         const text = await render(element, { plainText: true })
+
 
         const supabase = createClient(supabaseUrl, supabaseServiceKey, {
           auth: { persistSession: false, autoRefreshToken: false },
