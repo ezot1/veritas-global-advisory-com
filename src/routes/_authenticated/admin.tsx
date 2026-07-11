@@ -2,6 +2,15 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages } from "@/lib/admin/reply.functions";
+import {
+  listReplyTemplates,
+  createReplyTemplate,
+  updateReplyTemplate,
+  deleteReplyTemplate,
+  listEmailTemplateSettings,
+  upsertEmailTemplateSetting,
+} from "@/lib/admin/email-settings.functions";
+
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Submissions | Veritas Admin" }] }),
@@ -33,7 +42,9 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [tab, setTab] = useState<"inbox" | "snippets" | "settings">("inbox");
   const [error, setError] = useState<string | null>(null);
+
 
   // Check admin role
   useEffect(() => {
@@ -136,69 +147,97 @@ function AdminPage() {
       </header>
 
       <div className="container-x py-6">
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          {(["all", ...STATUS_OPTIONS] as const).map((s) => (
+        <div className="flex items-center gap-1 mb-5 border-b border-border">
+          {([
+            ["inbox", "Inbox"],
+            ["snippets", "Reply snippets"],
+            ["settings", "Email branding"],
+          ] as const).map(([id, label]) => (
             <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
-                filter === s
-                  ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
-                  : "border-border text-muted-foreground hover:text-foreground"
+              key={id}
+              onClick={() => setTab(id)}
+              className={`px-4 py-2 text-xs uppercase tracking-wider border-b-2 -mb-px ${
+                tab === id
+                  ? "border-[var(--navy-deep)] text-[var(--navy-deep)] font-semibold"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
-              {s} {s !== "all" && `(${items.filter((i) => i.status === s).length})`}
+              {label}
             </button>
           ))}
-          <span className="ml-auto text-xs text-muted-foreground">{filtered.length} of {items.length}</span>
         </div>
 
         {error && <div className="text-sm text-red-600 mb-4">{error}</div>}
 
-        <div className="grid lg:grid-cols-[380px_1fr] gap-6">
-          <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
-            {loading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
-            {!loading && filtered.length === 0 && (
-              <div className="p-6 text-sm text-muted-foreground">No submissions yet.</div>
-            )}
-            <ul>
-              {filtered.map((it) => (
-                <li key={it.id}>
-                  <button
-                    onClick={() => setSelectedId(it.id)}
-                    className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 transition ${
-                      selected?.id === it.id ? "bg-muted/60" : ""
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs uppercase tracking-wider text-[var(--gold)]">
-                        {it.form_type}{it.department ? ` · ${it.department}` : ""}
-                      </span>
-                      {it.status !== "read" && it.status !== "archived" && (
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          it.status === "new" ? "bg-blue-100 text-blue-700" :
-                          it.status === "replied" ? "bg-green-100 text-green-700" : "bg-gray-100"
-                        }`}>{it.status}</span>
-                      )}
-                    </div>
-                    <div className="mt-1 text-sm font-medium line-clamp-1">{it.sender_name || it.sender_email || "Anonymous"}</div>
-                    <div className="text-xs text-muted-foreground line-clamp-1">{it.subject}</div>
-                    <div className="text-[10px] text-muted-foreground mt-1">{new Date(it.created_at).toLocaleString()}</div>
-                  </button>
-                </li>
+        {tab === "inbox" && (
+          <>
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              {(["all", ...STATUS_OPTIONS] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setFilter(s)}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
+                    filter === s
+                      ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {s} {s !== "all" && `(${items.filter((i) => i.status === s).length})`}
+                </button>
               ))}
-            </ul>
-          </aside>
+              <span className="ml-auto text-xs text-muted-foreground">{filtered.length} of {items.length}</span>
+            </div>
 
-          <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
-            {!selected ? (
-              <div className="text-sm text-muted-foreground">Select a submission to view.</div>
-            ) : (
-              <SubmissionDetail submission={selected} onStatus={updateStatus} onDelete={remove} />
-            )}
-          </main>
-        </div>
+            <div className="grid lg:grid-cols-[380px_1fr] gap-6">
+              <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
+                {loading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
+                {!loading && filtered.length === 0 && (
+                  <div className="p-6 text-sm text-muted-foreground">No submissions yet.</div>
+                )}
+                <ul>
+                  {filtered.map((it) => (
+                    <li key={it.id}>
+                      <button
+                        onClick={() => setSelectedId(it.id)}
+                        className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 transition ${
+                          selected?.id === it.id ? "bg-muted/60" : ""
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs uppercase tracking-wider text-[var(--gold)]">
+                            {it.form_type}{it.department ? ` · ${it.department}` : ""}
+                          </span>
+                          {it.status !== "read" && it.status !== "archived" && (
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                              it.status === "new" ? "bg-blue-100 text-blue-700" :
+                              it.status === "replied" ? "bg-green-100 text-green-700" : "bg-gray-100"
+                            }`}>{it.status}</span>
+                          )}
+                        </div>
+                        <div className="mt-1 text-sm font-medium line-clamp-1">{it.sender_name || it.sender_email || "Anonymous"}</div>
+                        <div className="text-xs text-muted-foreground line-clamp-1">{it.subject}</div>
+                        <div className="text-[10px] text-muted-foreground mt-1">{new Date(it.created_at).toLocaleString()}</div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+
+              <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
+                {!selected ? (
+                  <div className="text-sm text-muted-foreground">Select a submission to view.</div>
+                ) : (
+                  <SubmissionDetail submission={selected} onStatus={updateStatus} onDelete={remove} />
+                )}
+              </main>
+            </div>
+          </>
+        )}
+
+        {tab === "snippets" && <SnippetsPanel />}
+        {tab === "settings" && <EmailSettingsPanel />}
       </div>
+
     </div>
   );
 }
@@ -286,6 +325,17 @@ type ThreadMessage = {
   created_at: string;
 };
 
+type Snippet = { id: string; name: string; department: string | null; subject: string; body: string };
+
+function applyPlaceholders(text: string, s: Submission): string {
+  return text
+    .replace(/\{\{\s*name\s*\}\}/gi, s.sender_name ?? "")
+    .replace(/\{\{\s*email\s*\}\}/gi, s.sender_email ?? "")
+    .replace(/\{\{\s*organization\s*\}\}/gi, s.sender_organization ?? "")
+    .replace(/\{\{\s*country\s*\}\}/gi, s.sender_country ?? "")
+    .replace(/\{\{\s*subject\s*\}\}/gi, s.subject ?? "");
+}
+
 function ReplyThread({ submission: s, onReplied }: { submission: Submission; onReplied: () => void }) {
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -294,6 +344,9 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
   const [department, setDepartment] = useState<string>(s.department ?? "general");
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [snippetId, setSnippetId] = useState<string>("");
+
 
   async function load() {
     setLoading(true);
@@ -311,10 +364,27 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
     setSubject("Re: " + s.subject);
     setBody("");
     setMsg(null);
+    setSnippetId("");
     setDepartment(s.department ?? (s.form_type === "careers" ? "careers" : s.form_type === "talent" ? "research" : "general"));
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.id]);
+
+  useEffect(() => {
+    listReplyTemplates()
+      .then((r) => setSnippets((r.templates as Snippet[]) ?? []))
+      .catch(() => {});
+  }, []);
+
+  function insertSnippet(id: string) {
+    setSnippetId(id);
+    if (!id) return;
+    const snip = snippets.find((x) => x.id === id);
+    if (!snip) return;
+    setSubject(applyPlaceholders(snip.subject, s));
+    setBody(applyPlaceholders(snip.body, s));
+  }
+
 
   async function send() {
     if (!s.sender_email) {
@@ -373,7 +443,27 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
 
       {s.sender_email ? (
         <div className="border border-border p-4 bg-white">
+          {snippets.length > 0 && (
+            <label className="text-xs block mb-3">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">
+                Insert saved snippet
+              </span>
+              <select
+                value={snippetId}
+                onChange={(e) => insertSnippet(e.target.value)}
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
+              >
+                <option value="">— Choose a snippet —</option>
+                {snippets.map((sn) => (
+                  <option key={sn.id} value={sn.id}>
+                    {sn.name}{sn.department ? ` · ${sn.department}` : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
+
             <label className="text-xs">
               <span className="block text-muted-foreground uppercase tracking-wider mb-1">From department</span>
               <select
@@ -446,3 +536,294 @@ function Row({ label, value, link }: { label: string; value: string | null; link
     </>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Reply snippets panel
+// ---------------------------------------------------------------------------
+const DEPARTMENTS = ["general", "business", "research", "careers", "media"] as const;
+
+function SnippetsPanel() {
+  const empty = { id: "", name: "", department: "" as string, subject: "", body: "" };
+  const [items, setItems] = useState<Snippet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState<typeof empty>(empty);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const r = await listReplyTemplates();
+      setItems((r.templates as Snippet[]) ?? []);
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to load");
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => { load(); }, []);
+
+  async function save() {
+    if (!form.name.trim() || !form.subject.trim() || !form.body.trim()) {
+      setMsg("Name, subject and body are required.");
+      return;
+    }
+    setSaving(true);
+    setMsg(null);
+    try {
+      const payload = {
+        name: form.name.trim(),
+        subject: form.subject.trim(),
+        body: form.body,
+        department: (form.department || null) as any,
+      };
+      if (form.id) {
+        await updateReplyTemplate({ data: { id: form.id, ...payload } });
+      } else {
+        await createReplyTemplate({ data: payload });
+      }
+      setForm(empty);
+      await load();
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function remove(id: string) {
+    if (!confirm("Delete this snippet?")) return;
+    try {
+      await deleteReplyTemplate({ data: { id } });
+      if (form.id === id) setForm(empty);
+      await load();
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to delete");
+    }
+  }
+
+  return (
+    <div className="grid lg:grid-cols-[380px_1fr] gap-6">
+      <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
+        <div className="p-3 border-b border-border flex items-center justify-between">
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Saved snippets</span>
+          <button onClick={() => setForm(empty)} className="text-xs underline">New</button>
+        </div>
+        {loading && <div className="p-4 text-sm text-muted-foreground">Loading…</div>}
+        {!loading && items.length === 0 && (
+          <div className="p-4 text-sm text-muted-foreground">No snippets yet. Create one on the right.</div>
+        )}
+        <ul>
+          {items.map((it) => (
+            <li key={it.id}>
+              <button
+                onClick={() => setForm({ id: it.id, name: it.name, department: it.department ?? "", subject: it.subject, body: it.body })}
+                className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 ${form.id === it.id ? "bg-muted/60" : ""}`}
+              >
+                <div className="text-sm font-medium">{it.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {it.department ?? "any department"} · {it.subject}
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
+        <h2 className="display-3 mb-1">{form.id ? "Edit snippet" : "New snippet"}</h2>
+        <p className="text-xs text-muted-foreground mb-5">
+          Placeholders: <code>{"{{name}}"}</code>, <code>{"{{email}}"}</code>, <code>{"{{organization}}"}</code>, <code>{"{{country}}"}</code>, <code>{"{{subject}}"}</code>. These are replaced with the recipient's details when you insert the snippet.
+        </p>
+
+        <div className="grid sm:grid-cols-2 gap-3 mb-3">
+          <label className="text-xs">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Name</span>
+            <input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="w-full h-9 px-2 border border-border bg-background text-sm"
+              placeholder="e.g. Thank you – acknowledged"
+            />
+          </label>
+          <label className="text-xs">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Department (optional)</span>
+            <select
+              value={form.department}
+              onChange={(e) => setForm({ ...form, department: e.target.value })}
+              className="w-full h-9 px-2 border border-border bg-background text-sm"
+            >
+              <option value="">Any</option>
+              {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <label className="text-xs block mb-3">
+          <span className="block text-muted-foreground uppercase tracking-wider mb-1">Subject</span>
+          <input
+            value={form.subject}
+            onChange={(e) => setForm({ ...form, subject: e.target.value })}
+            className="w-full h-9 px-2 border border-border bg-background text-sm"
+            placeholder="Re: {{subject}}"
+          />
+        </label>
+
+        <label className="text-xs block mb-3">
+          <span className="block text-muted-foreground uppercase tracking-wider mb-1">Body</span>
+          <textarea
+            value={form.body}
+            onChange={(e) => setForm({ ...form, body: e.target.value })}
+            rows={12}
+            className="w-full p-3 border border-border bg-background text-sm leading-relaxed"
+            placeholder={"Hi {{name}},\n\nThank you for reaching out to Veritas Global Advisory.\n\nBest,\nThe team"}
+          />
+        </label>
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-xs text-muted-foreground">{msg}</div>
+          <div className="flex items-center gap-2">
+            {form.id && (
+              <button onClick={() => remove(form.id)} className="text-xs text-red-600 hover:underline">Delete</button>
+            )}
+            <button onClick={save} disabled={saving} className="btn-primary !py-2.5 !px-5 !text-xs disabled:opacity-50">
+              {saving ? "Saving…" : form.id ? "Save changes" : "Create snippet"}
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Email branding panel
+// ---------------------------------------------------------------------------
+type TemplateSetting = {
+  template_name: string;
+  brand_color: string;
+  header_text: string;
+  intro_text: string;
+  signature: string;
+  footer_text: string;
+};
+
+function EmailSettingsPanel() {
+  const [items, setItems] = useState<TemplateSetting[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const r = await listEmailTemplateSettings();
+      setItems((r.settings as TemplateSetting[]) ?? []);
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to load");
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => { load(); }, []);
+
+  function update(name: string, patch: Partial<TemplateSetting>) {
+    setItems((arr) => arr.map((s) => (s.template_name === name ? { ...s, ...patch } : s)));
+  }
+
+  async function save(s: TemplateSetting) {
+    setSavingKey(s.template_name);
+    setMsg(null);
+    try {
+      await upsertEmailTemplateSetting({ data: s });
+      setMsg(`Saved ${s.template_name}.`);
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to save");
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
+  if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
+
+  return (
+    <div className="space-y-6">
+      <p className="text-xs text-muted-foreground">
+        Customize the branding of each app email. Changes apply to new emails sent after saving.
+      </p>
+      {msg && <div className="text-xs text-muted-foreground">{msg}</div>}
+      {items.map((s) => (
+        <section key={s.template_name} className="border border-border bg-white p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider">{s.template_name}</h3>
+            <button
+              onClick={() => save(s)}
+              disabled={savingKey === s.template_name}
+              className="btn-primary !py-2 !px-4 !text-xs disabled:opacity-50"
+            >
+              {savingKey === s.template_name ? "Saving…" : "Save"}
+            </button>
+          </div>
+          <div className="grid md:grid-cols-2 gap-3">
+            <label className="text-xs">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">Brand color (hex)</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={s.brand_color}
+                  onChange={(e) => update(s.template_name, { brand_color: e.target.value })}
+                  className="h-9 w-14 border border-border bg-background"
+                />
+                <input
+                  value={s.brand_color}
+                  onChange={(e) => update(s.template_name, { brand_color: e.target.value })}
+                  className="flex-1 h-9 px-2 border border-border bg-background text-sm font-mono"
+                />
+              </div>
+            </label>
+            <label className="text-xs">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">Header line</span>
+              <input
+                value={s.header_text}
+                onChange={(e) => update(s.template_name, { header_text: e.target.value })}
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
+              />
+            </label>
+          </div>
+          <label className="text-xs block mt-3">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">
+              Intro text {s.template_name === "form-notification" && "(replaces the default subtitle when set)"}
+            </span>
+            <textarea
+              value={s.intro_text}
+              onChange={(e) => update(s.template_name, { intro_text: e.target.value })}
+              rows={2}
+              className="w-full p-2 border border-border bg-background text-sm"
+            />
+          </label>
+          {s.template_name === "admin-reply" && (
+            <label className="text-xs block mt-3">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">Signature</span>
+              <input
+                value={s.signature}
+                onChange={(e) => update(s.template_name, { signature: e.target.value })}
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
+                placeholder="Veritas Global Advisory"
+              />
+            </label>
+          )}
+          <label className="text-xs block mt-3">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Footer text</span>
+            <textarea
+              value={s.footer_text}
+              onChange={(e) => update(s.template_name, { footer_text: e.target.value })}
+              rows={2}
+              className="w-full p-2 border border-border bg-background text-sm"
+            />
+          </label>
+        </section>
+      ))}
+    </div>
+  );
+}
+

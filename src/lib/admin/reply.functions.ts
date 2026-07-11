@@ -63,12 +63,25 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
     const template = TEMPLATES['admin-reply']
     if (!template) throw new Error('Reply template missing')
 
+    // Load per-template branding overrides
+    const { data: settingsRow } = await supabase
+      .from('email_template_settings')
+      .select('brand_color, header_text, intro_text, signature, footer_text')
+      .eq('template_name', 'admin-reply')
+      .maybeSingle()
+
     const templateData = {
       subject: data.subject,
       bodyText: data.body,
       fromLabel,
       fromEmail,
+      brandColor: settingsRow?.brand_color ?? '#b08838',
+      headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
+      introText: settingsRow?.intro_text ?? '',
+      signature: settingsRow?.signature ?? fromLabel,
+      footerText: settingsRow?.footer_text ?? 'Reply directly to this email to reach us.',
     }
+
     const element = React.createElement(template.component, templateData)
     const html = await render(element)
     const text = await render(element, { plainText: true })

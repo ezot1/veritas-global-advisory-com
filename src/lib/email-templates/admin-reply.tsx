@@ -7,6 +7,11 @@ interface Props {
   bodyText?: string
   fromLabel?: string
   fromEmail?: string
+  brandColor?: string
+  headerText?: string
+  introText?: string
+  signature?: string
+  footerText?: string
 }
 
 const Email = ({
@@ -14,6 +19,11 @@ const Email = ({
   bodyText = '',
   fromLabel = 'Veritas Global Advisory',
   fromEmail = 'info@veritasglobaladvisory.org',
+  brandColor = '#b08838',
+  headerText = 'VERITAS GLOBAL ADVISORY',
+  introText = '',
+  signature = 'Veritas Global Advisory',
+  footerText = 'Reply directly to this email to reach us.',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -21,19 +31,29 @@ const Email = ({
     <Body style={main}>
       <Container style={container}>
         <Section>
-          <Text style={brandMark}>VERITAS GLOBAL ADVISORY</Text>
+          <Text style={{ ...brandMark, color: brandColor }}>{headerText}</Text>
           <Heading style={h1}>{subject}</Heading>
         </Section>
         <Hr style={hr} />
+        {introText ? (
+          <Section>
+            <Text style={intro}>{introText}</Text>
+          </Section>
+        ) : null}
         <Section>
           {bodyText.split(/\n{2,}/).map((para, i) => (
             <Text key={i} style={p}>{para}</Text>
           ))}
         </Section>
+        {signature ? (
+          <Section>
+            <Text style={p}>{signature}</Text>
+          </Section>
+        ) : null}
         <Hr style={hr} />
         <Text style={footer}>
           {fromLabel}<br />
-          Reply directly to this email to reach us at {fromEmail}.
+          {footerText} {fromEmail && <>Reach us at {fromEmail}.</>}
         </Text>
       </Container>
     </Body>
@@ -59,9 +79,10 @@ const main: React.CSSProperties = {
 }
 const container: React.CSSProperties = { maxWidth: '600px', margin: '0 auto', padding: '32px 28px' }
 const brandMark: React.CSSProperties = {
-  fontSize: '11px', letterSpacing: '0.22em', color: '#b08838', margin: '0 0 16px', fontWeight: 600,
+  fontSize: '11px', letterSpacing: '0.22em', margin: '0 0 16px', fontWeight: 600,
 }
 const h1: React.CSSProperties = { fontSize: '22px', fontWeight: 600, color: '#0b1c3a', margin: '0 0 8px', lineHeight: 1.3 }
 const hr: React.CSSProperties = { borderColor: '#e5e7eb', margin: '20px 0' }
+const intro: React.CSSProperties = { fontSize: '14px', color: '#4a5568', margin: '0 0 14px', lineHeight: 1.6, fontStyle: 'italic' }
 const p: React.CSSProperties = { fontSize: '15px', color: '#0b1c3a', margin: '0 0 14px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }
 const footer: React.CSSProperties = { fontSize: '12px', color: '#6b7280', margin: 0, lineHeight: 1.55 }

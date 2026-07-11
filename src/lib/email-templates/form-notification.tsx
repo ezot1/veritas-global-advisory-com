@@ -22,6 +22,9 @@ interface Props {
   formSubtitle?: string
   fields?: FormField[]
   submittedAt?: string
+  brandColor?: string
+  headerText?: string
+  footerText?: string
 }
 
 const Email = ({
@@ -29,6 +32,9 @@ const Email = ({
   formSubtitle = 'A new submission has been received from veritasglobaladvisory.org.',
   fields = [],
   submittedAt,
+  brandColor = '#b08838',
+  headerText = 'VERITAS GLOBAL ADVISORY',
+  footerText = 'Submitted via the Veritas Global Advisory website.',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -36,7 +42,7 @@ const Email = ({
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
-          <Text style={brandMark}>VERITAS GLOBAL ADVISORY</Text>
+          <Text style={{ ...brandMark, color: brandColor }}>{headerText}</Text>
           <Heading style={h1}>{formTitle}</Heading>
           <Text style={lead}>{formSubtitle}</Text>
         </Section>
@@ -55,9 +61,7 @@ const Email = ({
         <Hr style={hr} />
 
         <Text style={footer}>
-          {submittedAt
-            ? `Submitted ${submittedAt}.`
-            : 'Submitted via the Veritas Global Advisory website.'}{' '}
+          {submittedAt ? `Submitted ${submittedAt}. ` : ''}{footerText}{' '}
           Reply directly to this thread to respond to the sender (where an email
           was provided).
         </Text>
@@ -65,6 +69,7 @@ const Email = ({
     </Body>
   </Html>
 )
+
 
 export const template = {
   component: Email,
@@ -101,10 +106,10 @@ const header: React.CSSProperties = { paddingBottom: '8px' }
 const brandMark: React.CSSProperties = {
   fontSize: '11px',
   letterSpacing: '0.22em',
-  color: '#b08838',
   margin: '0 0 16px',
   fontWeight: 600,
 }
+
 const h1: React.CSSProperties = {
   fontSize: '22px',
   fontWeight: 600,
