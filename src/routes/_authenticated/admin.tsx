@@ -42,7 +42,9 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [tab, setTab] = useState<"inbox" | "snippets" | "settings">("inbox");
   const [error, setError] = useState<string | null>(null);
+
 
   // Check admin role
   useEffect(() => {
