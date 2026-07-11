@@ -77,6 +77,42 @@ export type Database = {
         }
         Relationships: []
       }
+      email_template_settings: {
+        Row: {
+          brand_color: string
+          created_at: string
+          footer_text: string
+          header_text: string
+          intro_text: string
+          signature: string
+          template_name: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          brand_color?: string
+          created_at?: string
+          footer_text?: string
+          header_text?: string
+          intro_text?: string
+          signature?: string
+          template_name: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          brand_color?: string
+          created_at?: string
+          footer_text?: string
+          header_text?: string
+          intro_text?: string
+          signature?: string
+          template_name?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       email_unsubscribe_tokens: {
         Row: {
           created_at: string
@@ -150,6 +186,39 @@ export type Database = {
           sender_name?: string | null
           sender_organization?: string | null
           status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reply_templates: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string | null
+          department: string | null
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          id?: string
+          name?: string
           subject?: string
           updated_at?: string
         }
