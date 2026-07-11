@@ -218,13 +218,8 @@ function SubmissionDetail({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.id]);
 
-  const replyTo = s.sender_email ?? "";
-  const replySubject = encodeURIComponent("Re: " + s.subject);
-  const replyBody = encodeURIComponent(
-    `\n\n— Veritas Global Advisory\n\n---\nOriginal message from ${s.sender_name ?? "visitor"}:\n${s.message ?? ""}`,
-  );
-  const mailto = `mailto:${replyTo}?subject=${replySubject}&body=${replyBody}`;
-  const gmail = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(replyTo)}&su=${replySubject}&body=${replyBody}`;
+
+
 
   return (
     <article>
