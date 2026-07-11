@@ -106,10 +106,10 @@ const header: React.CSSProperties = { paddingBottom: '8px' }
 const brandMark: React.CSSProperties = {
   fontSize: '11px',
   letterSpacing: '0.22em',
-  color: '#b08838',
   margin: '0 0 16px',
   fontWeight: 600,
 }
+
 const h1: React.CSSProperties = {
   fontSize: '22px',
   fontWeight: 600,
