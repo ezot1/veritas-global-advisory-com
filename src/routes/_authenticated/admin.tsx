@@ -325,6 +325,17 @@ type ThreadMessage = {
   created_at: string;
 };
 
+type Snippet = { id: string; name: string; department: string | null; subject: string; body: string };
+
+function applyPlaceholders(text: string, s: Submission): string {
+  return text
+    .replace(/\{\{\s*name\s*\}\}/gi, s.sender_name ?? "")
+    .replace(/\{\{\s*email\s*\}\}/gi, s.sender_email ?? "")
+    .replace(/\{\{\s*organization\s*\}\}/gi, s.sender_organization ?? "")
+    .replace(/\{\{\s*country\s*\}\}/gi, s.sender_country ?? "")
+    .replace(/\{\{\s*subject\s*\}\}/gi, s.subject ?? "");
+}
+
 function ReplyThread({ submission: s, onReplied }: { submission: Submission; onReplied: () => void }) {
   const [messages, setMessages] = useState<ThreadMessage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -333,6 +344,9 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
   const [department, setDepartment] = useState<string>(s.department ?? "general");
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
+  const [snippetId, setSnippetId] = useState<string>("");
+
 
   async function load() {
     setLoading(true);
