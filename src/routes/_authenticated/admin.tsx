@@ -443,7 +443,27 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
 
       {s.sender_email ? (
         <div className="border border-border p-4 bg-white">
+          {snippets.length > 0 && (
+            <label className="text-xs block mb-3">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">
+                Insert saved snippet
+              </span>
+              <select
+                value={snippetId}
+                onChange={(e) => insertSnippet(e.target.value)}
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
+              >
+                <option value="">— Choose a snippet —</option>
+                {snippets.map((sn) => (
+                  <option key={sn.id} value={sn.id}>
+                    {sn.name}{sn.department ? ` · ${sn.department}` : ""}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
+
             <label className="text-xs">
               <span className="block text-muted-foreground uppercase tracking-wider mb-1">From department</span>
               <select
