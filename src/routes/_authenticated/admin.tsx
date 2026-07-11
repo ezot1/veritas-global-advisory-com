@@ -536,3 +536,294 @@ function Row({ label, value, link }: { label: string; value: string | null; link
     </>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Reply snippets panel
+// ---------------------------------------------------------------------------
+const DEPARTMENTS = ["general", "business", "research", "careers", "media"] as const;
+
+function SnippetsPanel() {
+  const empty = { id: "", name: "", department: "" as string, subject: "", body: "" };
+  const [items, setItems] = useState<Snippet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState<typeof empty>(empty);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const r = await listReplyTemplates();
+      setItems((r.templates as Snippet[]) ?? []);
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to load");
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => { load(); }, []);
+
+  async function save() {
+    if (!form.name.trim() || !form.subject.trim() || !form.body.trim()) {
+      setMsg("Name, subject and body are required.");
+      return;
+    }
+    setSaving(true);
+    setMsg(null);
+    try {
+      const payload = {
+        name: form.name.trim(),
+        subject: form.subject.trim(),
+        body: form.body,
+        department: (form.department || null) as any,
+      };
+      if (form.id) {
+        await updateReplyTemplate({ data: { id: form.id, ...payload } });
+      } else {
+        await createReplyTemplate({ data: payload });
+      }
+      setForm(empty);
+      await load();
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function remove(id: string) {
+    if (!confirm("Delete this snippet?")) return;
+    try {
+      await deleteReplyTemplate({ data: { id } });
+      if (form.id === id) setForm(empty);
+      await load();
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to delete");
+    }
+  }
+
+  return (
+    <div className="grid lg:grid-cols-[380px_1fr] gap-6">
+      <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
+        <div className="p-3 border-b border-border flex items-center justify-between">
+          <span className="text-xs uppercase tracking-wider text-muted-foreground">Saved snippets</span>
+          <button onClick={() => setForm(empty)} className="text-xs underline">New</button>
+        </div>
+        {loading && <div className="p-4 text-sm text-muted-foreground">Loading…</div>}
+        {!loading && items.length === 0 && (
+          <div className="p-4 text-sm text-muted-foreground">No snippets yet. Create one on the right.</div>
+        )}
+        <ul>
+          {items.map((it) => (
+            <li key={it.id}>
+              <button
+                onClick={() => setForm({ id: it.id, name: it.name, department: it.department ?? "", subject: it.subject, body: it.body })}
+                className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 ${form.id === it.id ? "bg-muted/60" : ""}`}
+              >
+                <div className="text-sm font-medium">{it.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {it.department ?? "any department"} · {it.subject}
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
+        <h2 className="display-3 mb-1">{form.id ? "Edit snippet" : "New snippet"}</h2>
+        <p className="text-xs text-muted-foreground mb-5">
+          Placeholders: <code>{"{{name}}"}</code>, <code>{"{{email}}"}</code>, <code>{"{{organization}}"}</code>, <code>{"{{country}}"}</code>, <code>{"{{subject}}"}</code>. These are replaced with the recipient's details when you insert the snippet.
+        </p>
+
+        <div className="grid sm:grid-cols-2 gap-3 mb-3">
+          <label className="text-xs">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Name</span>
+            <input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="w-full h-9 px-2 border border-border bg-background text-sm"
+              placeholder="e.g. Thank you – acknowledged"
+            />
+          </label>
+          <label className="text-xs">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Department (optional)</span>
+            <select
+              value={form.department}
+              onChange={(e) => setForm({ ...form, department: e.target.value })}
+              className="w-full h-9 px-2 border border-border bg-background text-sm"
+            >
+              <option value="">Any</option>
+              {DEPARTMENTS.map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <label className="text-xs block mb-3">
+          <span className="block text-muted-foreground uppercase tracking-wider mb-1">Subject</span>
+          <input
+            value={form.subject}
+            onChange={(e) => setForm({ ...form, subject: e.target.value })}
+            className="w-full h-9 px-2 border border-border bg-background text-sm"
+            placeholder="Re: {{subject}}"
+          />
+        </label>
+
+        <label className="text-xs block mb-3">
+          <span className="block text-muted-foreground uppercase tracking-wider mb-1">Body</span>
+          <textarea
+            value={form.body}
+            onChange={(e) => setForm({ ...form, body: e.target.value })}
+            rows={12}
+            className="w-full p-3 border border-border bg-background text-sm leading-relaxed"
+            placeholder={"Hi {{name}},\n\nThank you for reaching out to Veritas Global Advisory.\n\nBest,\nThe team"}
+          />
+        </label>
+
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-xs text-muted-foreground">{msg}</div>
+          <div className="flex items-center gap-2">
+            {form.id && (
+              <button onClick={() => remove(form.id)} className="text-xs text-red-600 hover:underline">Delete</button>
+            )}
+            <button onClick={save} disabled={saving} className="btn-primary !py-2.5 !px-5 !text-xs disabled:opacity-50">
+              {saving ? "Saving…" : form.id ? "Save changes" : "Create snippet"}
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Email branding panel
+// ---------------------------------------------------------------------------
+type TemplateSetting = {
+  template_name: string;
+  brand_color: string;
+  header_text: string;
+  intro_text: string;
+  signature: string;
+  footer_text: string;
+};
+
+function EmailSettingsPanel() {
+  const [items, setItems] = useState<TemplateSetting[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const r = await listEmailTemplateSettings();
+      setItems((r.settings as TemplateSetting[]) ?? []);
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to load");
+    } finally {
+      setLoading(false);
+    }
+  }
+  useEffect(() => { load(); }, []);
+
+  function update(name: string, patch: Partial<TemplateSetting>) {
+    setItems((arr) => arr.map((s) => (s.template_name === name ? { ...s, ...patch } : s)));
+  }
+
+  async function save(s: TemplateSetting) {
+    setSavingKey(s.template_name);
+    setMsg(null);
+    try {
+      await upsertEmailTemplateSetting({ data: s });
+      setMsg(`Saved ${s.template_name}.`);
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to save");
+    } finally {
+      setSavingKey(null);
+    }
+  }
+
+  if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
+
+  return (
+    <div className="space-y-6">
+      <p className="text-xs text-muted-foreground">
+        Customize the branding of each app email. Changes apply to new emails sent after saving.
+      </p>
+      {msg && <div className="text-xs text-muted-foreground">{msg}</div>}
+      {items.map((s) => (
+        <section key={s.template_name} className="border border-border bg-white p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold uppercase tracking-wider">{s.template_name}</h3>
+            <button
+              onClick={() => save(s)}
+              disabled={savingKey === s.template_name}
+              className="btn-primary !py-2 !px-4 !text-xs disabled:opacity-50"
+            >
+              {savingKey === s.template_name ? "Saving…" : "Save"}
+            </button>
+          </div>
+          <div className="grid md:grid-cols-2 gap-3">
+            <label className="text-xs">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">Brand color (hex)</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={s.brand_color}
+                  onChange={(e) => update(s.template_name, { brand_color: e.target.value })}
+                  className="h-9 w-14 border border-border bg-background"
+                />
+                <input
+                  value={s.brand_color}
+                  onChange={(e) => update(s.template_name, { brand_color: e.target.value })}
+                  className="flex-1 h-9 px-2 border border-border bg-background text-sm font-mono"
+                />
+              </div>
+            </label>
+            <label className="text-xs">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">Header line</span>
+              <input
+                value={s.header_text}
+                onChange={(e) => update(s.template_name, { header_text: e.target.value })}
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
+              />
+            </label>
+          </div>
+          <label className="text-xs block mt-3">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">
+              Intro text {s.template_name === "form-notification" && "(replaces the default subtitle when set)"}
+            </span>
+            <textarea
+              value={s.intro_text}
+              onChange={(e) => update(s.template_name, { intro_text: e.target.value })}
+              rows={2}
+              className="w-full p-2 border border-border bg-background text-sm"
+            />
+          </label>
+          {s.template_name === "admin-reply" && (
+            <label className="text-xs block mt-3">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">Signature</span>
+              <input
+                value={s.signature}
+                onChange={(e) => update(s.template_name, { signature: e.target.value })}
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
+                placeholder="Veritas Global Advisory"
+              />
+            </label>
+          )}
+          <label className="text-xs block mt-3">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Footer text</span>
+            <textarea
+              value={s.footer_text}
+              onChange={(e) => update(s.template_name, { footer_text: e.target.value })}
+              rows={2}
+              className="w-full p-2 border border-border bg-background text-sm"
+            />
+          </label>
+        </section>
+      ))}
+    </div>
+  );
+}
+
