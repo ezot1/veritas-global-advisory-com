@@ -147,69 +147,97 @@ function AdminPage() {
       </header>
 
       <div className="container-x py-6">
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
-          {(["all", ...STATUS_OPTIONS] as const).map((s) => (
+        <div className="flex items-center gap-1 mb-5 border-b border-border">
+          {([
+            ["inbox", "Inbox"],
+            ["snippets", "Reply snippets"],
+            ["settings", "Email branding"],
+          ] as const).map(([id, label]) => (
             <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
-                filter === s
-                  ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
-                  : "border-border text-muted-foreground hover:text-foreground"
+              key={id}
+              onClick={() => setTab(id)}
+              className={`px-4 py-2 text-xs uppercase tracking-wider border-b-2 -mb-px ${
+                tab === id
+                  ? "border-[var(--navy-deep)] text-[var(--navy-deep)] font-semibold"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
-              {s} {s !== "all" && `(${items.filter((i) => i.status === s).length})`}
+              {label}
             </button>
           ))}
-          <span className="ml-auto text-xs text-muted-foreground">{filtered.length} of {items.length}</span>
         </div>
 
         {error && <div className="text-sm text-red-600 mb-4">{error}</div>}
 
-        <div className="grid lg:grid-cols-[380px_1fr] gap-6">
-          <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
-            {loading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
-            {!loading && filtered.length === 0 && (
-              <div className="p-6 text-sm text-muted-foreground">No submissions yet.</div>
-            )}
-            <ul>
-              {filtered.map((it) => (
-                <li key={it.id}>
-                  <button
-                    onClick={() => setSelectedId(it.id)}
-                    className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 transition ${
-                      selected?.id === it.id ? "bg-muted/60" : ""
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs uppercase tracking-wider text-[var(--gold)]">
-                        {it.form_type}{it.department ? ` · ${it.department}` : ""}
-                      </span>
-                      {it.status !== "read" && it.status !== "archived" && (
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                          it.status === "new" ? "bg-blue-100 text-blue-700" :
-                          it.status === "replied" ? "bg-green-100 text-green-700" : "bg-gray-100"
-                        }`}>{it.status}</span>
-                      )}
-                    </div>
-                    <div className="mt-1 text-sm font-medium line-clamp-1">{it.sender_name || it.sender_email || "Anonymous"}</div>
-                    <div className="text-xs text-muted-foreground line-clamp-1">{it.subject}</div>
-                    <div className="text-[10px] text-muted-foreground mt-1">{new Date(it.created_at).toLocaleString()}</div>
-                  </button>
-                </li>
+        {tab === "inbox" && (
+          <>
+            <div className="flex items-center gap-2 mb-4 flex-wrap">
+              {(["all", ...STATUS_OPTIONS] as const).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setFilter(s)}
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
+                    filter === s
+                      ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {s} {s !== "all" && `(${items.filter((i) => i.status === s).length})`}
+                </button>
               ))}
-            </ul>
-          </aside>
+              <span className="ml-auto text-xs text-muted-foreground">{filtered.length} of {items.length}</span>
+            </div>
 
-          <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
-            {!selected ? (
-              <div className="text-sm text-muted-foreground">Select a submission to view.</div>
-            ) : (
-              <SubmissionDetail submission={selected} onStatus={updateStatus} onDelete={remove} />
-            )}
-          </main>
-        </div>
+            <div className="grid lg:grid-cols-[380px_1fr] gap-6">
+              <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
+                {loading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
+                {!loading && filtered.length === 0 && (
+                  <div className="p-6 text-sm text-muted-foreground">No submissions yet.</div>
+                )}
+                <ul>
+                  {filtered.map((it) => (
+                    <li key={it.id}>
+                      <button
+                        onClick={() => setSelectedId(it.id)}
+                        className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 transition ${
+                          selected?.id === it.id ? "bg-muted/60" : ""
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs uppercase tracking-wider text-[var(--gold)]">
+                            {it.form_type}{it.department ? ` · ${it.department}` : ""}
+                          </span>
+                          {it.status !== "read" && it.status !== "archived" && (
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full ${
+                              it.status === "new" ? "bg-blue-100 text-blue-700" :
+                              it.status === "replied" ? "bg-green-100 text-green-700" : "bg-gray-100"
+                            }`}>{it.status}</span>
+                          )}
+                        </div>
+                        <div className="mt-1 text-sm font-medium line-clamp-1">{it.sender_name || it.sender_email || "Anonymous"}</div>
+                        <div className="text-xs text-muted-foreground line-clamp-1">{it.subject}</div>
+                        <div className="text-[10px] text-muted-foreground mt-1">{new Date(it.created_at).toLocaleString()}</div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </aside>
+
+              <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
+                {!selected ? (
+                  <div className="text-sm text-muted-foreground">Select a submission to view.</div>
+                ) : (
+                  <SubmissionDetail submission={selected} onStatus={updateStatus} onDelete={remove} />
+                )}
+              </main>
+            </div>
+          </>
+        )}
+
+        {tab === "snippets" && <SnippetsPanel />}
+        {tab === "settings" && <EmailSettingsPanel />}
       </div>
+
     </div>
   );
 }
