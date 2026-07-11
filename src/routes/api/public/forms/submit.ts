@@ -114,9 +114,6 @@ export const Route = createFileRoute('/api/public/forms/submit')({
         const text = await render(element, { plainText: true })
 
 
-        const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-          auth: { persistSession: false, autoRefreshToken: false },
-        })
 
         const messageId = crypto.randomUUID()
 
