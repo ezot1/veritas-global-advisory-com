@@ -364,10 +364,27 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
     setSubject("Re: " + s.subject);
     setBody("");
     setMsg(null);
+    setSnippetId("");
     setDepartment(s.department ?? (s.form_type === "careers" ? "careers" : s.form_type === "talent" ? "research" : "general"));
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.id]);
+
+  useEffect(() => {
+    listReplyTemplates()
+      .then((r) => setSnippets((r.templates as Snippet[]) ?? []))
+      .catch(() => {});
+  }, []);
+
+  function insertSnippet(id: string) {
+    setSnippetId(id);
+    if (!id) return;
+    const snip = snippets.find((x) => x.id === id);
+    if (!snip) return;
+    setSubject(applyPlaceholders(snip.subject, s));
+    setBody(applyPlaceholders(snip.body, s));
+  }
+
 
   async function send() {
     if (!s.sender_email) {
