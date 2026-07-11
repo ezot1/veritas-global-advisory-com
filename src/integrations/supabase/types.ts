@@ -155,6 +155,65 @@ export type Database = {
         }
         Relationships: []
       }
+      submission_messages: {
+        Row: {
+          body_text: string
+          created_at: string
+          direction: string
+          error_message: string | null
+          from_email: string
+          from_label: string | null
+          id: string
+          message_id: string | null
+          reply_to: string | null
+          sent_by: string | null
+          status: string
+          subject: string
+          submission_id: string
+          to_email: string
+        }
+        Insert: {
+          body_text: string
+          created_at?: string
+          direction: string
+          error_message?: string | null
+          from_email: string
+          from_label?: string | null
+          id?: string
+          message_id?: string | null
+          reply_to?: string | null
+          sent_by?: string | null
+          status?: string
+          subject: string
+          submission_id: string
+          to_email: string
+        }
+        Update: {
+          body_text?: string
+          created_at?: string
+          direction?: string
+          error_message?: string | null
+          from_email?: string
+          from_label?: string | null
+          id?: string
+          message_id?: string | null
+          reply_to?: string | null
+          sent_by?: string | null
+          status?: string
+          subject?: string
+          submission_id?: string
+          to_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_messages_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "form_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
