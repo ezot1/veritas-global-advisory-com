@@ -273,19 +273,170 @@ function SubmissionDetail({
         </dl>
       </details>
 
-      <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
-        {replyTo ? (
-          <>
-            <a href={mailto} className="btn-primary !py-2.5 !px-5 !text-xs">Reply via email client</a>
-            <a href={gmail} target="_blank" rel="noopener noreferrer" className="btn-ghost !py-2.5 !px-5 !text-xs">
-              Reply in Gmail
-            </a>
-          </>
-        ) : (
-          <span className="text-xs text-muted-foreground">No reply-to email captured.</span>
-        )}
-      </div>
+      <ReplyThread submission={s} onReplied={() => onStatus(s.id, "replied")} />
     </article>
+  );
+}
+
+type ThreadMessage = {
+  id: string;
+  direction: "outbound" | "inbound";
+  from_email: string;
+  from_label: string | null;
+  to_email: string;
+  subject: string;
+  body_text: string;
+  status: string;
+  error_message: string | null;
+  created_at: string;
+};
+
+function ReplyThread({ submission: s, onReplied }: { submission: Submission; onReplied: () => void }) {
+  const [messages, setMessages] = useState<ThreadMessage[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [subject, setSubject] = useState("Re: " + s.subject);
+  const [body, setBody] = useState("");
+  const [department, setDepartment] = useState<string>(s.department ?? "general");
+  const [sending, setSending] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const res = await listSubmissionMessages({ data: { submissionId: s.id } });
+      setMessages((res.messages as ThreadMessage[]) ?? []);
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to load thread");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    setSubject("Re: " + s.subject);
+    setBody("");
+    setMsg(null);
+    setDepartment(s.department ?? (s.form_type === "careers" ? "careers" : s.form_type === "talent" ? "research" : "general"));
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [s.id]);
+
+  async function send() {
+    if (!s.sender_email) {
+      setMsg("This submission has no reply email.");
+      return;
+    }
+    if (!body.trim()) {
+      setMsg("Write a message first.");
+      return;
+    }
+    setSending(true);
+    setMsg(null);
+    try {
+      await sendAdminReply({
+        data: { submissionId: s.id, subject: subject.trim(), body: body.trim(), fromDepartment: department as any },
+      });
+      setBody("");
+      setMsg("Reply sent.");
+      onReplied();
+      await load();
+    } catch (e: any) {
+      setMsg(e?.message ?? "Failed to send reply");
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="pt-6 border-t border-border">
+      <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-3">In-house conversation</div>
+
+      {loading && <div className="text-xs text-muted-foreground mb-3">Loading thread…</div>}
+
+      {messages.length > 0 && (
+        <ul className="space-y-3 mb-6">
+          {messages.map((m) => (
+            <li key={m.id} className="border border-border bg-muted/30 p-4">
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <div className="text-xs text-muted-foreground">
+                  <span className="uppercase tracking-wider text-[var(--gold)] mr-2">
+                    {m.direction === "outbound" ? "Sent" : "Received"}
+                  </span>
+                  {m.from_label ? `${m.from_label} <${m.from_email}>` : m.from_email} → {m.to_email}
+                </div>
+                <div className="text-[10px] text-muted-foreground">
+                  {new Date(m.created_at).toLocaleString()} · {m.status}
+                </div>
+              </div>
+              <div className="text-sm font-medium mb-1">{m.subject}</div>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.body_text}</p>
+              {m.error_message && <div className="mt-2 text-xs text-red-600">{m.error_message}</div>}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {s.sender_email ? (
+        <div className="border border-border p-4 bg-white">
+          <div className="grid sm:grid-cols-2 gap-3 mb-3">
+            <label className="text-xs">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">From department</span>
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
+              >
+                <option value="general">info@</option>
+                <option value="business">business@</option>
+                <option value="research">research@</option>
+                <option value="careers">careers@</option>
+                <option value="media">media@</option>
+              </select>
+            </label>
+            <label className="text-xs">
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">To</span>
+              <input
+                readOnly
+                value={s.sender_email}
+                className="w-full h-9 px-2 border border-border bg-muted/40 text-sm"
+              />
+            </label>
+          </div>
+          <label className="text-xs block mb-3">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Subject</span>
+            <input
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              className="w-full h-9 px-2 border border-border bg-background text-sm"
+            />
+          </label>
+          <label className="text-xs block mb-3">
+            <span className="block text-muted-foreground uppercase tracking-wider mb-1">Message</span>
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              rows={8}
+              placeholder="Write your reply…"
+              className="w-full p-3 border border-border bg-background text-sm leading-relaxed"
+            />
+          </label>
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-xs text-muted-foreground">
+              {msg && <span>{msg}</span>}
+            </div>
+            <button
+              onClick={send}
+              disabled={sending}
+              className="btn-primary !py-2.5 !px-5 !text-xs disabled:opacity-50"
+            >
+              {sending ? "Sending…" : "Send reply"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="text-xs text-muted-foreground">No reply-to email captured for this submission.</div>
+      )}
+    </div>
   );
 }
 
