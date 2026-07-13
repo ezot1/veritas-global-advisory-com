@@ -12,6 +12,7 @@ import sceneIntelligence from "@/assets/scene-intelligence.jpg";
 import sceneAssembly from "@/assets/scene-assembly.jpg";
 import { Section } from "@/components/site/Section";
 import { StatCounter } from "@/components/site/StatCounter";
+import { LiftoffHero } from "@/components/site/LiftoffHero";
 import {
   Briefcase, Landmark, Shield, Activity, Scale, Search,
 } from "lucide-react";
