@@ -80,51 +80,8 @@ function Index() {
       </div>
 
       {/* HERO */}
-      <section className="relative bg-[var(--navy-deep)] text-white overflow-hidden">
-        <img
-          src={heroWorld}
-          alt=""
-          width={1920}
-          height={1280}
-          fetchPriority="high"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover opacity-50"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[var(--navy-deep)]/70 via-[var(--navy-deep)]/60 to-[var(--navy-deep)]" />
-        <div className="container-x relative pt-32 pb-28 md:pt-44 md:pb-36">
-          <div className="max-w-5xl">
-            <span className="eyebrow !text-[var(--gold)]">Global Advisory · Research · Intelligence</span>
-            <h1 className="display-1 mt-7 text-balance">
-              Navigating Complexity.<br />
-              Connecting Opportunities.<br />
-              <span className="text-[var(--gold)]">Shaping Global Solutions.</span>
-            </h1>
-            <p className="mt-9 max-w-2xl text-lg md:text-xl text-white/80 leading-relaxed text-pretty">
-              Veritas Global Advisory is an international consulting and advisory firm providing
-              strategic intelligence, business consulting, governance analysis, political risk
-              assessment, market-entry support, and global talent solutions across regions and sectors.
-            </p>
-            <div className="mt-12 flex flex-wrap gap-4">
-              <Link to="/services" className="btn-primary !bg-[var(--gold)] !border-[var(--gold)] !text-[var(--navy-deep)] hover:!bg-white hover:!border-white">Explore Our Services</Link>
-              <Link to="/talent" className="btn-ghost !text-white">Join Our Global Network</Link>
-            </div>
-          </div>
+      <LiftoffHero />
 
-          <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-px bg-white/15 border border-white/15">
-            {[
-              { v: "12", l: "Countries Covered" },
-              { v: "40", l: "Experts Worldwide" },
-              { v: "100", l: "Research Publications" },
-              { v: "5", l: "Regional Divisions" },
-            ].map((s) => (
-              <div key={s.l} className="bg-[var(--navy-deep)] p-8">
-                <div className="text-4xl md:text-5xl font-semibold text-[var(--gold)] tracking-tight">{s.v}</div>
-                <div className="mt-2 text-xs uppercase tracking-[0.18em] text-white/70">{s.l}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* WHO WE ARE */}
       <Section eyebrow="Who We Are" title="An institution built for a complex, multipolar world.">
