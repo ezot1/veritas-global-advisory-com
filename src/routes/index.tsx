@@ -13,6 +13,7 @@ import sceneAssembly from "@/assets/scene-assembly.jpg";
 import { Section } from "@/components/site/Section";
 import { StatCounter } from "@/components/site/StatCounter";
 import { LiftoffHero } from "@/components/site/LiftoffHero";
+import { Globe3D } from "@/components/site/Globe3D";
 import {
   Briefcase, Landmark, Shield, Activity, Scale, Search,
 } from "lucide-react";
