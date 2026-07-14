@@ -151,7 +151,9 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           sender_organization: findField('organization') ?? findField('company'),
           sender_country: findField('country'),
           message: messageVal,
-          fields: parsed.fields,
+          fields: enrichedFields,
+          resume_url: resumeSignedUrl,
+          resume_path: parsed.resumePath ?? null,
           status: 'new',
         })
 
