@@ -38,6 +38,9 @@ function ContactPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [resume, setResume] = useState<File | null>(null);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
@@ -46,12 +49,16 @@ function ContactPage() {
     const department = (fd.get("department") as DeptValue) || "general";
     const deptLabel = DEPARTMENTS.find(d => d.value === department)?.label ?? "General";
     try {
+      let resumeInfo: { path: string; name: string } | null = null;
+      if (resume) resumeInfo = await uploadResume(resume, "contact");
       await submitForm({
         formType: "contact",
         department,
         formTitle: `New contact inquiry — ${deptLabel}`,
         formSubtitle: "A visitor submitted the contact form on veritasglobaladvisory.org.",
         replyTo: String(fd.get("email") || ""),
+        resumePath: resumeInfo?.path,
+        resumeName: resumeInfo?.name,
         fields: [
           { label: "Name", value: String(fd.get("name") || "") },
           { label: "Organization", value: String(fd.get("org") || "") },
