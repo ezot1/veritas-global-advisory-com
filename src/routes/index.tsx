@@ -174,7 +174,7 @@ function Index() {
       <Section eyebrow="Global Coverage" title="Five regions. One integrated intelligence network." className="bg-[var(--secondary)]">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-14 items-center">
           <div className="relative aspect-square max-w-xl mx-auto w-full">
-            <Globe3D />
+            <Globe3D markers={markers} />
           </div>
           <div className="space-y-px bg-border">
             {regions.map((r) => (
