@@ -152,8 +152,6 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           sender_country: findField('country'),
           message: messageVal,
           fields: enrichedFields,
-          resume_url: resumeSignedUrl,
-          resume_path: parsed.resumePath ?? null,
           status: 'new',
         })
 
