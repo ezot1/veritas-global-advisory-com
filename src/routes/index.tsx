@@ -66,6 +66,10 @@ const insights = [
 ];
 
 function Index() {
+  const { data: markers = [] } = useQuery({
+    queryKey: ["globe-markers"],
+    queryFn: () => listGlobeMarkers(),
+  });
   return (
     <>
       {/* ANIMATED TOP BANNER */}
