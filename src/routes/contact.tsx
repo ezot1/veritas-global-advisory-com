@@ -136,6 +136,7 @@ function ContactPage() {
                 className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-[var(--navy-deep)] file:text-white file:text-xs file:uppercase file:tracking-[0.16em] file:cursor-pointer"
               />
               {resume && <div className="mt-2 text-xs text-muted-foreground">Selected: {resume.name}</div>}
+            </div>
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               {sent
                 ? <p className="text-[var(--navy-deep)] font-medium">Thank you. We'll respond shortly.</p>
