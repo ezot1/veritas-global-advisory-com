@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { submitForm } from "@/lib/forms/submit";
+import { submitForm, uploadResume } from "@/lib/forms/submit";
 
 export type ApplyJob = { title: string; dept: string; region: string };
 
