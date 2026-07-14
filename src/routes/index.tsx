@@ -13,6 +13,7 @@ import sceneAssembly from "@/assets/scene-assembly.jpg";
 import { Section } from "@/components/site/Section";
 import { StatCounter } from "@/components/site/StatCounter";
 import { LiftoffHero } from "@/components/site/LiftoffHero";
+import { Globe3D } from "@/components/site/Globe3D";
 import {
   Briefcase, Landmark, Shield, Activity, Scale, Search,
 } from "lucide-react";
@@ -160,8 +161,7 @@ function Index() {
       <Section eyebrow="Global Coverage" title="Five regions. One integrated intelligence network." className="bg-[var(--secondary)]">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-14 items-center">
           <div className="relative aspect-square max-w-xl mx-auto w-full">
-            <img src={globeImg} alt="Global coverage" loading="lazy" width={1024} height={1024} className="absolute inset-0 w-full h-full object-cover rounded-full animate-spin-slow" style={{ animation: "spin 120s linear infinite" }} />
-            <div className="absolute inset-0 rounded-full ring-1 ring-[var(--gold)]/30" />
+            <Globe3D />
           </div>
           <div className="space-y-px bg-border">
             {regions.map((r) => (
