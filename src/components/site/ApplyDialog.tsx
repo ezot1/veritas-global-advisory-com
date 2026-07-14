@@ -34,16 +34,23 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
   const handle = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [resume, setResume] = useState<File | null>(null);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSending(true);
     try {
+      let resumeInfo: { path: string; name: string } | null = null;
+      if (resume) resumeInfo = await uploadResume(resume, "careers");
       await submitForm({
         formType: "careers",
         formTitle: `New application — ${job.title} (${job.dept}, ${job.region})`,
         formSubtitle: "A candidate applied through the Veritas Global Advisory careers page.",
         replyTo: form.email,
+        resumePath: resumeInfo?.path,
+        resumeName: resumeInfo?.name,
         fields: [
           { label: "Position", value: `${job.title} — ${job.dept} · ${job.region}` },
           { label: "First name", value: form.firstName },
