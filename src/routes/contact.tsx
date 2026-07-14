@@ -125,6 +125,17 @@ function ContactPage() {
               <label htmlFor="contact-message" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Message</label>
               <textarea id="contact-message" name="message" rows={6} required maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
             </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="contact-resume" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Attach Resume / CV <span className="normal-case tracking-normal text-muted-foreground/80">(optional · PDF or Word, max 10 MB)</span></label>
+              <input
+                id="contact-resume"
+                ref={fileRef}
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={(e) => setResume(e.target.files?.[0] ?? null)}
+                className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-[var(--navy-deep)] file:text-white file:text-xs file:uppercase file:tracking-[0.16em] file:cursor-pointer"
+              />
+              {resume && <div className="mt-2 text-xs text-muted-foreground">Selected: {resume.name}</div>}
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               {sent
                 ? <p className="text-[var(--navy-deep)] font-medium">Thank you. We'll respond shortly.</p>
