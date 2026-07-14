@@ -31,6 +31,13 @@ export const Route = createFileRoute("/")({
     ],
     links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/" }],
   }),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData({
+      queryKey: ["globe-markers"],
+      queryFn: () => listGlobeMarkers(),
+    }),
+  errorComponent: ({ error }) => <div role="alert" className="container-x py-24">{error.message}</div>,
+  notFoundComponent: () => <div className="container-x py-24">Not found.</div>,
   component: Index,
 });
 
