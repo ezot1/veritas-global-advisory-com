@@ -14,11 +14,14 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
     yearsExp: "", education: "", languages: "",
     cover: "", availability: "", workAuth: "",
   });
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [resume, setResume] = useState<File | null>(null);
 
   useEffect(() => {
     if (!job) return;
     setSubmitted(false);
     setError(null);
+    setResume(null);
     setForm((f) => ({ ...f, firstName: "", lastName: "", email: "", phone: "", cover: "" }));
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
@@ -33,9 +36,6 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
 
   const handle = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
-
-  const fileRef = useRef<HTMLInputElement | null>(null);
-  const [resume, setResume] = useState<File | null>(null);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
