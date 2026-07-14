@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { submitForm } from "@/lib/forms/submit";
+import { submitForm, uploadResume } from "@/lib/forms/submit";
 
 export type ApplyJob = { title: string; dept: string; region: string };
 
@@ -34,16 +34,23 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
   const handle = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm({ ...form, [k]: e.target.value });
 
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [resume, setResume] = useState<File | null>(null);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSending(true);
     try {
+      let resumeInfo: { path: string; name: string } | null = null;
+      if (resume) resumeInfo = await uploadResume(resume, "careers");
       await submitForm({
         formType: "careers",
         formTitle: `New application — ${job.title} (${job.dept}, ${job.region})`,
         formSubtitle: "A candidate applied through the Veritas Global Advisory careers page.",
         replyTo: form.email,
+        resumePath: resumeInfo?.path,
+        resumeName: resumeInfo?.name,
         fields: [
           { label: "Position", value: `${job.title} — ${job.dept} · ${job.region}` },
           { label: "First name", value: form.firstName },
@@ -138,6 +145,16 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
             </Grid>
             <Field label="Cover note" required>
               <textarea required rows={5} value={form.cover} onChange={handle("cover")} placeholder="Briefly describe your relevant experience and why this role." className={input + " resize-y"} />
+            </Field>
+            <Field label="Resume / CV (PDF or Word, max 10 MB)">
+              <input
+                ref={fileRef}
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={(e) => setResume(e.target.files?.[0] ?? null)}
+                className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-[var(--navy-deep)] file:text-white file:text-xs file:uppercase file:tracking-[0.16em] file:cursor-pointer"
+              />
+              {resume && <div className="mt-2 text-xs text-muted-foreground">Selected: {resume.name}</div>}
             </Field>
             <div className="text-xs text-muted-foreground">
               By submitting you consent to Veritas Global Advisory processing your details in accordance with our Privacy Policy.

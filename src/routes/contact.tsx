@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
-import { useState } from "react";
-import { submitForm } from "@/lib/forms/submit";
+import { useRef, useState } from "react";
+import { submitForm, uploadResume } from "@/lib/forms/submit";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -38,6 +38,9 @@ function ContactPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [resume, setResume] = useState<File | null>(null);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
@@ -46,12 +49,16 @@ function ContactPage() {
     const department = (fd.get("department") as DeptValue) || "general";
     const deptLabel = DEPARTMENTS.find(d => d.value === department)?.label ?? "General";
     try {
+      let resumeInfo: { path: string; name: string } | null = null;
+      if (resume) resumeInfo = await uploadResume(resume, "contact");
       await submitForm({
         formType: "contact",
         department,
         formTitle: `New contact inquiry — ${deptLabel}`,
         formSubtitle: "A visitor submitted the contact form on veritasglobaladvisory.org.",
         replyTo: String(fd.get("email") || ""),
+        resumePath: resumeInfo?.path,
+        resumeName: resumeInfo?.name,
         fields: [
           { label: "Name", value: String(fd.get("name") || "") },
           { label: "Organization", value: String(fd.get("org") || "") },
@@ -117,6 +124,18 @@ function ContactPage() {
             <div className="sm:col-span-2">
               <label htmlFor="contact-message" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Message</label>
               <textarea id="contact-message" name="message" rows={6} required maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="contact-resume" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Attach Resume / CV <span className="normal-case tracking-normal text-muted-foreground/80">(optional · PDF or Word, max 10 MB)</span></label>
+              <input
+                id="contact-resume"
+                ref={fileRef}
+                type="file"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                onChange={(e) => setResume(e.target.files?.[0] ?? null)}
+                className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-[var(--navy-deep)] file:text-white file:text-xs file:uppercase file:tracking-[0.16em] file:cursor-pointer"
+              />
+              {resume && <div className="mt-2 text-xs text-muted-foreground">Selected: {resume.name}</div>}
             </div>
             <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
               {sent

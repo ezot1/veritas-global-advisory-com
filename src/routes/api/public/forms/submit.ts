@@ -43,6 +43,8 @@ const bodySchema = z.object({
   formSubtitle: z.string().trim().max(280).optional(),
   replyTo: z.string().trim().email().max(254).optional(),
   fields: z.array(fieldSchema).min(1).max(40),
+  resumePath: z.string().trim().max(500).optional(),
+  resumeName: z.string().trim().max(200).optional(),
 })
 
 function resolveRecipient(parsed: z.infer<typeof bodySchema>): string {
@@ -99,10 +101,26 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           .eq('template_name', 'form-notification')
           .maybeSingle()
 
+        // If a resume was uploaded, sign a long-lived URL and append as a field
+        const enrichedFields = [...parsed.fields]
+        let resumeSignedUrl: string | null = null
+        if (parsed.resumePath) {
+          const { data: signed } = await supabase.storage
+            .from('resumes')
+            .createSignedUrl(parsed.resumePath, 60 * 60 * 24 * 30) // 30 days
+          if (signed?.signedUrl) {
+            resumeSignedUrl = signed.signedUrl
+            enrichedFields.push({
+              label: 'Resume',
+              value: `${parsed.resumeName ?? 'Download'} — ${signed.signedUrl}`,
+            })
+          }
+        }
+
         const templateData = {
           formTitle: parsed.formTitle,
           formSubtitle: settingsRow?.intro_text?.trim() ? settingsRow.intro_text : parsed.formSubtitle,
-          fields: parsed.fields,
+          fields: enrichedFields,
           submittedAt: new Date().toISOString(),
           brandColor: settingsRow?.brand_color ?? '#b08838',
           headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
@@ -133,7 +151,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           sender_organization: findField('organization') ?? findField('company'),
           sender_country: findField('country'),
           message: messageVal,
-          fields: parsed.fields,
+          fields: enrichedFields,
           status: 'new',
         })
 
