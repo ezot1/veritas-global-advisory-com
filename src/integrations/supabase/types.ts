@@ -191,6 +191,48 @@ export type Database = {
         }
         Relationships: []
       }
+      globe_markers: {
+        Row: {
+          created_at: string
+          description: string | null
+          href: string | null
+          id: string
+          is_active: boolean
+          kind: string
+          label: string
+          latitude: number
+          longitude: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          href?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          label: string
+          latitude: number
+          longitude: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          href?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: string
+          label?: string
+          latitude?: number
+          longitude?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reply_templates: {
         Row: {
           body: string

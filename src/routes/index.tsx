@@ -14,6 +14,8 @@ import { Section } from "@/components/site/Section";
 import { StatCounter } from "@/components/site/StatCounter";
 import { LiftoffHero } from "@/components/site/LiftoffHero";
 import { Globe3D } from "@/components/site/Globe3D";
+import { listGlobeMarkers } from "@/lib/globe-markers.functions";
+import { useQuery } from "@tanstack/react-query";
 import {
   Briefcase, Landmark, Shield, Activity, Scale, Search,
 } from "lucide-react";
@@ -29,6 +31,13 @@ export const Route = createFileRoute("/")({
     ],
     links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/" }],
   }),
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData({
+      queryKey: ["globe-markers"],
+      queryFn: () => listGlobeMarkers(),
+    }),
+  errorComponent: ({ error }) => <div role="alert" className="container-x py-24">{error.message}</div>,
+  notFoundComponent: () => <div className="container-x py-24">Not found.</div>,
   component: Index,
 });
 
@@ -57,6 +66,10 @@ const insights = [
 ];
 
 function Index() {
+  const { data: markers = [] } = useQuery({
+    queryKey: ["globe-markers"],
+    queryFn: () => listGlobeMarkers(),
+  });
   return (
     <>
       {/* ANIMATED TOP BANNER */}
@@ -161,7 +174,7 @@ function Index() {
       <Section eyebrow="Global Coverage" title="Five regions. One integrated intelligence network." className="bg-[var(--secondary)]">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-14 items-center">
           <div className="relative aspect-square max-w-xl mx-auto w-full">
-            <Globe3D />
+            <Globe3D markers={markers} />
           </div>
           <div className="space-y-px bg-border">
             {regions.map((r) => (
