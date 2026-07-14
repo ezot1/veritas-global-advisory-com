@@ -43,6 +43,8 @@ const bodySchema = z.object({
   formSubtitle: z.string().trim().max(280).optional(),
   replyTo: z.string().trim().email().max(254).optional(),
   fields: z.array(fieldSchema).min(1).max(40),
+  resumePath: z.string().trim().max(500).optional(),
+  resumeName: z.string().trim().max(200).optional(),
 })
 
 function resolveRecipient(parsed: z.infer<typeof bodySchema>): string {
