@@ -296,16 +296,44 @@ function SubmissionDetail({
         </section>
       )}
 
+      {(() => {
+        const resumeField = s.fields.find((f) => /resume|cv/i.test(f.label));
+        const urlMatch = resumeField?.value.match(/https?:\/\/\S+/);
+        if (!resumeField || !urlMatch) return null;
+        const url = urlMatch[0];
+        const name = resumeField.value.split(/\s—\s|\s-\s/)[0]?.trim() || "resume";
+        return (
+          <section className="mb-6">
+            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Resume / CV</div>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              download={name}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--navy-deep)] text-white text-xs uppercase tracking-[0.16em] hover:bg-[var(--gold)] transition-colors"
+            >
+              Download {name}
+            </a>
+            <p className="mt-2 text-xs text-muted-foreground">Link valid for 30 days from submission.</p>
+          </section>
+        );
+      })()}
+
       <details className="mb-6">
         <summary className="text-xs uppercase tracking-[0.18em] text-muted-foreground cursor-pointer">
           All submitted fields
         </summary>
         <dl className="mt-3 grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
-          {s.fields.map((f, i) => (
-            <Row key={i} label={f.label} value={f.value} />
-          ))}
+          {s.fields.map((f, i) => {
+            const urlMatch = f.value.match(/https?:\/\/\S+/);
+            if (urlMatch) {
+              return <Row key={i} label={f.label} value={f.value} link={urlMatch[0]} />;
+            }
+            return <Row key={i} label={f.label} value={f.value} />;
+          })}
         </dl>
       </details>
+
 
       <ReplyThread submission={s} onReplied={() => onStatus(s.id, "replied")} />
     </article>
