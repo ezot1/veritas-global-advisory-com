@@ -11,6 +11,12 @@ export const Route = createFileRoute("/careers")({
     meta: [
       { title: "Careers | Veritas Global Advisory" },
       { name: "description", content: "Join Veritas Global Advisory. Open roles in research, political risk, governance, communications, and more." },
+      { property: "og:title", content: "Careers | Veritas Global Advisory" },
+      { property: "og:description", content: "Join Veritas Global Advisory. Open roles in research, political risk, governance, communications, and more." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Careers | Veritas Global Advisory" },
+      { name: "twitter:description", content: "Join Veritas Global Advisory. Open roles in research, political risk, governance, communications, and more." },
     ],
   }),
   component: CareersPage,

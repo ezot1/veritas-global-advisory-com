@@ -9,7 +9,13 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact | Veritas Global Advisory" },
-      { name: "description", content: "Contact Veritas Global Advisory. Headquarters in Miami, Florida, USA." },
+      { name: "description", content: "Contact Veritas Global Advisory. Headquarters in Miami, Florida, USA. Reach our research, consulting, careers, and media teams." },
+      { property: "og:title", content: "Contact | Veritas Global Advisory" },
+      { property: "og:description", content: "Contact Veritas Global Advisory. Headquarters in Miami, Florida, USA. Reach our research, consulting, careers, and media teams." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Contact | Veritas Global Advisory" },
+      { name: "twitter:description", content: "Contact Veritas Global Advisory. Headquarters in Miami, Florida, USA. Reach our research, consulting, careers, and media teams." },
     ],
   }),
   component: ContactPage,
