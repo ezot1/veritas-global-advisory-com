@@ -95,8 +95,15 @@ function TalentPage() {
             <textarea id="talent-bio" name="bio" rows={5} maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">CV Upload (PDF) — please email separately to research@veritasglobaladvisory.org</label>
-            <input type="file" accept=".pdf,.doc,.docx" className="w-full text-sm" disabled />
+            <label htmlFor="talent-cv" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">CV / Resume (PDF or Word, max 10 MB)</label>
+            <input
+              id="talent-cv"
+              type="file"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={(e) => setResume(e.target.files?.[0] ?? null)}
+              className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-[var(--navy-deep)] file:text-white file:text-xs file:uppercase file:tracking-[0.16em] file:cursor-pointer"
+            />
+            {resume && <div className="mt-2 text-xs text-muted-foreground">Selected: {resume.name}</div>}
           </div>
           <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-4">
             {sent
