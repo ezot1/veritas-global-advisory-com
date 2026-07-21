@@ -43,14 +43,15 @@ export function Globe3D({ markers = [] }: { markers?: GlobeMarker[] }) {
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = 8;
 
-    const geometry = new THREE.SphereGeometry(RADIUS, 96, 96);
+    const geometry = new THREE.SphereGeometry(RADIUS, 128, 128);
     const material = new THREE.MeshPhongMaterial({
       map: texture,
-      specular: new THREE.Color(0x1a3a6b),
-      shininess: 12,
+      specular: new THREE.Color(0x0a1a33),
+      shininess: 18,
     });
     const globe = new THREE.Mesh(geometry, material);
-    globe.rotation.z = 0.35;
+    // Real Earth axial tilt (~23.4°); upright, not tumbled
+    globe.rotation.z = THREE.MathUtils.degToRad(23.4);
     scene.add(globe);
     globeRef.current = globe;
 
@@ -59,23 +60,25 @@ export function Globe3D({ markers = [] }: { markers?: GlobeMarker[] }) {
     globe.add(markerGroup);
     markerGroupRef.current = markerGroup;
 
-    // Atmosphere
-    const atmosGeo = new THREE.SphereGeometry(1.06, 64, 64);
+    // Atmosphere — subtle blue Rayleigh-style glow, additive for realism
+    const atmosGeo = new THREE.SphereGeometry(1.045, 64, 64);
     const atmosMat = new THREE.ShaderMaterial({
       transparent: true,
       side: THREE.BackSide,
-      uniforms: { c: { value: 0.6 }, p: { value: 3.2 } },
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      uniforms: { c: { value: 0.35 }, p: { value: 4.5 } },
       vertexShader: `varying vec3 vNormal; void main(){ vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-      fragmentShader: `varying vec3 vNormal; uniform float c; uniform float p; void main(){ float i = pow(c - dot(vNormal, vec3(0.0,0.0,1.0)), p); gl_FragColor = vec4(0.83,0.69,0.22,1.0) * i; }`,
+      fragmentShader: `varying vec3 vNormal; uniform float c; uniform float p; void main(){ float i = pow(c - dot(vNormal, vec3(0.0,0.0,1.0)), p); gl_FragColor = vec4(0.35, 0.6, 1.0, 1.0) * i; }`,
     });
     scene.add(new THREE.Mesh(atmosGeo, atmosMat));
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-    const key = new THREE.DirectionalLight(0xffffff, 1.1);
-    key.position.set(5, 3, 5);
-    scene.add(key);
-    const rim = new THREE.DirectionalLight(0xd4af37, 0.5);
-    rim.position.set(-5, -2, -3);
+    scene.add(new THREE.AmbientLight(0x223355, 0.35));
+    const sun = new THREE.DirectionalLight(0xfff4e0, 1.35);
+    sun.position.set(5, 2, 4);
+    scene.add(sun);
+    const rim = new THREE.DirectionalLight(0x4a80c8, 0.4);
+    rim.position.set(-5, -1, -3);
     scene.add(rim);
 
     const raycaster = new THREE.Raycaster();
