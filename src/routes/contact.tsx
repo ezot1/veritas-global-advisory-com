@@ -17,6 +17,26 @@ export const Route = createFileRoute("/contact")({
       { name: "twitter:title", content: "Contact | Veritas Global Advisory" },
       { name: "twitter:description", content: "Contact Veritas Global Advisory. Headquarters in Miami, Florida, USA. Reach our research, consulting, careers, and media teams." },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Veritas Global Advisory",
+          url: "https://veritasglobaladvisory.org",
+          email: "info@veritasglobaladvisory.org",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "1450 Brickell Avenue, Suite 2400",
+            addressLocality: "Miami",
+            addressRegion: "FL",
+            postalCode: "33131",
+            addressCountry: "US",
+          },
+        }),
+      },
+    ],
   }),
   component: ContactPage,
 });
