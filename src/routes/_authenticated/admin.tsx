@@ -242,6 +242,64 @@ function AdminPage() {
   );
 }
 
+function ResumePreview({ fields }: { fields: { label: string; value: string }[] }) {
+  const [open, setOpen] = useState(false);
+  const resumeField = fields.find((f) => /resume|cv/i.test(f.label));
+  const urlMatch = resumeField?.value.match(/https?:\/\/\S+/);
+  if (!resumeField || !urlMatch) return null;
+  const url = urlMatch[0];
+  const name = resumeField.value.split(/\s—\s|\s-\s/)[0]?.trim() || "resume";
+  const isPdf = /\.pdf(\?|$)/i.test(url) || /\.pdf(\?|$)/i.test(name);
+
+  return (
+    <section className="mb-6">
+      <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Resume / CV</div>
+      <div className="flex flex-wrap items-center gap-2">
+        {isPdf && (
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-[var(--navy-deep)] text-[var(--navy-deep)] text-xs uppercase tracking-[0.16em] hover:bg-[var(--navy-deep)] hover:text-white transition-colors"
+          >
+            {open ? "Hide preview" : "Preview PDF"}
+          </button>
+        )}
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          download={name}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--navy-deep)] text-white text-xs uppercase tracking-[0.16em] hover:bg-[var(--gold)] transition-colors"
+        >
+          Download {name}
+        </a>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs underline text-muted-foreground hover:text-foreground"
+        >
+          Open in new tab
+        </a>
+      </div>
+      {open && isPdf && (
+        <div className="mt-4 border border-border bg-muted/30">
+          <iframe
+            src={`${url}#toolbar=1&view=FitH`}
+            title={`Resume preview: ${name}`}
+            className="w-full h-[70vh] bg-white"
+          />
+        </div>
+      )}
+      {!isPdf && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Preview available for PDFs only. Word documents can be downloaded above.
+        </p>
+      )}
+      <p className="mt-2 text-xs text-muted-foreground">Link valid for 30 days from submission.</p>
+    </section>
+  );
+}
+
 function SubmissionDetail({
   submission: s,
   onStatus,
@@ -296,28 +354,7 @@ function SubmissionDetail({
         </section>
       )}
 
-      {(() => {
-        const resumeField = s.fields.find((f) => /resume|cv/i.test(f.label));
-        const urlMatch = resumeField?.value.match(/https?:\/\/\S+/);
-        if (!resumeField || !urlMatch) return null;
-        const url = urlMatch[0];
-        const name = resumeField.value.split(/\s—\s|\s-\s/)[0]?.trim() || "resume";
-        return (
-          <section className="mb-6">
-            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Resume / CV</div>
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              download={name}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--navy-deep)] text-white text-xs uppercase tracking-[0.16em] hover:bg-[var(--gold)] transition-colors"
-            >
-              Download {name}
-            </a>
-            <p className="mt-2 text-xs text-muted-foreground">Link valid for 30 days from submission.</p>
-          </section>
-        );
-      })()}
+      <ResumePreview fields={s.fields} />
 
       <details className="mb-6">
         <summary className="text-xs uppercase tracking-[0.18em] text-muted-foreground cursor-pointer">
