@@ -296,28 +296,7 @@ function SubmissionDetail({
         </section>
       )}
 
-      {(() => {
-        const resumeField = s.fields.find((f) => /resume|cv/i.test(f.label));
-        const urlMatch = resumeField?.value.match(/https?:\/\/\S+/);
-        if (!resumeField || !urlMatch) return null;
-        const url = urlMatch[0];
-        const name = resumeField.value.split(/\s—\s|\s-\s/)[0]?.trim() || "resume";
-        return (
-          <section className="mb-6">
-            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Resume / CV</div>
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              download={name}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[var(--navy-deep)] text-white text-xs uppercase tracking-[0.16em] hover:bg-[var(--gold)] transition-colors"
-            >
-              Download {name}
-            </a>
-            <p className="mt-2 text-xs text-muted-foreground">Link valid for 30 days from submission.</p>
-          </section>
-        );
-      })()}
+      <ResumePreview fields={s.fields} />
 
       <details className="mb-6">
         <summary className="text-xs uppercase tracking-[0.18em] text-muted-foreground cursor-pointer">
