@@ -145,18 +145,19 @@ export function Globe3D({ markers = [] }: { markers?: GlobeMarker[] }) {
     document.addEventListener("visibilitychange", onVis);
 
     const worldPos = new THREE.Vector3();
-    const camDir = new THREE.Vector3();
     let raf = 0;
     let last = performance.now();
+    const ANGULAR_VELOCITY = 0.08; // rad/s — smooth, satellite-like drift
 
     const animate = () => {
       raf = requestAnimationFrame(animate);
       const now = performance.now();
-      const dt = Math.min((now - last) / 1000, 0.05);
+      // Clamp large gaps (tab switch) so rotation doesn't jump
+      const dt = Math.min((now - last) / 1000, 0.1);
       last = now;
       if (!visibleRef.current) return;
 
-      globe.rotation.y += 0.06 * dt;
+      globe.rotation.y += ANGULAR_VELOCITY * dt;
 
       // Fade markers on the back of the globe
       camera.getWorldDirection(camDir);
