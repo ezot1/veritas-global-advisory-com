@@ -29,6 +29,7 @@ function TalentPage() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resume, setResume] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,11 +37,15 @@ function TalentPage() {
     setSending(true);
     const fd = new FormData(e.currentTarget);
     try {
+      let resumeInfo: { path: string; name: string } | null = null;
+      if (resume) resumeInfo = await uploadResume(resume, "talent");
       await submitForm({
         formType: "talent",
         formTitle: "New Global Talent Network application",
         formSubtitle: "A specialist submitted the talent network form.",
         replyTo: String(fd.get("email") || ""),
+        resumePath: resumeInfo?.path,
+        resumeName: resumeInfo?.name,
         fields: [
           { label: "Full name", value: String(fd.get("name") || "") },
           { label: "Country", value: String(fd.get("country") || "") },
