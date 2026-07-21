@@ -46,7 +46,7 @@ export function SiteHeader() {
             <Link
               key={n.to}
               to={n.to}
-              className="text-[13px] font-medium tracking-wide text-foreground/80 hover:text-[var(--navy-deep)] transition-colors"
+              className="text-[13px] font-medium tracking-wide text-foreground hover:text-[var(--navy-deep)] transition-colors"
               activeProps={{ className: "text-[var(--navy-deep)] font-semibold" }}
             >
               {n.label}

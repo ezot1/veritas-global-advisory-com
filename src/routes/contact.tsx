@@ -126,7 +126,7 @@ function ContactPage() {
               <textarea id="contact-message" name="message" rows={6} required maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="contact-resume" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Attach Resume / CV <span className="normal-case tracking-normal text-muted-foreground/80">(optional · PDF or Word, max 10 MB)</span></label>
+              <label htmlFor="contact-resume" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Attach Resume / CV <span className="normal-case tracking-normal text-muted-foreground">(optional · PDF or Word, max 10 MB)</span></label>
               <input
                 id="contact-resume"
                 ref={fileRef}

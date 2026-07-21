@@ -94,7 +94,7 @@ function ArticlePage() {
           </div>
           <div className="prose-veritas">
             {article.body.map((p: string, i: number) => (
-              <p key={i} className="text-[17px] leading-[1.85] text-foreground/90 mb-6">{p}</p>
+              <p key={i} className="text-[17px] leading-[1.85] text-foreground mb-6">{p}</p>
             ))}
           </div>
           <p className="text-sm text-muted-foreground mt-12">
@@ -105,7 +105,7 @@ function ArticlePage() {
         <aside className="space-y-10">
           <div>
             <h4 className="text-xs uppercase tracking-[0.22em] text-[var(--gold)] mb-4">In this briefing</h4>
-            <ul className="space-y-2 text-sm text-foreground/80">
+            <ul className="space-y-2 text-sm text-foreground">
               <li>· Strategic context</li>
               <li>· Operational implications</li>
               <li>· Risk assessment</li>

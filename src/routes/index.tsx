@@ -104,7 +104,7 @@ function Index() {
           <Pillar title="Our Vision" body="To become a globally trusted consulting and advisory institution connecting expertise, knowledge, and solutions across continents." />
           <div>
             <h3 className="display-3 mb-6">Core Values</h3>
-            <ul className="space-y-3 text-foreground/85">
+            <ul className="space-y-3 text-foreground">
               {["Integrity", "Professionalism", "Evidence-Based Analysis", "Global Perspective", "Confidentiality", "Excellence", "Diversity & Inclusion"].map((v) => (
                 <li key={v} className="flex items-start gap-3 border-b border-border pb-3">
                   <span className="text-[var(--gold)] mt-1">◆</span>
@@ -225,7 +225,7 @@ function Pillar({ title, body }: { title: string; body: string }) {
   return (
           <div>
             <h3 className="display-3 mb-5">{title}</h3>
-      <p className="text-foreground/80 leading-relaxed">{body}</p>
+      <p className="text-foreground leading-relaxed">{body}</p>
     </div>
   );
 }

@@ -83,7 +83,7 @@
   --secondary: oklch(0.97 0.005 260);   /* #F8FAFC */
   --secondary-foreground: oklch(0.21 0.063 263);
   --muted: oklch(0.97 0.005 260);
-  --muted-foreground: oklch(0.45 0.02 260);
+  --muted-foreground: oklch(0.29 0.02 260);
   --accent: oklch(0.78 0.13 85);        /* gold */
   --accent-foreground: oklch(0.21 0.063 263);
   --destructive: oklch(0.55 0.22 27);
