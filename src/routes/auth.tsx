@@ -4,7 +4,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [{ title: "Sign In | Veritas Global Advisory" }] }),
+  head: () => ({
+    meta: [
+      { title: "Sign In | Veritas Global Advisory" },
+      { name: "description", content: "Sign in to the Veritas Global Advisory admin console. Secure access for staff to manage submissions, messages, and platform settings." },
+      { property: "og:title", content: "Sign In | Veritas Global Advisory" },
+      { property: "og:description", content: "Sign in to the Veritas Global Advisory admin console. Secure access for staff to manage submissions, messages, and platform settings." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Sign In | Veritas Global Advisory" },
+      { name: "twitter:description", content: "Sign in to the Veritas Global Advisory admin console. Secure access for staff to manage submissions, messages, and platform settings." },
+    ],
+  }),
   component: AuthPage,
 });
 
