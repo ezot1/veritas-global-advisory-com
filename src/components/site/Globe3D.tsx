@@ -160,7 +160,6 @@ export function Globe3D({ markers = [] }: { markers?: GlobeMarker[] }) {
       globe.rotation.y += ANGULAR_VELOCITY * dt;
 
       // Fade markers on the back of the globe
-      camera.getWorldDirection(camDir);
       for (const ref of markerRefsRef.current) {
         ref.dot.getWorldPosition(worldPos);
         const toCam = worldPos.clone().sub(camera.position).normalize();
