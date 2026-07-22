@@ -56,9 +56,9 @@ Return:
 - body: array of 10-14 paragraph strings (each 120-220 words)
 - author: a plausible senior fellow name for Veritas Global Advisory`;
 
-  const { experimental_output } = await generateText({
+  const { output } = await generateText({
     model: gateway("google/gemini-3.6-flash"),
-    experimental_output: Output.object({
+    output: Output.object({
       schema: z.object({
         title: z.string(),
         summary: z.string(),
@@ -69,7 +69,7 @@ Return:
     prompt,
   });
 
-  const generated = experimental_output;
+  const generated = output;
   const baseSlug = slugify(generated.title) || `${pick.continent.toLowerCase()}-briefing`;
   const slug = `${baseSlug}-${Date.now().toString(36)}`;
 
