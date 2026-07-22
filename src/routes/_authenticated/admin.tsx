@@ -248,7 +248,7 @@ function ResumePreview({ fields }: { fields: { label: string; value: string }[] 
   const urlMatch = resumeField?.value.match(/https?:\/\/\S+/);
   if (!resumeField || !urlMatch) return null;
   const url = urlMatch[0];
-  const name = resumeField.value.split(/\s-\s|\s-\s/)[0]?.trim() || "resume";
+  const name = resumeField.value.split(/\s-\s/)[0]?.trim() || "resume";
   const isPdf = /\.pdf(\?|$)/i.test(url) || /\.pdf(\?|$)/i.test(name);
 
   return (
