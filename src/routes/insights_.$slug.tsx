@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
 import { findArticle, articles } from "@/data/articles";
 import { listGeneratedArticles } from "@/lib/articles.functions";
+import { ShareButtons } from "@/components/site/ShareButtons";
 
 export const Route = createFileRoute("/insights_/$slug")({
   loader: async ({ params }) => {
@@ -97,12 +98,18 @@ function ArticlePage() {
           <div className="aspect-[16/9] overflow-hidden mb-10 border border-border">
             <img src={article.img} alt="" className="w-full h-full object-cover" loading="lazy" />
           </div>
+          <div className="mb-8 pb-8 border-b border-border">
+            <ShareButtons title={article.title} summary={article.summary} />
+          </div>
           <div className="prose-veritas">
             {article.body.map((p: string, i: number) => (
               <p key={i} className="text-[17px] leading-[1.85] text-foreground mb-6">{p}</p>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground mt-12">
+          <div className="mt-12 pt-8 border-t border-border">
+            <ShareButtons title={article.title} summary={article.summary} />
+          </div>
+          <p className="text-sm text-muted-foreground mt-8">
             This research briefing is published by Veritas Global Advisory's editorial desks. Views expressed are those of the authors and do not constitute investment advice.
           </p>
         </article>
