@@ -18,7 +18,7 @@ export const Route = createFileRoute("/services")({
     meta: [
       { title: "Services | Veritas Global Advisory" },
       { name: "description", content: "Strategic intelligence, business consulting, governance, political risk, security advisory, human rights, and research services." },
-      { property: "og:title", content: "Advisory Services — Veritas Global Advisory" },
+      { property: "og:title", content: "Advisory Services - Veritas Global Advisory" },
       { property: "og:description", content: "Six interconnected advisory practices: business consulting, governance, political risk, security, human rights, and research." },
       { property: "og:url", content: "https://veritasglobaladvisory.org/services" },
     ],

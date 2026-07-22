@@ -67,7 +67,7 @@ export const template = {
   previewData: {
     subject: 'Re: Partnership inquiry',
     bodyText: 'Thank you for reaching out.\n\nWe would be glad to schedule a call next week.',
-    fromLabel: 'Veritas Global Advisory — Business',
+    fromLabel: 'Veritas Global Advisory - Business',
     fromEmail: 'business@veritasglobaladvisory.org',
   },
 } satisfies TemplateEntry

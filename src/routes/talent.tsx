@@ -10,7 +10,7 @@ export const Route = createFileRoute("/talent")({
     meta: [
       { title: "Global Talent Network | Veritas Global Advisory" },
       { name: "description", content: "Join the Veritas Global Advisory expert network of researchers, policy analysts, economists, and practitioners worldwide." },
-      { property: "og:title", content: "Global Talent Network — Veritas Global Advisory" },
+      { property: "og:title", content: "Global Talent Network - Veritas Global Advisory" },
       { property: "og:description", content: "Apply to a global network of researchers, analysts, economists, and practitioners shaping strategic advisory across five regions." },
       { property: "og:url", content: "https://veritasglobaladvisory.org/talent" },
     ],

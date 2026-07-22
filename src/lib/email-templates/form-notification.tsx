@@ -53,7 +53,7 @@ const Email = ({
           {fields.map((f) => (
             <Section key={f.label} style={row}>
               <Text style={label}>{f.label}</Text>
-              <Text style={value}>{f.value || '—'}</Text>
+              <Text style={value}>{f.value || '-'}</Text>
             </Section>
           ))}
         </Section>
@@ -74,10 +74,10 @@ const Email = ({
 export const template = {
   component: Email,
   subject: (data: Record<string, any>) =>
-    (data?.formTitle as string) || 'New website inquiry — Veritas Global Advisory',
+    (data?.formTitle as string) || 'New website inquiry - Veritas Global Advisory',
   displayName: 'Form submission notification',
   previewData: {
-    formTitle: 'New contact inquiry — General',
+    formTitle: 'New contact inquiry - General',
     formSubtitle: 'A visitor submitted the contact form.',
     fields: [
       { label: 'Name', value: 'Jane Doe' },

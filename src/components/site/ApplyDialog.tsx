@@ -46,13 +46,13 @@ export function ApplyDialog({ job, onClose }: { job: ApplyJob | null; onClose: (
       if (resume) resumeInfo = await uploadResume(resume, "careers");
       await submitForm({
         formType: "careers",
-        formTitle: `New application — ${job.title} (${job.dept}, ${job.region})`,
+        formTitle: `New application - ${job.title} (${job.dept}, ${job.region})`,
         formSubtitle: "A candidate applied through the Veritas Global Advisory careers page.",
         replyTo: form.email,
         resumePath: resumeInfo?.path,
         resumeName: resumeInfo?.name,
         fields: [
-          { label: "Position", value: `${job.title} — ${job.dept} · ${job.region}` },
+          { label: "Position", value: `${job.title} - ${job.dept} · ${job.region}` },
           { label: "First name", value: form.firstName },
           { label: "Last name", value: form.lastName },
           { label: "Email", value: form.email },
