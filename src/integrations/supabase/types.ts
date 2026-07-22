@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      article_rotation_state: {
+        Row: {
+          id: number
+          last_run_at: string | null
+          next_index: number
+        }
+        Insert: {
+          id?: number
+          last_run_at?: string | null
+          next_index?: number
+        }
+        Update: {
+          id?: number
+          last_run_at?: string | null
+          next_index?: number
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -188,6 +206,51 @@ export type Database = {
           status?: string
           subject?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      generated_articles: {
+        Row: {
+          author: string
+          body: Json
+          continent: string
+          created_at: string
+          id: string
+          image_url: string
+          published_date: string
+          region: string
+          slug: string
+          summary: string
+          tag: string
+          title: string
+        }
+        Insert: {
+          author?: string
+          body: Json
+          continent: string
+          created_at?: string
+          id?: string
+          image_url: string
+          published_date: string
+          region: string
+          slug: string
+          summary: string
+          tag: string
+          title: string
+        }
+        Update: {
+          author?: string
+          body?: Json
+          continent?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          published_date?: string
+          region?: string
+          slug?: string
+          summary?: string
+          tag?: string
+          title?: string
         }
         Relationships: []
       }

@@ -27,6 +27,7 @@ import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/em
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as ApiPublicHooksGenerateArticleRouteImport } from './routes/api/public/hooks/generate-article'
 import { Route as ApiPublicFormsSubmitRouteImport } from './routes/api/public/forms/submit'
 
 const TalentRoute = TalentRouteImport.update({
@@ -121,6 +122,12 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksGenerateArticleRoute =
+  ApiPublicHooksGenerateArticleRouteImport.update({
+    id: '/api/public/hooks/generate-article',
+    path: '/api/public/hooks/generate-article',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicFormsSubmitRoute = ApiPublicFormsSubmitRouteImport.update({
   id: '/api/public/forms/submit',
   path: '/api/public/forms/submit',
@@ -143,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/insights/$slug': typeof InsightsSlugRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
+  '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -163,6 +171,7 @@ export interface FileRoutesByTo {
   '/insights/$slug': typeof InsightsSlugRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
+  '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -185,6 +194,7 @@ export interface FileRoutesById {
   '/insights_/$slug': typeof InsightsSlugRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
+  '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/lovable/email/transactional/send': typeof LovableEmailTransactionalSendRoute
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/insights/$slug'
     | '/lovable/email/suppression'
     | '/api/public/forms/submit'
+    | '/api/public/hooks/generate-article'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/insights/$slug'
     | '/lovable/email/suppression'
     | '/api/public/forms/submit'
+    | '/api/public/hooks/generate-article'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -248,6 +260,7 @@ export interface FileRouteTypes {
     | '/insights_/$slug'
     | '/lovable/email/suppression'
     | '/api/public/forms/submit'
+    | '/api/public/hooks/generate-article'
     | '/lovable/email/queue/process'
     | '/lovable/email/transactional/preview'
     | '/lovable/email/transactional/send'
@@ -269,6 +282,7 @@ export interface RootRouteChildren {
   InsightsSlugRoute: typeof InsightsSlugRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicFormsSubmitRoute: typeof ApiPublicFormsSubmitRoute
+  ApiPublicHooksGenerateArticleRoute: typeof ApiPublicHooksGenerateArticleRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
   LovableEmailTransactionalSendRoute: typeof LovableEmailTransactionalSendRoute
@@ -402,6 +416,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/generate-article': {
+      id: '/api/public/hooks/generate-article'
+      path: '/api/public/hooks/generate-article'
+      fullPath: '/api/public/hooks/generate-article'
+      preLoaderRoute: typeof ApiPublicHooksGenerateArticleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/forms/submit': {
       id: '/api/public/forms/submit'
       path: '/api/public/forms/submit'
@@ -439,6 +460,7 @@ const rootRouteChildren: RootRouteChildren = {
   InsightsSlugRoute: InsightsSlugRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicFormsSubmitRoute: ApiPublicFormsSubmitRoute,
+  ApiPublicHooksGenerateArticleRoute: ApiPublicHooksGenerateArticleRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
   LovableEmailTransactionalSendRoute: LovableEmailTransactionalSendRoute,

@@ -4,9 +4,14 @@ import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { articles } from "@/data/articles";
+import { articles as staticArticles } from "@/data/articles";
+import { listGeneratedArticles } from "@/lib/articles.functions";
 
 export const Route = createFileRoute("/insights")({
+  loader: async () => {
+    const generated = await listGeneratedArticles().catch(() => []);
+    return { generated };
+  },
   head: () => ({
     meta: [
       { title: "Global Research | Veritas Global Advisory" },
@@ -24,6 +29,8 @@ const categories = ["All", "Global Affairs", "Politics & Governance", "Business 
 const regions = ["All Regions", "Africa", "Asia-Pacific", "Europe", "Middle East", "Americas"];
 
 function InsightsPage() {
+  const { generated } = Route.useLoaderData();
+  const articles = useMemo(() => [...generated, ...staticArticles], [generated]);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [reg, setReg] = useState("All Regions");
@@ -32,7 +39,7 @@ function InsightsPage() {
     (cat === "All" || a.tag === cat) &&
     (reg === "All Regions" || a.region === reg) &&
     (q === "" || a.title.toLowerCase().includes(q.toLowerCase()))
-  ), [q, cat, reg]);
+  ), [articles, q, cat, reg]);
 
   return (
     <>
