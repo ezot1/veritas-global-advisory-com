@@ -2,6 +2,7 @@ import insight1 from "@/assets/insight-1.jpg";
 import insight2 from "@/assets/insight-2.jpg";
 import insight3 from "@/assets/insight-3.jpg";
 import insight4 from "@/assets/insight-4.jpg";
+import insightAfricaAfcfta from "@/assets/insight-africa-afcfta.jpg";
 
 export type Article = {
   slug: string;
