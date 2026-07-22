@@ -22,7 +22,7 @@ export const Route = createFileRoute("/insights_/$slug")({
           { property: "og:description", content: loaderData.article.summary },
           { property: "og:type", content: "article" },
           { property: "og:url", content: `https://veritasglobaladvisory.org/insights/${params.slug}` },
-          { property: "og:image", content: `https://veritasglobaladvisory.org${loaderData.article.img}` },
+          { property: "og:image", content: loaderData.article.img.startsWith("http") ? loaderData.article.img : `https://veritasglobaladvisory.org${loaderData.article.img}` },
           { property: "article:author", content: loaderData.article.author },
           { property: "article:published_time", content: loaderData.article.date },
         ]
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/insights_/$slug")({
               description: loaderData.article.summary,
               author: { "@type": "Person", name: loaderData.article.author },
               datePublished: loaderData.article.date,
-              image: `https://veritasglobaladvisory.org${loaderData.article.img}`,
+              image: loaderData.article.img.startsWith("http") ? loaderData.article.img : `https://veritasglobaladvisory.org${loaderData.article.img}`,
               publisher: {
                 "@type": "Organization",
                 name: "Veritas Global Advisory",
