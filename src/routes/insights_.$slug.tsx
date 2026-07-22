@@ -1,10 +1,15 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { Section } from "@/components/site/Section";
 import { findArticle, articles } from "@/data/articles";
+import { listGeneratedArticles } from "@/lib/articles.functions";
 
 export const Route = createFileRoute("/insights_/$slug")({
-  loader: ({ params }) => {
-    const article = findArticle(params.slug);
+  loader: async ({ params }) => {
+    let article = findArticle(params.slug);
+    if (!article) {
+      const generated = await listGeneratedArticles().catch(() => []);
+      article = generated.find((a) => a.slug === params.slug);
+    }
     if (!article) throw notFound();
     return { article };
   },
