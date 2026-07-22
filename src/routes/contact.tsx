@@ -80,7 +80,7 @@ function ContactPage() {
       await submitForm({
         formType: "contact",
         department,
-        formTitle: `New contact inquiry — ${deptLabel}`,
+        formTitle: `New contact inquiry - ${deptLabel}`,
         formSubtitle: "A visitor submitted the contact form on veritasglobaladvisory.org.",
         replyTo: String(fd.get("email") || ""),
         resumePath: resumeInfo?.path,
