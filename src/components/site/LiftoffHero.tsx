@@ -34,7 +34,7 @@ export function LiftoffHero() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--navy-deep)]/80 via-[var(--navy-deep)]/70 to-[var(--navy-deep)]" />
 
-      {/* Liftoff trail — a thin vertical gradient that streaks up the left rail of the headline */}
+      {/* Liftoff trail - a thin vertical gradient that streaks up the left rail of the headline */}
       <div
         aria-hidden
         className={`pointer-events-none absolute left-[max(1.5rem,calc((100vw-80rem)/2+2.5rem))] bottom-0 w-[3px] origin-bottom ${

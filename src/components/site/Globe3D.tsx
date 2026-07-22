@@ -147,7 +147,7 @@ export function Globe3D({ markers = [] }: { markers?: GlobeMarker[] }) {
     const worldPos = new THREE.Vector3();
     let raf = 0;
     let last = performance.now();
-    const ANGULAR_VELOCITY = 0.08; // rad/s — smooth, satellite-like drift
+    const ANGULAR_VELOCITY = 0.08; // rad/s - smooth, satellite-like drift
 
     const animate = () => {
       raf = requestAnimationFrame(animate);

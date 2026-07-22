@@ -11,7 +11,7 @@ export const Route = createFileRoute("/insights")({
     meta: [
       { title: "Global Research | Veritas Global Advisory" },
       { name: "description", content: "Research briefings and analysis from Veritas Global Advisory across global affairs, governance, business, and regional studies." },
-      { property: "og:title", content: "Global Research — Veritas Global Advisory" },
+      { property: "og:title", content: "Global Research - Veritas Global Advisory" },
       { property: "og:description", content: "Featured reports, country studies, and briefings from our editorial desks and network of senior fellows." },
       { property: "og:url", content: "https://veritasglobaladvisory.org/insights" },
     ],

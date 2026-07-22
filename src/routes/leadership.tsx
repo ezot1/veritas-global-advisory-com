@@ -8,7 +8,7 @@ export const Route = createFileRoute("/leadership")({
     meta: [
       { title: "Leadership | Veritas Global Advisory" },
       { name: "description", content: "Board of directors, executive leadership, advisory council, and regional offices of Veritas Global Advisory." },
-      { property: "og:title", content: "Leadership — Veritas Global Advisory" },
+      { property: "og:title", content: "Leadership - Veritas Global Advisory" },
       { property: "og:description", content: "The board, executives, and senior fellows guiding Veritas Global Advisory across five regional divisions." },
       { property: "og:url", content: "https://veritasglobaladvisory.org/leadership" },
     ],

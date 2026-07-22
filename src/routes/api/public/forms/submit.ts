@@ -18,11 +18,11 @@ const DEPARTMENT_INBOXES: Record<string, string> = {
 }
 
 const DEPARTMENT_LABELS: Record<string, string> = {
-  general: 'Veritas Global Advisory — General',
-  business: 'Veritas Global Advisory — Business',
-  research: 'Veritas Global Advisory — Research',
-  careers: 'Veritas Global Advisory — Careers',
-  media: 'Veritas Global Advisory — Media',
+  general: 'Veritas Global Advisory - General',
+  business: 'Veritas Global Advisory - Business',
+  research: 'Veritas Global Advisory - Research',
+  careers: 'Veritas Global Advisory - Careers',
+  media: 'Veritas Global Advisory - Media',
 }
 
 function resolveDepartmentKey(parsed: z.infer<typeof bodySchema>): string {
@@ -112,7 +112,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
             resumeSignedUrl = signed.signedUrl
             enrichedFields.push({
               label: 'Resume',
-              value: `${parsed.resumeName ?? 'Download'} — ${signed.signedUrl}`,
+              value: `${parsed.resumeName ?? 'Download'} - ${signed.signedUrl}`,
             })
           }
         }
