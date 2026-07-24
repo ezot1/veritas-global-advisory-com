@@ -21,7 +21,7 @@ export const articles: Article[] = [
   {
     slug: "second-scramble-religious-fundamentalism-global-south",
     img: insightAfricaReligion,
-    tag: "Africa Watch",
+    tag: "Religion",
     region: "Africa",
     title: "The Second Scramble: Religious Fundamentalism, the Global South, and the Quiet Contest for the Twenty-First-Century Soul",
     author: "Dr. Lindiwe Nkosi",
