@@ -1,4 +1,5 @@
 import { Linkedin, Twitter, Facebook, Link2, Mail, Check } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
 
 export function ShareButtons({ title, summary }: { title: string; summary: string }) {
@@ -12,6 +13,7 @@ export function ShareButtons({ title, summary }: { title: string; summary: strin
     { name: "LinkedIn", Icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
     { name: "X", Icon: Twitter, href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` },
     { name: "Facebook", Icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+    { name: "WhatsApp", Icon: FaWhatsapp, href: `https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}` },
     { name: "Email", Icon: Mail, href: `mailto:?subject=${encodedTitle}&body=${encodedSummary}%0A%0A${encodedUrl}` },
   ];
 
