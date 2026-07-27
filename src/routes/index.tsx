@@ -135,16 +135,16 @@ function Index() {
             { img: sceneBoardroom, cap: "Executive Briefings" },
             { img: sceneIntelligence, cap: "Intelligence Operations" },
             { img: sceneAssembly, cap: "Multilateral Forums" },
-            { img: sceneMiami, cap: "Miami Headquarters" },
-            { img: globeImg, cap: "Global Coverage" },
-            { img: heroAnimation, cap: "Live Data Network" },
-          ].slice(0, 3).map((s) => (
-            <figure key={s.cap} className="relative group overflow-hidden">
-              <img src={s.img} alt={s.cap} loading="lazy" className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-105" />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--navy-deep)]/95 to-transparent text-white p-5 text-xs uppercase tracking-[0.2em]">
-                <span className="text-[var(--gold)]">·</span> {s.cap}
+          ].map((s, i) => (
+            <Reveal key={s.cap} delay={i * 0.12} as="figure" className="relative group overflow-hidden">
+              <img src={s.img} alt={s.cap} loading="lazy" className="w-full aspect-[4/3] object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--navy-deep)] via-transparent to-transparent opacity-90 group-hover:opacity-60 transition-opacity duration-700" />
+              <div aria-hidden className="absolute inset-x-0 bottom-0 h-[2px] bg-[var(--gold)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+              <figcaption className="absolute inset-x-0 bottom-0 text-white p-5 text-xs uppercase tracking-[0.2em] flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-[var(--gold)] animate-pulse" />
+                {s.cap}
               </figcaption>
-            </figure>
+            </Reveal>
           ))}
         </div>
       </Section>
@@ -153,39 +153,43 @@ function Index() {
       {/* SERVICES */}
       <Section eyebrow="Practices" title="Six interconnected disciplines. One global perspective." intro="Our advisory practices bring together rigorous analysis, cross-regional expertise, and field experience to support decisions of consequence.">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
-          {services.map((s) => (
-            <div key={s.title} className="card-elevated p-9 group">
-              <div className="flex items-start justify-between mb-8">
-                <span className="grid place-items-center h-12 w-12 bg-[var(--navy-deep)] text-[var(--gold)]">
-                  <s.icon className="h-5 w-5" />
-                </span>
-                <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">0{services.indexOf(s) + 1}</span>
+          {services.map((s, idx) => (
+            <Reveal key={s.title} delay={idx * 0.08}>
+              <div className="card-elevated p-9 group h-full">
+                <div className="flex items-start justify-between mb-8">
+                  <span className="grid place-items-center h-12 w-12 bg-[var(--navy-deep)] text-[var(--gold)] transition-transform duration-500 group-hover:rotate-[8deg] group-hover:scale-110">
+                    <s.icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">0{idx + 1}</span>
+                </div>
+                <h3 className="text-xl font-semibold leading-snug mb-5 text-[var(--navy-deep)]">{s.title}</h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">·</span>{i}</li>)}
+                </ul>
+                <Link to="/services" className="link-arrow mt-8">Explore</Link>
               </div>
-              <h3 className="text-xl font-semibold leading-snug mb-5 text-[var(--navy-deep)]">{s.title}</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                {s.items.map((i) => <li key={i} className="flex gap-2"><span className="text-[var(--gold)]">·</span>{i}</li>)}
-              </ul>
-              <Link to="/services" className="link-arrow mt-8">Explore</Link>
-            </div>
+            </Reveal>
           ))}
         </div>
       </Section>
 
       {/* GLOBAL COVERAGE */}
-      <Section eyebrow="Global Coverage" title="Five regions. One integrated intelligence network." className="bg-[var(--secondary)]">
+      <Section eyebrow="Global Coverage" title="Five regions. One integrated intelligence network." className="bg-[var(--secondary)]" backdrop backdropVariant="meridian">
         <div className="grid lg:grid-cols-[1.1fr_1fr] gap-14 items-center">
           <div className="relative aspect-square max-w-xl mx-auto w-full">
             <Globe3D markers={markers} />
           </div>
           <div className="space-y-px bg-border">
-            {regions.map((r) => (
-              <div key={r.name} className="bg-card p-6 flex items-center justify-between group hover:bg-[var(--navy-deep)] hover:text-white transition-colors">
-                <div>
-                  <div className="text-lg font-semibold">{r.name}</div>
-                  <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground group-hover:text-white/65 mt-1">{r.experts} · {r.reports}</div>
+            {regions.map((r, i) => (
+              <Reveal key={r.name} delay={i * 0.08}>
+                <div className="bg-card p-6 flex items-center justify-between group hover:bg-[var(--navy-deep)] hover:text-white transition-all duration-500 cursor-default">
+                  <div>
+                    <div className="text-lg font-semibold">{r.name}</div>
+                    <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground group-hover:text-white/65 mt-1 transition-colors">{r.experts} · {r.reports}</div>
+                  </div>
+                  <span className="text-[var(--gold)] text-xl transition-transform duration-500 group-hover:translate-x-2">→</span>
                 </div>
-                <span className="text-[var(--gold)] text-xl">→</span>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -194,9 +198,11 @@ function Index() {
       {/* INSIGHTS */}
       <Section eyebrow="Global Insights" title="Analysis and intelligence from our editorial desks." intro="Featured reports, regional briefings, and strategic foresight from our network of analysts.">
         <div className="grid lg:grid-cols-2 gap-10">
-          <FeaturedInsight item={insights[0]} />
+          <Reveal><FeaturedInsight item={insights[0]} /></Reveal>
           <div className="grid sm:grid-cols-1 gap-6">
-            {insights.slice(1).map((i) => <InsightCard key={i.title} item={i} />)}
+            {insights.slice(1).map((i, idx) => (
+              <Reveal key={i.title} delay={0.1 + idx * 0.1}><InsightCard item={i} /></Reveal>
+            ))}
           </div>
         </div>
         <div className="mt-14 flex justify-center">
@@ -205,13 +211,18 @@ function Index() {
       </Section>
 
       {/* TALENT CTA */}
-      <Section dark eyebrow="Global Talent Network" title="Join a network of analysts, scholars, and practitioners shaping global solutions." intro="Veritas continuously seeks highly qualified professionals from diverse disciplines and geographic regions.">
+      <Section dark eyebrow="Global Talent Network" title="Join a network of analysts, scholars, and practitioners shaping global solutions." intro="Veritas continuously seeks highly qualified professionals from diverse disciplines and geographic regions." backdropVariant="orbit">
         <div className="grid md:grid-cols-3 gap-px bg-white/10">
-          {["Policy Analysts", "Researchers", "Economists", "Security Analysts", "Legal Experts", "Business Consultants"].map((c) => (
-            <div key={c} className="bg-[var(--navy-deep)] p-6 border border-white/10">
-              <div className="text-sm uppercase tracking-[0.16em] text-[var(--gold)]">Open</div>
-              <div className="mt-3 text-lg font-medium">{c}</div>
-            </div>
+          {["Policy Analysts", "Researchers", "Economists", "Security Analysts", "Legal Experts", "Business Consultants"].map((c, i) => (
+            <Reveal key={c} delay={i * 0.07}>
+              <div className="bg-[var(--navy-deep)]/80 backdrop-blur-sm p-6 border border-white/10 group hover:border-[var(--gold)]/60 transition-colors">
+                <div className="text-sm uppercase tracking-[0.16em] text-[var(--gold)] flex items-center gap-2">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--gold)] animate-pulse" />
+                  Open
+                </div>
+                <div className="mt-3 text-lg font-medium group-hover:translate-x-1 transition-transform">{c}</div>
+              </div>
+            </Reveal>
           ))}
         </div>
         <div className="mt-12">
