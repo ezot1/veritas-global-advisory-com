@@ -1,5 +1,6 @@
 import { Linkedin, Twitter, Facebook, Link2, Mail, Check } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 function WhatsAppIcon({ size = 16 }: { size?: number }) {
   return (
@@ -9,25 +10,48 @@ function WhatsAppIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-export function ShareButtons({ title, summary }: { title: string; summary: string }) {
+type Channel = "linkedin" | "x" | "facebook" | "whatsapp" | "email" | "copy";
+
+export function ShareButtons({
+  title,
+  summary,
+  slug,
+}: {
+  title: string;
+  summary: string;
+  slug: string;
+}) {
   const [copied, setCopied] = useState(false);
   const url = typeof window !== "undefined" ? window.location.href : "";
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
   const encodedSummary = encodeURIComponent(summary);
 
-  const links = [
-    { name: "LinkedIn", Icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
-    { name: "X", Icon: Twitter, href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` },
-    { name: "Facebook", Icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
-    { name: "WhatsApp", Icon: WhatsAppIcon, href: `https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}` },
-    { name: "Email", Icon: Mail, href: `mailto:?subject=${encodedTitle}&body=${encodedSummary}%0A%0A${encodedUrl}` },
+  const track = (channel: Channel) => {
+    try {
+      void supabase.from("article_share_events").insert({
+        article_slug: slug,
+        article_title: title.slice(0, 400),
+        channel,
+        referrer: typeof document !== "undefined" ? document.referrer.slice(0, 500) : null,
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent.slice(0, 500) : null,
+      });
+    } catch {}
+  };
+
+  const links: { name: string; channel: Channel; Icon: React.ComponentType<{ size?: number }>; href: string }[] = [
+    { name: "LinkedIn", channel: "linkedin", Icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
+    { name: "X", channel: "x", Icon: Twitter, href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` },
+    { name: "Facebook", channel: "facebook", Icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+    { name: "WhatsApp", channel: "whatsapp", Icon: WhatsAppIcon, href: `https://api.whatsapp.com/send?text=${encodedTitle}%20${encodedUrl}` },
+    { name: "Email", channel: "email", Icon: Mail, href: `mailto:?subject=${encodedTitle}&body=${encodedSummary}%0A%0A${encodedUrl}` },
   ];
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
+      track("copy");
       setTimeout(() => setCopied(false), 2000);
     } catch {}
   };
@@ -35,12 +59,13 @@ export function ShareButtons({ title, summary }: { title: string; summary: strin
   return (
     <div className="flex items-center gap-3 flex-wrap">
       <span className="text-[11px] uppercase tracking-[0.22em] text-[var(--gold)] font-semibold">Share</span>
-      {links.map(({ name, Icon, href }) => (
+      {links.map(({ name, channel, Icon, href }) => (
         <a
           key={name}
           href={href}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => track(channel)}
           aria-label={`Share on ${name}`}
           className="inline-flex h-9 w-9 items-center justify-center border border-border text-[var(--navy-deep)] hover:bg-[var(--navy-deep)] hover:text-white hover:border-[var(--navy-deep)] transition-colors"
         >
