@@ -32,6 +32,36 @@ export type Database = {
         }
         Relationships: []
       }
+      article_share_events: {
+        Row: {
+          article_slug: string
+          article_title: string | null
+          channel: string
+          created_at: string
+          id: string
+          referrer: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          article_slug: string
+          article_title?: string | null
+          channel: string
+          created_at?: string
+          id?: string
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          article_slug?: string
+          article_title?: string | null
+          channel?: string
+          created_at?: string
+          id?: string
+          referrer?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
