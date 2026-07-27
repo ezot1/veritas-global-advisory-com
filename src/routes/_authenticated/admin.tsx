@@ -894,3 +894,163 @@ function EmailSettingsPanel() {
   );
 }
 
+
+// =============================================================
+// Share analytics panel
+// =============================================================
+type ShareEvent = {
+  id: string;
+  article_slug: string;
+  article_title: string | null;
+  channel: string;
+  created_at: string;
+};
+
+const CHANNELS = ["linkedin", "x", "facebook", "whatsapp", "email", "copy"] as const;
+
+function ShareAnalyticsPanel() {
+  const [events, setEvents] = useState<ShareEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [days, setDays] = useState<number>(30);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      setError(null);
+      const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+      const { data, error } = await supabase
+        .from("article_share_events")
+        .select("id, article_slug, article_title, channel, created_at")
+        .gte("created_at", since)
+        .order("created_at", { ascending: false })
+        .limit(5000);
+      if (error) setError(error.message);
+      setEvents((data ?? []) as ShareEvent[]);
+      setLoading(false);
+    })();
+  }, [days]);
+
+  const rows = useMemo(() => {
+    const byArticle = new Map<
+      string,
+      { slug: string; title: string; total: number; channels: Record<string, number>; last: string }
+    >();
+    for (const ev of events) {
+      const key = ev.article_slug;
+      const cur =
+        byArticle.get(key) ??
+        {
+          slug: ev.article_slug,
+          title: ev.article_title ?? ev.article_slug,
+          total: 0,
+          channels: Object.fromEntries(CHANNELS.map((c) => [c, 0])) as Record<string, number>,
+          last: ev.created_at,
+        };
+      cur.total += 1;
+      cur.channels[ev.channel] = (cur.channels[ev.channel] ?? 0) + 1;
+      if (ev.created_at > cur.last) cur.last = ev.created_at;
+      cur.title = ev.article_title ?? cur.title;
+      byArticle.set(key, cur);
+    }
+    return Array.from(byArticle.values()).sort((a, b) => b.total - a.total);
+  }, [events]);
+
+  const totalsByChannel = useMemo(() => {
+    const t: Record<string, number> = Object.fromEntries(CHANNELS.map((c) => [c, 0]));
+    for (const ev of events) t[ev.channel] = (t[ev.channel] ?? 0) + 1;
+    return t;
+  }, [events]);
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-5 flex-wrap">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">Range</span>
+        {[7, 30, 90, 365].map((d) => (
+          <button
+            key={d}
+            onClick={() => setDays(d)}
+            className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
+              days === d
+                ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {d === 365 ? "1y" : `${d}d`}
+          </button>
+        ))}
+        <span className="ml-auto text-xs text-muted-foreground">
+          {events.length} share{events.length === 1 ? "" : "s"} total
+        </span>
+      </div>
+
+      {error && <div className="text-sm text-red-600 mb-4">{error}</div>}
+      {loading && <div className="text-sm text-muted-foreground">Loading…</div>}
+
+      {!loading && (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-3 mb-6">
+            {CHANNELS.map((c) => (
+              <div key={c} className="border border-border bg-white p-4">
+                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{c}</div>
+                <div className="text-2xl font-semibold text-[var(--navy-deep)] mt-1">
+                  {totalsByChannel[c] ?? 0}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border border-border bg-white overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50 text-xs uppercase tracking-wider text-muted-foreground">
+                <tr>
+                  <th className="text-left px-4 py-3">Article</th>
+                  <th className="text-right px-3 py-3">Total</th>
+                  {CHANNELS.map((c) => (
+                    <th key={c} className="text-right px-3 py-3">
+                      {c === "whatsapp" ? "WA" : c === "linkedin" ? "LI" : c === "facebook" ? "FB" : c}
+                    </th>
+                  ))}
+                  <th className="text-right px-4 py-3">Last</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-6 text-center text-muted-foreground">
+                      No shares recorded in this range yet.
+                    </td>
+                  </tr>
+                )}
+                {rows.map((r) => (
+                  <tr key={r.slug} className="border-t border-border">
+                    <td className="px-4 py-3">
+                      <a
+                        href={`/insights/${r.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[var(--navy-deep)] hover:underline font-medium"
+                      >
+                        {r.title}
+                      </a>
+                      <div className="text-[11px] text-muted-foreground">/{r.slug}</div>
+                    </td>
+                    <td className="text-right px-3 py-3 font-semibold">{r.total}</td>
+                    {CHANNELS.map((c) => (
+                      <td key={c} className="text-right px-3 py-3 text-muted-foreground">
+                        {r.channels[c] ?? 0}
+                      </td>
+                    ))}
+                    <td className="text-right px-4 py-3 text-xs text-muted-foreground">
+                      {new Date(r.last).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
