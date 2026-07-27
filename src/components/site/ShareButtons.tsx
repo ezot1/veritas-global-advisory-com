@@ -39,7 +39,7 @@ export function ShareButtons({
     } catch {}
   };
 
-  const links: { name: string; channel: Channel; Icon: typeof Linkedin; href: string }[] = [
+  const links: { name: string; channel: Channel; Icon: React.ComponentType<{ size?: number }>; href: string }[] = [
     { name: "LinkedIn", channel: "linkedin", Icon: Linkedin, href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
     { name: "X", channel: "x", Icon: Twitter, href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}` },
     { name: "Facebook", channel: "facebook", Icon: Facebook, href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
