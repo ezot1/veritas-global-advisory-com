@@ -14,6 +14,7 @@ import { Section } from "@/components/site/Section";
 import { StatCounter } from "@/components/site/StatCounter";
 import { LiftoffHero } from "@/components/site/LiftoffHero";
 import { Globe3D } from "@/components/site/Globe3D";
+import { Reveal } from "@/components/site/Reveal";
 import { listGlobeMarkers } from "@/lib/globe-markers.functions";
 import { useQuery } from "@tanstack/react-query";
 import {
