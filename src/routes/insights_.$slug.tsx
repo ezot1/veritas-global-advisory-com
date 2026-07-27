@@ -99,7 +99,7 @@ function ArticlePage() {
             <img src={article.img} alt="" className="w-full h-full object-cover" loading="lazy" />
           </div>
           <div className="mb-8 pb-8 border-b border-border">
-            <ShareButtons title={article.title} summary={article.summary} />
+            <ShareButtons title={article.title} summary={article.summary} slug={article.slug} />
           </div>
           <div className="prose-veritas">
             {article.body.map((p: string, i: number) => (
@@ -107,7 +107,7 @@ function ArticlePage() {
             ))}
           </div>
           <div className="mt-12 pt-8 border-t border-border">
-            <ShareButtons title={article.title} summary={article.summary} />
+            <ShareButtons title={article.title} summary={article.summary} slug={article.slug} />
           </div>
           <p className="text-sm text-muted-foreground mt-8">
             This research briefing is published by Veritas Global Advisory's editorial desks. Views expressed are those of the authors and do not constitute investment advice.
