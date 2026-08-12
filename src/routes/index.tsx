@@ -16,6 +16,9 @@ import { LiftoffHero } from "@/components/site/LiftoffHero";
 import { Globe3D } from "@/components/site/Globe3D";
 import { Reveal } from "@/components/site/Reveal";
 import { listGlobeMarkers } from "@/lib/globe-markers.functions";
+import { listGeneratedArticles } from "@/lib/articles.functions";
+import { articles as staticArticles } from "@/data/articles";
+import { LatestBriefing } from "@/components/site/LatestBriefing";
 import { useQuery } from "@tanstack/react-query";
 import {
   Briefcase, Landmark, Shield, Activity, Scale, Search,
@@ -32,11 +35,16 @@ export const Route = createFileRoute("/")({
     ],
     links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/" }],
   }),
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData({
-      queryKey: ["globe-markers"],
-      queryFn: () => listGlobeMarkers(),
-    }),
+  loader: async ({ context }) => {
+    const [, generated] = await Promise.all([
+      context.queryClient.ensureQueryData({
+        queryKey: ["globe-markers"],
+        queryFn: () => listGlobeMarkers(),
+      }),
+      listGeneratedArticles().catch(() => []),
+    ]);
+    return { generated };
+  },
   errorComponent: ({ error }) => <div role="alert" className="container-x py-24">{error.message}</div>,
   notFoundComponent: () => <div className="container-x py-24">Not found.</div>,
   component: Index,
@@ -67,6 +75,10 @@ const insights = [
 ];
 
 function Index() {
+  const { generated } = Route.useLoaderData();
+  const latest = [...generated, ...staticArticles].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )[0];
   const { data: markers = [] } = useQuery({
     queryKey: ["globe-markers"],
     queryFn: () => listGlobeMarkers(),
@@ -96,6 +108,9 @@ function Index() {
 
       {/* HERO */}
       <LiftoffHero />
+
+      {/* LATEST BRIEFING */}
+      {latest ? <LatestBriefing article={latest} /> : null}
 
 
       {/* WHO WE ARE */}
