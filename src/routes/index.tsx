@@ -2,10 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import heroWorld from "@/assets/hero-world.jpg";
 import heroAnimation from "@/assets/hero-animation.jpg";
 import globeImg from "@/assets/globe.jpg";
-import insight1 from "@/assets/insight-1.jpg";
-import insight2 from "@/assets/insight-2.jpg";
-import insight3 from "@/assets/insight-3.jpg";
-import insight4 from "@/assets/insight-4.jpg";
 import sceneBoardroom from "@/assets/scene-boardroom.jpg";
 import sceneMiami from "@/assets/scene-miami.jpg";
 import sceneIntelligence from "@/assets/scene-intelligence.jpg";
@@ -67,22 +63,18 @@ const regions = [
   { name: "Americas", experts: "7 experts", reports: "18 reports" },
 ];
 
-const insights = [
-  { slug: "brics-plus-expansion-2025", img: insight1, tag: "Global Affairs", title: "BRICS+ Expansion in 2025: Strategic Implications of Saudi Arabia, UAE, and Egypt Joining the Bloc", date: "Feb 14, 2026", featured: true },
-  { slug: "mexico-us-trade-nearshoring", img: insight2, tag: "Business & Investment", title: "Mexico Overtakes China as Largest U.S. Trade Partner: Nearshoring Capital Flows Accelerate", date: "Feb 9, 2026" },
-  { slug: "germany-snap-election-merz", img: insight3, tag: "Politics & Governance", title: "Germany's 2025 Snap Election and the Return of CDU/CSU Under Friedrich Merz", date: "Feb 2, 2026" },
-  { slug: "gaza-ceasefire-reconstruction", img: insight4, tag: "Middle East Insights", title: "After the Gaza Ceasefire: Reconstruction Politics and the Abraham Accords Revival", date: "Jan 28, 2026" },
-];
-
 function Index() {
   const { generated } = Route.useLoaderData();
-  const latest = [...generated, ...staticArticles].sort(
+  const sorted = [...generated, ...staticArticles].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  )[0];
+  );
+  const latest = sorted[0];
+  const insights = sorted.slice(1, 5);
   const { data: markers = [] } = useQuery({
     queryKey: ["globe-markers"],
     queryFn: () => listGlobeMarkers(),
   });
+
   return (
     <>
       {/* ANIMATED TOP BANNER */}
@@ -213,7 +205,7 @@ function Index() {
       {/* INSIGHTS */}
       <Section eyebrow="Global Insights" title="Analysis and intelligence from our editorial desks." intro="Featured reports, regional briefings, and strategic foresight from our network of analysts.">
         <div className="grid lg:grid-cols-2 gap-10">
-          <Reveal><FeaturedInsight item={insights[0]} /></Reveal>
+          {insights[0] ? <Reveal><FeaturedInsight item={insights[0]} /></Reveal> : null}
           <div className="grid sm:grid-cols-1 gap-6">
             {insights.slice(1).map((i, idx) => (
               <Reveal key={i.title} delay={0.1 + idx * 0.1}><InsightCard item={i} /></Reveal>
