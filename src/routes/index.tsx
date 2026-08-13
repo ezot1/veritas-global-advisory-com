@@ -205,7 +205,7 @@ function Index() {
       {/* INSIGHTS */}
       <Section eyebrow="Global Insights" title="Analysis and intelligence from our editorial desks." intro="Featured reports, regional briefings, and strategic foresight from our network of analysts.">
         <div className="grid lg:grid-cols-2 gap-10">
-          <Reveal><FeaturedInsight item={insights[0]} /></Reveal>
+          {insights[0] ? <Reveal><FeaturedInsight item={insights[0]} /></Reveal> : null}
           <div className="grid sm:grid-cols-1 gap-6">
             {insights.slice(1).map((i, idx) => (
               <Reveal key={i.title} delay={0.1 + idx * 0.1}><InsightCard item={i} /></Reveal>
