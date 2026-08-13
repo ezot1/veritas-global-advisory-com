@@ -67,22 +67,18 @@ const regions = [
   { name: "Americas", experts: "7 experts", reports: "18 reports" },
 ];
 
-const insights = [
-  { slug: "brics-plus-expansion-2025", img: insight1, tag: "Global Affairs", title: "BRICS+ Expansion in 2025: Strategic Implications of Saudi Arabia, UAE, and Egypt Joining the Bloc", date: "Feb 14, 2026", featured: true },
-  { slug: "mexico-us-trade-nearshoring", img: insight2, tag: "Business & Investment", title: "Mexico Overtakes China as Largest U.S. Trade Partner: Nearshoring Capital Flows Accelerate", date: "Feb 9, 2026" },
-  { slug: "germany-snap-election-merz", img: insight3, tag: "Politics & Governance", title: "Germany's 2025 Snap Election and the Return of CDU/CSU Under Friedrich Merz", date: "Feb 2, 2026" },
-  { slug: "gaza-ceasefire-reconstruction", img: insight4, tag: "Middle East Insights", title: "After the Gaza Ceasefire: Reconstruction Politics and the Abraham Accords Revival", date: "Jan 28, 2026" },
-];
-
 function Index() {
   const { generated } = Route.useLoaderData();
-  const latest = [...generated, ...staticArticles].sort(
+  const sorted = [...generated, ...staticArticles].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  )[0];
+  );
+  const latest = sorted[0];
+  const insights = sorted.slice(1, 5);
   const { data: markers = [] } = useQuery({
     queryKey: ["globe-markers"],
     queryFn: () => listGlobeMarkers(),
   });
+
   return (
     <>
       {/* ANIMATED TOP BANNER */}
