@@ -4,14 +4,12 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 
-const CONTINENT_ROTATION = [
-  { continent: "Africa", region: "Africa", tag: "Africa Watch", image: "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?auto=format&fit=crop&w=1600&q=80" },
-  { continent: "Asia", region: "Asia-Pacific", tag: "Asia Focus", image: "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?auto=format&fit=crop&w=1600&q=80" },
-  { continent: "Europe", region: "Europe", tag: "Europe & Eurasia", image: "https://images.unsplash.com/photo-1522093007474-d86e9bf7ba6f?auto=format&fit=crop&w=1600&q=80" },
-  { continent: "Americas", region: "Americas", tag: "Americas Briefing", image: "https://images.unsplash.com/photo-1522083165195-3424ed129620?auto=format&fit=crop&w=1600&q=80" },
-  { continent: "Middle East", region: "Middle East", tag: "Middle East Insights", image: "https://images.unsplash.com/photo-1512632578888-169bbbc64f33?auto=format&fit=crop&w=1600&q=80" },
-  { continent: "Oceania", region: "Asia-Pacific", tag: "Global Affairs", image: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?auto=format&fit=crop&w=1600&q=80" },
-];
+const WORLD_FOCUS = {
+  region: "Worldwide",
+  tag: "Global Affairs",
+  image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80",
+};
+
 
 function slugify(title: string) {
   return title
