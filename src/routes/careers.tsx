@@ -29,6 +29,7 @@ const jobs: ApplyJob[] = [
   { title: "Governance Consultant", dept: "Public Policy", region: "Middle East" },
   { title: "International Business Consultant", dept: "Consulting", region: "Americas" },
   { title: "Communications Officer", dept: "Communications", region: "Europe" },
+  { title: "Journalist", dept: "Communications", region: "Americas" },
   { title: "Project Coordinator", dept: "Operations", region: "Europe" },
   { title: "Data Analyst", dept: "Research", region: "Asia-Pacific" },
   { title: "Human Rights Researcher", dept: "Human Rights", region: "Africa" },
