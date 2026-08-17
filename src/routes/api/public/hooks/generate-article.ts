@@ -41,12 +41,12 @@ async function generate() {
     .select("next_index")
     .eq("id", 1)
     .maybeSingle();
-  const idx = ((state?.next_index ?? 0) % CONTINENT_ROTATION.length + CONTINENT_ROTATION.length) % CONTINENT_ROTATION.length;
-  const pick = CONTINENT_ROTATION[idx];
+  const idx = state?.next_index ?? 0;
+  const pick = WORLD_FOCUS;
 
   const gateway = createLovableAiGatewayProvider(lovableKey);
 
-  const prompt = `Write an in-depth, ~1200 word institutional research briefing from Veritas Global Advisory focused on current, real-world developments in ${pick.continent} for 2026. Cover geopolitics, economics, security, and business implications. Voice must be authoritative, analytical, and comparable to a top-tier think tank or consulting firm. Do NOT use em dashes; use hyphens with spaces instead. Cite specific countries, institutions, figures, and recent events. Structure as 10-14 substantive paragraphs.
+  const prompt = `Write an in-depth, ~1200 word institutional research briefing from Veritas Global Advisory focused on current, real-world worldwide developments for 2026. Cover geopolitics, economics, security, and business implications across multiple regions. Voice must be authoritative, analytical, and comparable to a top-tier think tank or consulting firm. Do NOT use em dashes; use hyphens with spaces instead. Cite specific countries, institutions, figures, and recent events. Structure as 10-14 substantive paragraphs.
 
 Return:
 - title: sharp, editorial (max 140 chars, no colon-heavy academic style)
@@ -68,12 +68,12 @@ Return:
   });
 
   const generated = output;
-  const baseSlug = slugify(generated.title) || `${pick.continent.toLowerCase()}-briefing`;
+  const baseSlug = slugify(generated.title) || "worldwide-briefing";
   const slug = `${baseSlug}-${Date.now().toString(36)}`;
 
   const { error: insertError } = await admin.from("generated_articles").insert({
     slug,
-    continent: pick.continent,
+    continent: "Worldwide",
     tag: pick.tag,
     region: pick.region,
     title: generated.title,
@@ -90,7 +90,8 @@ Return:
     .update({ next_index: idx + 1, last_run_at: new Date().toISOString() })
     .eq("id", 1);
 
-  return { slug, continent: pick.continent, title: generated.title };
+  return { slug, region: pick.region, title: generated.title };
+
 }
 
 export const Route = createFileRoute("/api/public/hooks/generate-article")({
