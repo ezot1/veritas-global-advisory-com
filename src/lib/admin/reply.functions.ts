@@ -116,6 +116,9 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       metadata: { submission_id: submission.id, department: deptKey },
     })
 
+    const { getOrCreateUnsubscribeToken } = await import('@/lib/email/unsubscribe.server')
+    const unsubscribeToken = await getOrCreateUnsubscribeToken(supabaseAdmin, recipient)
+
     const { error: enqErr } = await supabaseAdmin.rpc('enqueue_email', {
       queue_name: 'transactional_emails',
       payload: {
@@ -129,6 +132,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
         purpose: 'transactional',
         label: 'admin-reply',
         idempotency_key: messageId,
+        unsubscribe_token: unsubscribeToken,
         reply_to: fromEmail,
         queued_at: new Date().toISOString(),
       },
