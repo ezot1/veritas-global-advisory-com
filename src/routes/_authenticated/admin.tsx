@@ -408,7 +408,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
   const [loading, setLoading] = useState(false);
   const [subject, setSubject] = useState("Re: " + s.subject);
   const [body, setBody] = useState("");
-  const [department, setDepartment] = useState<string>(s.department ?? "general");
+  const [to, setTo] = useState<string>(s.sender_email ?? "");
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [snippets, setSnippets] = useState<Snippet[]>([]);
@@ -432,7 +432,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
     setBody("");
     setMsg(null);
     setSnippetId("");
-    setDepartment(s.department ?? (s.form_type === "careers" ? "careers" : s.form_type === "talent" ? "research" : "general"));
+    setTo(s.sender_email ?? "");
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.id]);
@@ -454,8 +454,8 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
 
 
   async function send() {
-    if (!s.sender_email) {
-      setMsg("This submission has no reply email.");
+    if (!to.trim()) {
+      setMsg("Enter a recipient email.");
       return;
     }
     if (!body.trim()) {
@@ -466,8 +466,9 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
     setMsg(null);
     try {
       await sendAdminReply({
-        data: { submissionId: s.id, subject: subject.trim(), body: body.trim(), fromDepartment: department as any },
+        data: { submissionId: s.id, subject: subject.trim(), body: body.trim(), fromDepartment: "general", toEmail: to.trim() },
       });
+
       setBody("");
       setMsg("Reply sent.");
       onReplied();
@@ -508,8 +509,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
         </ul>
       )}
 
-      {s.sender_email ? (
-        <div className="border border-border p-4 bg-white">
+      <div className="border border-border p-4 bg-white">
           {snippets.length > 0 && (
             <label className="text-xs block mb-3">
               <span className="block text-muted-foreground uppercase tracking-wider mb-1">
@@ -530,27 +530,21 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
             </label>
           )}
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
-
             <label className="text-xs">
-              <span className="block text-muted-foreground uppercase tracking-wider mb-1">From department</span>
-              <select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="w-full h-9 px-2 border border-border bg-background text-sm"
-              >
-                <option value="general">info@</option>
-                <option value="business">business@</option>
-                <option value="research">research@</option>
-                <option value="careers">careers@</option>
-                <option value="media">media@</option>
-              </select>
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">From</span>
+              <input
+                readOnly
+                value="info@veritasglobaladvisory.org"
+                className="w-full h-9 px-2 border border-border bg-muted/40 text-sm"
+              />
             </label>
             <label className="text-xs">
               <span className="block text-muted-foreground uppercase tracking-wider mb-1">To</span>
               <input
-                readOnly
-                value={s.sender_email}
-                className="w-full h-9 px-2 border border-border bg-muted/40 text-sm"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                placeholder="recipient@example.com"
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
               />
             </label>
           </div>
@@ -585,9 +579,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
             </button>
           </div>
         </div>
-      ) : (
-        <div className="text-xs text-muted-foreground">No reply-to email captured for this submission.</div>
-      )}
+
     </div>
   );
 }

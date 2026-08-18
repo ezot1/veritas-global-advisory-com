@@ -30,13 +30,14 @@ function departmentKeyForSubmission(formType: string, department: string | null)
 
 export const sendAdminReply = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { submissionId: string; subject: string; body: string; fromDepartment?: string }) =>
+  .inputValidator((input: { submissionId: string; subject: string; body: string; fromDepartment?: string; toEmail?: string }) =>
     z
       .object({
         submissionId: z.string().uuid(),
         subject: z.string().trim().min(1).max(200),
         body: z.string().trim().min(1).max(20000),
         fromDepartment: z.enum(['general', 'business', 'research', 'careers', 'media']).optional(),
+        toEmail: z.string().trim().email().max(254).optional(),
       })
       .parse(input),
   )
@@ -54,11 +55,13 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       .eq('id', data.submissionId)
       .maybeSingle()
     if (subErr || !submission) throw new Error('Submission not found')
-    if (!submission.sender_email) throw new Error('Submission has no sender email to reply to')
+    const recipient = data.toEmail ?? submission.sender_email
+    if (!recipient) throw new Error('Submission has no sender email to reply to')
 
-    const deptKey = data.fromDepartment ?? departmentKeyForSubmission(submission.form_type, submission.department)
+    const deptKey = data.fromDepartment ?? 'general'
     const fromEmail = DEPARTMENT_INBOXES[deptKey] ?? DEPARTMENT_INBOXES.general
     const fromLabel = DEPARTMENT_LABELS[deptKey] ?? DEPARTMENT_LABELS.general
+
 
     const template = TEMPLATES['admin-reply']
     if (!template) throw new Error('Reply template missing')
@@ -95,7 +98,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       direction: 'outbound',
       from_email: fromEmail,
       from_label: fromLabel,
-      to_email: submission.sender_email,
+      to_email: recipient,
       reply_to: fromEmail,
       subject: data.subject,
       body_text: data.body,
@@ -108,7 +111,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
     await supabaseAdmin.from('email_send_log').insert({
       message_id: messageId,
       template_name: 'admin-reply',
-      recipient_email: submission.sender_email,
+      recipient_email: recipient,
       status: 'pending',
       metadata: { submission_id: submission.id, department: deptKey },
     })
@@ -117,7 +120,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       queue_name: 'transactional_emails',
       payload: {
         message_id: messageId,
-        to: submission.sender_email,
+        to: recipient,
         from: `${fromLabel} <${fromEmail}>`,
         sender_domain: SENDER_DOMAIN,
         subject: data.subject,
