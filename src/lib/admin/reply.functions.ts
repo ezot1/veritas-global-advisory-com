@@ -55,7 +55,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       .eq('id', data.submissionId)
       .maybeSingle()
     if (subErr || !submission) throw new Error('Submission not found')
-    const recipient = data.toEmail ?? recipient
+    const recipient = data.toEmail ?? submission.sender_email
     if (!recipient) throw new Error('Submission has no sender email to reply to')
 
     const deptKey = data.fromDepartment ?? 'general'
