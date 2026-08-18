@@ -432,7 +432,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
     setBody("");
     setMsg(null);
     setSnippetId("");
-    setDepartment(s.department ?? (s.form_type === "careers" ? "careers" : s.form_type === "talent" ? "research" : "general"));
+    setTo(s.sender_email ?? "");
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [s.id]);
