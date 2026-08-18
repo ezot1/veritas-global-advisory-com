@@ -508,8 +508,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
         </ul>
       )}
 
-      {s.sender_email ? (
-        <div className="border border-border p-4 bg-white">
+      <div className="border border-border p-4 bg-white">
           {snippets.length > 0 && (
             <label className="text-xs block mb-3">
               <span className="block text-muted-foreground uppercase tracking-wider mb-1">
@@ -530,27 +529,21 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
             </label>
           )}
           <div className="grid sm:grid-cols-2 gap-3 mb-3">
-
             <label className="text-xs">
-              <span className="block text-muted-foreground uppercase tracking-wider mb-1">From department</span>
-              <select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="w-full h-9 px-2 border border-border bg-background text-sm"
-              >
-                <option value="general">info@</option>
-                <option value="business">business@</option>
-                <option value="research">research@</option>
-                <option value="careers">careers@</option>
-                <option value="media">media@</option>
-              </select>
+              <span className="block text-muted-foreground uppercase tracking-wider mb-1">From</span>
+              <input
+                readOnly
+                value="info@veritasglobaladvisory.org"
+                className="w-full h-9 px-2 border border-border bg-muted/40 text-sm"
+              />
             </label>
             <label className="text-xs">
               <span className="block text-muted-foreground uppercase tracking-wider mb-1">To</span>
               <input
-                readOnly
-                value={s.sender_email}
-                className="w-full h-9 px-2 border border-border bg-muted/40 text-sm"
+                value={to}
+                onChange={(e) => setTo(e.target.value)}
+                placeholder="recipient@example.com"
+                className="w-full h-9 px-2 border border-border bg-background text-sm"
               />
             </label>
           </div>
@@ -585,9 +578,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
             </button>
           </div>
         </div>
-      ) : (
-        <div className="text-xs text-muted-foreground">No reply-to email captured for this submission.</div>
-      )}
+
     </div>
   );
 }
