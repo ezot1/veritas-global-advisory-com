@@ -454,8 +454,8 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
 
 
   async function send() {
-    if (!s.sender_email) {
-      setMsg("This submission has no reply email.");
+    if (!to.trim()) {
+      setMsg("Enter a recipient email.");
       return;
     }
     if (!body.trim()) {
@@ -466,8 +466,9 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
     setMsg(null);
     try {
       await sendAdminReply({
-        data: { submissionId: s.id, subject: subject.trim(), body: body.trim(), fromDepartment: department as any },
+        data: { submissionId: s.id, subject: subject.trim(), body: body.trim(), fromDepartment: "general", toEmail: to.trim() },
       });
+
       setBody("");
       setMsg("Reply sent.");
       onReplied();
