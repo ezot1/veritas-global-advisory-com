@@ -408,7 +408,7 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
   const [loading, setLoading] = useState(false);
   const [subject, setSubject] = useState("Re: " + s.subject);
   const [body, setBody] = useState("");
-  const [department, setDepartment] = useState<string>(s.department ?? "general");
+  const [to, setTo] = useState<string>(s.sender_email ?? "");
   const [sending, setSending] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [snippets, setSnippets] = useState<Snippet[]>([]);
