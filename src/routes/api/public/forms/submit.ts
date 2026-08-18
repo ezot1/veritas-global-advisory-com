@@ -163,6 +163,9 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           metadata: { form_type: parsed.formType, department: parsed.department ?? null },
         })
 
+        const { getOrCreateUnsubscribeToken } = await import('@/lib/email/unsubscribe.server')
+        const unsubscribeToken = await getOrCreateUnsubscribeToken(supabase, recipient)
+
         const { error: enqueueError } = await supabase.rpc('enqueue_email', {
           queue_name: 'transactional_emails',
           payload: {
@@ -176,6 +179,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
             purpose: 'transactional',
             label: `form-${parsed.formType}`,
             idempotency_key: messageId,
+            unsubscribe_token: unsubscribeToken,
             reply_to: parsed.replyTo,
             queued_at: new Date().toISOString(),
           },
