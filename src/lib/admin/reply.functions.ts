@@ -55,7 +55,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       .eq('id', data.submissionId)
       .maybeSingle()
     if (subErr || !submission) throw new Error('Submission not found')
-    const recipient = data.toEmail ?? submission.sender_email
+    const recipient = data.toEmail ?? recipient
     if (!recipient) throw new Error('Submission has no sender email to reply to')
 
     const deptKey = data.fromDepartment ?? 'general'
@@ -98,7 +98,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       direction: 'outbound',
       from_email: fromEmail,
       from_label: fromLabel,
-      to_email: submission.sender_email,
+      to_email: recipient,
       reply_to: fromEmail,
       subject: data.subject,
       body_text: data.body,
@@ -111,7 +111,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
     await supabaseAdmin.from('email_send_log').insert({
       message_id: messageId,
       template_name: 'admin-reply',
-      recipient_email: submission.sender_email,
+      recipient_email: recipient,
       status: 'pending',
       metadata: { submission_id: submission.id, department: deptKey },
     })
@@ -120,7 +120,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       queue_name: 'transactional_emails',
       payload: {
         message_id: messageId,
-        to: submission.sender_email,
+        to: recipient,
         from: `${fromLabel} <${fromEmail}>`,
         sender_domain: SENDER_DOMAIN,
         subject: data.subject,
