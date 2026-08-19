@@ -31,7 +31,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "veritas-global-advisory-com"
+const SITE_NAME = "veritasglobaladvisory.org"
 const SENDER_DOMAIN = "notify.veritasglobaladvisory.org"
 const ROOT_DOMAIN = "veritasglobaladvisory.org"
 const FROM_DOMAIN = "veritasglobaladvisory.org"
