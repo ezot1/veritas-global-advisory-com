@@ -4,6 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>): { next?: string } => {
+    const next = s.next;
+    return typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? { next } : {};
+  },
   head: () => ({
     meta: [
       { title: "Sign In | Veritas Global Advisory" },
@@ -21,17 +25,27 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  function goNext() {
+    if (next) {
+      window.location.href = next;
+      return;
+    }
+    navigate({ to: "/admin" });
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/admin" });
+      if (data.session) goNext();
     });
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, next]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,11 +59,11 @@ function AuthPage() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin + "/admin" },
+          options: { emailRedirectTo: window.location.origin + (next ?? "/admin") },
         });
         if (error) throw error;
       }
-      navigate({ to: "/admin" });
+      goNext();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
@@ -96,11 +110,14 @@ function AuthPage() {
             setBusy(true);
             try {
               const result = await lovable.auth.signInWithOAuth("google", {
-                redirect_uri: window.location.origin + "/auth",
+                redirect_uri:
+                  window.location.origin +
+                  "/auth" +
+                  (next ? `?next=${encodeURIComponent(next)}` : ""),
               });
               if (result.error) throw result.error;
               if (result.redirected) return;
-              navigate({ to: "/admin" });
+              goNext();
             } catch (err) {
               setError(err instanceof Error ? err.message : "Google sign-in failed");
             } finally {

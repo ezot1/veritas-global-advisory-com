@@ -1,0 +1,166 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://khqllersodsosalsipdj.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "veritas-global-advisory",
+      "version": "0.1.0",
+      "title": "Veritas Global Advisory"
+    },
+    "tools": [
+      {
+        "name": "list_submissions",
+        "title": "List inquiries",
+        "description": "List inquiries submitted through the contact, careers and talent-network forms, newest first. Admin access only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Filter by workflow status.",
+              "type": "string",
+              "enum": [
+                "new",
+                "read",
+                "replied",
+                "archived"
+              ]
+            },
+            "form_type": {
+              "description": "Filter by form type, e.g. contact, careers, talent.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Maximum rows to return (default 20, max 100).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_submission",
+        "title": "Get inquiry",
+        "description": "Get one inquiry in full, including its message body, submitted fields and the reply thread. Admin access only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The inquiry id (uuid)."
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_submission_status",
+        "title": "Update inquiry status",
+        "description": "Change an inquiry's workflow status (new, read, replied, archived). Admin access only.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The inquiry id (uuid)."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "new",
+                "read",
+                "replied",
+                "archived"
+              ],
+              "description": "New workflow status."
+            }
+          },
+          "required": [
+            "id",
+            "status"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_briefings",
+        "title": "List research briefings",
+        "description": "List published Veritas Global Advisory research briefings, newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "Maximum briefings to return (default 10, max 50).",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            },
+            "include_body": {
+              "description": "Include full article body paragraphs.",
+              "type": "boolean"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "article_share_stats",
+        "title": "Article share stats",
+        "description": "Summarise how often briefings have been shared, broken down by channel (whatsapp, x, linkedin, email, copy). Admin access only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "description": "Limit the summary to one article slug.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
