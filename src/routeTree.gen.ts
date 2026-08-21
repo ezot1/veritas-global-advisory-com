@@ -24,6 +24,7 @@ import { Route as InsightsSlugRouteImport } from './routes/insights_.$slug'
 import { Route as EmailUnsubscribeRouteImport } from './routes/email/unsubscribe'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as LovableEmailSuppressionRouteImport } from './routes/lovable/email/suppression'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as LovableEmailTransactionalSendRouteImport } from './routes/lovable/email/transactional/send'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
@@ -106,6 +107,11 @@ const LovableEmailSuppressionRoute = LovableEmailSuppressionRouteImport.update({
   path: '/lovable/email/suppression',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalSendRoute =
   LovableEmailTransactionalSendRouteImport.update({
     id: '/lovable/email/transactional/send',
@@ -160,6 +166,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/insights/$slug': typeof InsightsSlugRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
@@ -183,6 +190,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/insights/$slug': typeof InsightsSlugRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
@@ -208,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/email/unsubscribe': typeof EmailUnsubscribeRoute
   '/insights_/$slug': typeof InsightsSlugRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/lovable/email/suppression': typeof LovableEmailSuppressionRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
@@ -233,6 +242,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/email/unsubscribe'
     | '/insights/$slug'
+    | '/.lovable/oauth/consent'
     | '/lovable/email/suppression'
     | '/api/public/forms/submit'
     | '/api/public/hooks/generate-article'
@@ -256,6 +266,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/email/unsubscribe'
     | '/insights/$slug'
+    | '/.lovable/oauth/consent'
     | '/lovable/email/suppression'
     | '/api/public/forms/submit'
     | '/api/public/hooks/generate-article'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/email/unsubscribe'
     | '/insights_/$slug'
+    | '/.lovable/oauth/consent'
     | '/lovable/email/suppression'
     | '/api/public/forms/submit'
     | '/api/public/hooks/generate-article'
@@ -304,6 +316,7 @@ export interface RootRouteChildren {
   TalentRoute: typeof TalentRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   InsightsSlugRoute: typeof InsightsSlugRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   LovableEmailSuppressionRoute: typeof LovableEmailSuppressionRoute
   ApiPublicFormsSubmitRoute: typeof ApiPublicFormsSubmitRoute
   ApiPublicHooksGenerateArticleRoute: typeof ApiPublicHooksGenerateArticleRoute
@@ -421,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailSuppressionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/send': {
       id: '/lovable/email/transactional/send'
       path: '/lovable/email/transactional/send'
@@ -498,6 +518,7 @@ const rootRouteChildren: RootRouteChildren = {
   TalentRoute: TalentRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   InsightsSlugRoute: InsightsSlugRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   LovableEmailSuppressionRoute: LovableEmailSuppressionRoute,
   ApiPublicFormsSubmitRoute: ApiPublicFormsSubmitRoute,
   ApiPublicHooksGenerateArticleRoute: ApiPublicHooksGenerateArticleRoute,
