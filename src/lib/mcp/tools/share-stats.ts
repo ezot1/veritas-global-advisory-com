@@ -33,10 +33,11 @@ export default defineTool({
         slug: key,
         title: row.article_title ?? key,
         total: 0,
-        channels: {},
+        channels: {} as Record<string, number>,
       };
+      const channel: string = row.channel ?? "unknown";
       entry.total += 1;
-      entry.channels[row.channel ?? "unknown"] = (entry.channels[row.channel ?? "unknown"] ?? 0) + 1;
+      entry.channels[channel] = (entry.channels[channel] ?? 0) + 1;
       byArticle.set(key, entry);
     }
     const stats = [...byArticle.values()].sort((a, b) => b.total - a.total);
