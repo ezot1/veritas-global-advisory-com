@@ -5,6 +5,7 @@ import insight4 from "@/assets/insight-4.jpg";
 import insightAfricaAfcfta from "@/assets/insight-africa-afcfta.jpg";
 import insightAfricaReligion from "@/assets/insight-africa-religion.jpg";
 import insightGhanaLithium from "@/assets/insight-ghana-lithium.jpg";
+import insightEducationSoftPower from "@/assets/insight-education-soft-power.jpg";
 
 
 export type Article = {
