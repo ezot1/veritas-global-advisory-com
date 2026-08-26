@@ -25,7 +25,7 @@ export const Route = createFileRoute("/insights")({
   component: InsightsPage,
 });
 
-const categories = ["All", "Global Affairs", "Politics & Governance", "Business & Investment", "Africa Watch", "Asia Focus", "Europe & Eurasia", "Americas Briefing", "Middle East Insights"];
+const categories = ["All", "Global Affairs", "Education & Soft Power", "Politics & Governance", "Business & Investment", "Africa Watch", "Asia Focus", "Europe & Eurasia", "Americas Briefing", "Middle East Insights"];
 const regions = ["All Regions", "Africa", "Asia-Pacific", "Europe", "Middle East", "Americas"];
 
 function InsightsPage() {
