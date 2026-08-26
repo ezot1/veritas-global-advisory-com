@@ -1,13 +1,19 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { articles as staticArticles } from "@/data/articles";
 import { listGeneratedArticles } from "@/lib/articles.functions";
 
+const PAGE_SIZE = 18;
+
 export const Route = createFileRoute("/insights")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    page: Math.max(1, Number(search.page) || 1),
+  }),
+
   loader: async () => {
     const generated = await listGeneratedArticles().catch(() => []);
     return { generated };
