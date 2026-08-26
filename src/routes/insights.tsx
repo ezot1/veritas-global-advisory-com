@@ -1,13 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
-import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { articles as staticArticles } from "@/data/articles";
 import { listGeneratedArticles } from "@/lib/articles.functions";
 
+const PAGE_SIZE = 18;
+
 export const Route = createFileRoute("/insights")({
+  validateSearch: (search: Record<string, unknown>): { page?: number } => {
+    const page = Math.max(1, Number(search.page) || 1);
+    return page > 1 ? { page } : {};
+  },
+
   loader: async () => {
     const generated = await listGeneratedArticles().catch(() => []);
     return { generated };
@@ -47,6 +54,27 @@ function InsightsPage() {
     (q === "" || a.title.toLowerCase().includes(q.toLowerCase()))
   ), [articles, q, cat, reg]);
 
+  const { page = 1 } = Route.useSearch();
+  const navigate = useNavigate({ from: "/insights" });
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const current = Math.min(page, pageCount);
+  const paged = useMemo(
+    () => filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE),
+    [filtered, current]
+  );
+
+  const goTo = (p: number) => {
+    navigate({ search: p > 1 ? { page: p } : {}, resetScroll: false });
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Reset to the first page whenever filters change.
+  useEffect(() => {
+    if (page !== 1) navigate({ search: {}, resetScroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, cat, reg]);
+
+
   return (
     <>
       <PageHeader eyebrow="Global Research" title="Research, analysis, and strategic foresight."
@@ -73,7 +101,7 @@ function InsightsPage() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filtered.map((a) => (
+          {paged.map((a) => (
             <Link key={a.slug} to="/insights/$slug" params={{ slug: a.slug }} className="card-elevated block group">
               <div className="aspect-[4/3] overflow-hidden">
                 <img src={a.img} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -96,7 +124,51 @@ function InsightsPage() {
             <div className="col-span-full text-center py-20 text-muted-foreground">No research matches your filters.</div>
           )}
         </div>
+
+        {pageCount > 1 && (
+          <nav aria-label="Research archive pagination" className="mt-14 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => goTo(current - 1)}
+              disabled={current === 1}
+              className="inline-flex items-center gap-2 h-11 px-5 border border-border text-sm uppercase tracking-[0.14em] text-[var(--navy-deep)] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[var(--navy-deep)] transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" /> Newer
+            </button>
+            <div className="flex items-center gap-2">
+              {Array.from({ length: pageCount }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => goTo(p)}
+                  aria-current={p === current ? "page" : undefined}
+                  className={`h-11 w-11 text-sm border transition-colors ${
+                    p === current
+                      ? "border-[var(--navy-deep)] bg-[var(--navy-deep)] text-white"
+                      : "border-border text-[var(--navy-deep)] hover:border-[var(--navy-deep)]"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => goTo(current + 1)}
+              disabled={current === pageCount}
+              className="inline-flex items-center gap-2 h-11 px-5 border border-border text-sm uppercase tracking-[0.14em] text-[var(--navy-deep)] disabled:opacity-40 disabled:cursor-not-allowed hover:border-[var(--navy-deep)] transition-colors"
+            >
+              Older <ChevronRight className="h-4 w-4" />
+            </button>
+          </nav>
+        )}
+        {pageCount > 1 && (
+          <p className="mt-4 text-center text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            Page {current} of {pageCount} · {filtered.length} briefings
+          </p>
+        )}
       </Section>
+
       <ImageStrip start={0} eyebrow="Editorial Desks" title="Where our research is produced." />
     </>
   );
