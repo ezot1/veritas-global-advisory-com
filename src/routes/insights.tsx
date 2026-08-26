@@ -53,6 +53,27 @@ function InsightsPage() {
     (q === "" || a.title.toLowerCase().includes(q.toLowerCase()))
   ), [articles, q, cat, reg]);
 
+  const { page } = Route.useSearch();
+  const navigate = useNavigate({ from: "/insights" });
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const current = Math.min(page, pageCount);
+  const paged = useMemo(
+    () => filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE),
+    [filtered, current]
+  );
+
+  const goTo = (p: number) => {
+    navigate({ search: { page: p }, resetScroll: false });
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Reset to the first page whenever filters change.
+  useEffect(() => {
+    if (page !== 1) navigate({ search: { page: 1 }, resetScroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, cat, reg]);
+
+
   return (
     <>
       <PageHeader eyebrow="Global Research" title="Research, analysis, and strategic foresight."
