@@ -30,7 +30,13 @@ const regions = ["All Regions", "Africa", "Asia-Pacific", "Europe", "Middle East
 
 function InsightsPage() {
   const { generated } = Route.useLoaderData();
-  const articles = useMemo(() => [...generated, ...staticArticles], [generated]);
+  const articles = useMemo(
+    () =>
+      [...generated, ...staticArticles].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      ),
+    [generated]
+  );
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [reg, setReg] = useState("All Regions");
