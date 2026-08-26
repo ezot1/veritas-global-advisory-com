@@ -10,9 +10,10 @@ import { listGeneratedArticles } from "@/lib/articles.functions";
 const PAGE_SIZE = 18;
 
 export const Route = createFileRoute("/insights")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    page: Math.max(1, Number(search.page) || 1),
-  }),
+  validateSearch: (search: Record<string, unknown>): { page?: number } => {
+    const page = Math.max(1, Number(search.page) || 1);
+    return page > 1 ? { page } : {};
+  },
 
   loader: async () => {
     const generated = await listGeneratedArticles().catch(() => []);
@@ -53,7 +54,7 @@ function InsightsPage() {
     (q === "" || a.title.toLowerCase().includes(q.toLowerCase()))
   ), [articles, q, cat, reg]);
 
-  const { page } = Route.useSearch();
+  const { page = 1 } = Route.useSearch();
   const navigate = useNavigate({ from: "/insights" });
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const current = Math.min(page, pageCount);
@@ -63,13 +64,13 @@ function InsightsPage() {
   );
 
   const goTo = (p: number) => {
-    navigate({ search: { page: p }, resetScroll: false });
+    navigate({ search: p > 1 ? { page: p } : {}, resetScroll: false });
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Reset to the first page whenever filters change.
   useEffect(() => {
-    if (page !== 1) navigate({ search: { page: 1 }, resetScroll: false });
+    if (page !== 1) navigate({ search: {}, resetScroll: false });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, cat, reg]);
 
