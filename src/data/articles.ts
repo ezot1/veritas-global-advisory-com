@@ -6,23 +6,7 @@ import insightAfricaAfcfta from "@/assets/insight-africa-afcfta.jpg";
 import insightAfricaReligion from "@/assets/insight-africa-religion.jpg";
 import insightGhanaLithium from "@/assets/insight-ghana-lithium.jpg";
 import insightEducationSoftPower from "@/assets/insight-education-soft-power.jpg";
-
-
-export type Article = {
-  slug: string;
-  img: string;
-  tag: string;
-  region: string;
-  title: string;
-  author: string;
-  date: string;
-  summary: string;
-  body: string[];
-};
-
-export const articles: Article[] = [
-  {
-    slug: "scholarship-as-statecraft-china-global-south",
+import insightWomenLeadership from "@/assets/insight-women-leadership.jpg";
     img: insightEducationSoftPower,
     tag: "Education & Soft Power",
     region: "Africa",
