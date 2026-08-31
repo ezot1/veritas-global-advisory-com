@@ -43,7 +43,7 @@ export function Section({
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 78%, transparent), color-mix(in oklab, var(--navy-deep) 92%, transparent))",
+                "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 58%, transparent), color-mix(in oklab, var(--navy-deep) 78%, transparent))",
             }}
           />
         </div>
