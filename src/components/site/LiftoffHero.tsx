@@ -30,13 +30,13 @@ export function LiftoffHero() {
         height={1280}
         fetchPriority="high"
         decoding="async"
-        className="absolute inset-0 h-full w-full object-cover opacity-75 animate-kenburns"
+        className="absolute inset-0 h-full w-full object-cover opacity-95 animate-kenburns"
       />
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 55%, transparent), color-mix(in oklab, var(--navy-deep) 68%, transparent))",
+            "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 38%, transparent), color-mix(in oklab, var(--navy-deep) 52%, transparent))",
         }}
       />
 
