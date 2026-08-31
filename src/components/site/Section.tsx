@@ -43,12 +43,12 @@ export function Section({
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 78%, transparent), color-mix(in oklab, var(--navy-deep) 92%, transparent))",
+                "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 42%, transparent), color-mix(in oklab, var(--navy-deep) 62%, transparent))",
             }}
           />
         </div>
       )}
-      {(dark || backdrop) && <DataBackdrop variant={backdropVariant} className={image ? "opacity-30" : ""} />}
+      {(dark || backdrop) && <DataBackdrop variant={backdropVariant} className={image ? "opacity-15" : ""} />}
       <div className="container-x relative">
         {(eyebrow || title || intro) && (
           <Reveal className="max-w-3xl mb-16">

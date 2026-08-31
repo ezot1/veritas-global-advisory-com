@@ -223,7 +223,7 @@ function Index() {
         <div className="grid md:grid-cols-3 gap-px bg-white/10">
           {["Policy Analysts", "Researchers", "Economists", "Security Analysts", "Legal Experts", "Business Consultants"].map((c, i) => (
             <Reveal key={c} delay={i * 0.07}>
-              <div className="bg-[var(--navy-deep)]/70 backdrop-blur-sm p-6 border border-white/10 group hover:border-[var(--gold)]/60 transition-colors">
+              <div className="bg-[var(--navy-deep)]/45 backdrop-blur-sm p-6 border border-white/10 group hover:border-[var(--gold)]/60 transition-colors">
                 <div className="text-sm uppercase tracking-[0.16em] text-[var(--gold)] flex items-center gap-2">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--gold)] animate-pulse" />
                   Open
