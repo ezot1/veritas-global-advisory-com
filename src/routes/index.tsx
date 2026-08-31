@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroWorld from "@/assets/hero-world.jpg";
 import heroAnimation from "@/assets/hero-animation.jpg";
+import talentNetworkBg from "@/assets/talent-network-bg.jpg";
 import globeImg from "@/assets/globe.jpg";
 import sceneBoardroom from "@/assets/scene-boardroom.jpg";
 import sceneMiami from "@/assets/scene-miami.jpg";
