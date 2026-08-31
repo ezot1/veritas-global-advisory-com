@@ -1,32 +1,53 @@
 import type { ReactNode } from "react";
 import { DataBackdrop } from "./DataBackdrop";
+import heroWorld from "@/assets/hero-world.jpg";
 
 export function PageHeader({
   eyebrow,
   title,
   intro,
   variant = "network",
+  image = heroWorld,
+  imageAlt = "",
 }: {
   eyebrow: string;
   title: ReactNode;
   intro?: ReactNode;
   variant?: "network" | "grid" | "orbit" | "meridian";
+  image?: string;
+  imageAlt?: string;
 }) {
   return (
     <section className="relative bg-[var(--navy-deep)] text-white overflow-hidden">
-      <DataBackdrop variant={variant} />
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-[0.20]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 30%, rgba(212,175,55,.55), transparent 40%), radial-gradient(circle at 80% 70%, rgba(45,138,158,.4), transparent 45%)",
-        }}
-      />
+      {/* Photographic base with slow ambient zoom */}
+      <div aria-hidden className="absolute inset-0">
+        <img
+          src={image}
+          alt={imageAlt}
+          className="h-full w-full object-cover animate-kenburns"
+        />
+        {/* Navy gradient scrim for legibility */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 72%, transparent), color-mix(in oklab, var(--navy-deep) 88%, transparent))",
+          }}
+        />
+        {/* Corner glow accents */}
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 15% 20%, color-mix(in oklab, var(--gold) 45%, transparent), transparent 35%), radial-gradient(circle at 85% 80%, color-mix(in oklab, #2d8a9e 40%, transparent), transparent 40%)",
+          }}
+        />
+      </div>
+
+      <DataBackdrop variant={variant} className="opacity-40" />
+
       <div className="container-x relative py-28 md:py-36">
-        <span
-          className="eyebrow !text-white/70 opacity-0 animate-[fade-up_.7s_.15s_forwards]"
-        >
+        <span className="eyebrow !text-white/70 opacity-0 animate-[fade-up_.7s_.15s_forwards]">
           {eyebrow}
         </span>
         <h1 className="display-1 mt-6 max-w-4xl text-balance opacity-0 animate-[fade-up_.85s_.3s_forwards]">
@@ -42,3 +63,4 @@ export function PageHeader({
     </section>
   );
 }
+
