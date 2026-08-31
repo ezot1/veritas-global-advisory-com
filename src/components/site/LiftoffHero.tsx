@@ -30,9 +30,15 @@ export function LiftoffHero() {
         height={1280}
         fetchPriority="high"
         decoding="async"
-        className="absolute inset-0 h-full w-full object-cover opacity-40"
+        className="absolute inset-0 h-full w-full object-cover opacity-75 animate-kenburns"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--navy-deep)]/80 via-[var(--navy-deep)]/70 to-[var(--navy-deep)]" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 55%, transparent), color-mix(in oklab, var(--navy-deep) 68%, transparent))",
+        }}
+      />
 
       {/* Liftoff trail - a thin vertical gradient that streaks up the left rail of the headline */}
       <div
