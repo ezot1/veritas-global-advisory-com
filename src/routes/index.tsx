@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import heroWorld from "@/assets/hero-world.jpg";
 import heroAnimation from "@/assets/hero-animation.jpg";
+import talentNetworkBg from "@/assets/talent-network-bg.jpg";
 import globeImg from "@/assets/globe.jpg";
 import sceneBoardroom from "@/assets/scene-boardroom.jpg";
 import sceneMiami from "@/assets/scene-miami.jpg";
@@ -218,11 +219,11 @@ function Index() {
       </Section>
 
       {/* TALENT CTA */}
-      <Section dark eyebrow="Global Talent Network" title="Join a network of analysts, scholars, and practitioners shaping global solutions." intro="Veritas continuously seeks highly qualified professionals from diverse disciplines and geographic regions." backdropVariant="orbit">
+      <Section dark eyebrow="Global Talent Network" title="Join a network of analysts, scholars, and practitioners shaping global solutions." intro="Veritas continuously seeks highly qualified professionals from diverse disciplines and geographic regions." backdropVariant="orbit" image={talentNetworkBg} imageAlt="Global network of connected cities">
         <div className="grid md:grid-cols-3 gap-px bg-white/10">
           {["Policy Analysts", "Researchers", "Economists", "Security Analysts", "Legal Experts", "Business Consultants"].map((c, i) => (
             <Reveal key={c} delay={i * 0.07}>
-              <div className="bg-[var(--navy-deep)]/80 backdrop-blur-sm p-6 border border-white/10 group hover:border-[var(--gold)]/60 transition-colors">
+              <div className="bg-[var(--navy-deep)]/70 backdrop-blur-sm p-6 border border-white/10 group hover:border-[var(--gold)]/60 transition-colors">
                 <div className="text-sm uppercase tracking-[0.16em] text-[var(--gold)] flex items-center gap-2">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--gold)] animate-pulse" />
                   Open

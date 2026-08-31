@@ -11,6 +11,8 @@ export function Section({
   dark = false,
   backdrop = false,
   backdropVariant = "network",
+  image,
+  imageAlt = "",
 }: {
   eyebrow?: string;
   title?: ReactNode;
@@ -20,12 +22,33 @@ export function Section({
   dark?: boolean;
   backdrop?: boolean;
   backdropVariant?: "network" | "grid" | "orbit" | "meridian";
+  image?: string;
+  imageAlt?: string;
 }) {
   return (
     <section
       className={`relative overflow-hidden py-24 md:py-32 ${dark ? "bg-[var(--navy-deep)] text-white" : ""} ${className}`}
     >
-      {(dark || backdrop) && <DataBackdrop variant={backdropVariant} />}
+      {image && (
+        <div aria-hidden className="absolute inset-0">
+          <img
+            src={image}
+            alt={imageAlt}
+            width={1920}
+            height={768}
+            loading="lazy"
+            className="h-full w-full object-cover animate-kenburns"
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(to bottom, color-mix(in oklab, var(--navy-deep) 78%, transparent), color-mix(in oklab, var(--navy-deep) 92%, transparent))",
+            }}
+          />
+        </div>
+      )}
+      {(dark || backdrop) && <DataBackdrop variant={backdropVariant} className={image ? "opacity-30" : ""} />}
       <div className="container-x relative">
         {(eyebrow || title || intro) && (
           <Reveal className="max-w-3xl mb-16">
