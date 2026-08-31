@@ -57,7 +57,7 @@ function ServicesPage() {
     <>
       <PageHeader eyebrow="Services" title="Advisory practices built around the decisions that matter."
         intro="Six interconnected disciplines combining cross-regional expertise, rigorous research, and field-tested judgment." />
-      <Section>
+      <Section eyebrow="Our Practices" title="Our advisory practices">
         <div className="space-y-px bg-border">
           {services.map((s, idx) => (
             <div key={s.title} className="bg-background grid lg:grid-cols-[260px_1fr_1fr] gap-10 p-10">
