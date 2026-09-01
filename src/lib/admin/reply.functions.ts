@@ -108,43 +108,49 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
     })
     if (insertErr) throw new Error('Failed to record reply: ' + insertErr.message)
 
-    await supabaseAdmin.from('email_send_log').insert({
-      message_id: messageId,
-      template_name: 'admin-reply',
-      recipient_email: recipient,
-      status: 'pending',
-      metadata: { submission_id: submission.id, department: deptKey },
-    })
+    const { EmailAPIError, sendLovableEmail } = await import('@lovable.dev/email-js')
 
-    const { getOrCreateUnsubscribeToken } = await import('@/lib/email/unsubscribe.server')
-    const unsubscribeToken = await getOrCreateUnsubscribeToken(supabaseAdmin, recipient)
-
-    const { error: enqErr } = await supabaseAdmin.rpc('enqueue_email', {
-      queue_name: 'transactional_emails',
-      payload: {
+    const logSend = async (status: string, errorMessage?: string) => {
+      const { error } = await supabaseAdmin.from('email_send_log').insert({
         message_id: messageId,
-        to: recipient,
-        from: `${fromLabel} <${fromEmail}>`,
-        sender_domain: SENDER_DOMAIN,
-        subject: data.subject,
-        html,
-        text,
-        purpose: 'transactional',
-        label: 'admin-reply',
-        idempotency_key: messageId,
-        unsubscribe_token: unsubscribeToken,
-        reply_to: fromEmail,
-        queued_at: new Date().toISOString(),
-      },
-    })
+        template_name: 'admin-reply',
+        recipient_email: recipient,
+        status,
+        error_message: errorMessage,
+        metadata: { submission_id: submission.id, department: deptKey },
+      })
+      if (error) console.error('Failed to write email_send_log', { code: error.code, message: error.message })
+    }
 
-    if (enqErr) {
+    try {
+      await sendLovableEmail(
+        {
+          to: recipient,
+          from: `${fromLabel} <${fromEmail}>`,
+          sender_domain: SENDER_DOMAIN,
+          subject: data.subject,
+          html,
+          text,
+          purpose: 'transactional',
+          label: 'admin-reply',
+          idempotency_key: messageId,
+          reply_to: fromEmail,
+        },
+        { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
+      )
+    } catch (error) {
+      const suppressed = error instanceof EmailAPIError && error.code === 'recipient_suppressed'
+      const msg = error instanceof Error ? error.message : String(error)
+      await logSend(suppressed ? 'suppressed' : 'failed', suppressed ? 'Recipient suppressed' : msg.slice(0, 1000))
       await supabaseAdmin
         .from('submission_messages')
-        .update({ status: 'failed', error_message: enqErr.message })
+        .update({ status: 'failed', error_message: suppressed ? 'Recipient suppressed' : msg.slice(0, 1000) })
         .eq('message_id', messageId)
-      throw new Error('Failed to send reply: ' + enqErr.message)
+      throw new Error('Failed to send reply: ' + msg)
     }
+
+    await logSend('sent')
+    await supabaseAdmin.from('submission_messages').update({ status: 'sent' }).eq('message_id', messageId)
 
     // Update submission status
     await supabaseAdmin.from('form_submissions').update({ status: 'replied' }).eq('id', submission.id)

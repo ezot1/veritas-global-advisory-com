@@ -155,47 +155,48 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           status: 'new',
         })
 
-        await supabase.from('email_send_log').insert({
-          message_id: messageId,
-          template_name: 'form-notification',
-          recipient_email: recipient,
-          status: 'pending',
-          metadata: { form_type: parsed.formType, department: parsed.department ?? null },
-        })
-
-        const { getOrCreateUnsubscribeToken } = await import('@/lib/email/unsubscribe.server')
-        const unsubscribeToken = await getOrCreateUnsubscribeToken(supabase, recipient)
-
-        const { error: enqueueError } = await supabase.rpc('enqueue_email', {
-          queue_name: 'transactional_emails',
-          payload: {
-            message_id: messageId,
-            to: recipient,
-            from: `${fromLabel} <${fromAddress}>`,
-            sender_domain: SENDER_DOMAIN,
-            subject: parsed.formTitle,
-            html,
-            text,
-            purpose: 'transactional',
-            label: `form-${parsed.formType}`,
-            idempotency_key: messageId,
-            unsubscribe_token: unsubscribeToken,
-            reply_to: parsed.replyTo,
-            queued_at: new Date().toISOString(),
-          },
-        })
-
-        if (enqueueError) {
-          console.error('Failed to enqueue form notification', { error: enqueueError })
-          await supabase.from('email_send_log').insert({
+        const logSend = async (status: string, errorMessage?: string) => {
+          const { error } = await supabase.from('email_send_log').insert({
             message_id: messageId,
             template_name: 'form-notification',
             recipient_email: recipient,
-            status: 'failed',
-            error_message: 'Failed to enqueue',
+            status,
+            error_message: errorMessage,
+            metadata: { form_type: parsed.formType, department: parsed.department ?? null },
           })
+          if (error) console.error('Failed to write email_send_log', { code: error.code, message: error.message })
+        }
+
+        const { EmailAPIError, sendLovableEmail } = await import('@lovable.dev/email-js')
+
+        try {
+          await sendLovableEmail(
+            {
+              to: recipient,
+              from: `${fromLabel} <${fromAddress}>`,
+              sender_domain: SENDER_DOMAIN,
+              subject: parsed.formTitle,
+              html,
+              text,
+              purpose: 'transactional',
+              label: `form-${parsed.formType}`,
+              idempotency_key: messageId,
+              reply_to: parsed.replyTo,
+            },
+            { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
+          )
+        } catch (error) {
+          const suppressed = error instanceof EmailAPIError && error.code === 'recipient_suppressed'
+          const msg = error instanceof Error ? error.message : String(error)
+          await logSend(suppressed ? 'suppressed' : 'failed', suppressed ? 'Recipient suppressed' : msg.slice(0, 1000))
+          if (suppressed) {
+            return Response.json({ success: true }, { headers: corsHeaders })
+          }
+          console.error('Failed to send form notification')
           return Response.json({ error: 'Failed to send' }, { status: 500, headers: corsHeaders })
         }
+
+        await logSend('sent')
 
         return Response.json({ success: true }, { headers: corsHeaders })
       },
