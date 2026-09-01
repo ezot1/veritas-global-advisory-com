@@ -9,7 +9,7 @@ import { EmailChangeEmail } from '@/lib/email-templates/email-change'
 import { ReauthenticationEmail } from '@/lib/email-templates/reauthentication'
 
 // Configuration
-const SITE_NAME = "Veritas Global Nexus"
+const SITE_NAME = "veritasglobaladvisory.org"
 const SENDER_DOMAIN = "notify.veritasglobaladvisory.org"
 const ROOT_DOMAIN = "veritasglobaladvisory.org"
 const FROM_DOMAIN = "veritasglobaladvisory.org"
