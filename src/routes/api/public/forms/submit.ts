@@ -155,11 +155,11 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           status: 'new',
         })
 
-        const logSend = async (status: string, errorMessage?: string) => {
+        const logSend = async (status: string, errorMessage?: string, templateName = 'form-notification', recipientEmail = recipient) => {
           const { error } = await supabase.from('email_send_log').insert({
             message_id: messageId,
-            template_name: 'form-notification',
-            recipient_email: recipient,
+            template_name: templateName,
+            recipient_email: recipientEmail,
             status,
             error_message: errorMessage,
             metadata: { form_type: parsed.formType, department: parsed.department ?? null },
@@ -197,6 +197,67 @@ export const Route = createFileRoute('/api/public/forms/submit')({
         }
 
         await logSend('sent')
+
+        // Send applicant auto-reply when an email address was provided
+        if (parsed.replyTo) {
+          const autoReplyTemplate = TEMPLATES['auto-reply']
+          if (autoReplyTemplate) {
+            const firstNameValue =
+              findField('first name') ??
+              findField('name') ??
+              findField('full name') ??
+              ''
+            const firstName = String(firstNameValue).trim().split(/\s+/)[0]
+
+            const autoReplyData = {
+              firstName,
+              subject: 'We have received your message',
+              brandColor: settingsRow?.brand_color ?? '#b08838',
+              headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
+              footerText:
+                settingsRow?.footer_text ??
+                'Submitted via the Veritas Global Advisory website.',
+              fromEmail: 'info@veritasglobaladvisory.org',
+            }
+            const autoReplyElement = React.createElement(autoReplyTemplate.component, autoReplyData)
+            const autoReplyHtml = await render(autoReplyElement)
+            const autoReplyText = await render(autoReplyElement, { plainText: true })
+            const autoReplySubject =
+              typeof autoReplyTemplate.subject === 'function'
+                ? autoReplyTemplate.subject(autoReplyData)
+                : autoReplyTemplate.subject
+            const autoReplyMessageId = crypto.randomUUID()
+
+            try {
+              await sendLovableEmail(
+                {
+                  to: parsed.replyTo,
+                  from: `${SITE_NAME} <info@${FROM_DOMAIN}>`,
+                  sender_domain: SENDER_DOMAIN,
+                  subject: autoReplySubject,
+                  html: autoReplyHtml,
+                  text: autoReplyText,
+                  purpose: 'transactional',
+                  label: `auto-reply-${parsed.formType}`,
+                  idempotency_key: autoReplyMessageId,
+                },
+                { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
+              )
+              await logSend('sent', undefined, 'auto-reply', parsed.replyTo)
+            } catch (error) {
+              const suppressed = error instanceof EmailAPIError && error.code === 'recipient_suppressed'
+              const msg = error instanceof Error ? error.message : String(error)
+              await logSend(
+                suppressed ? 'suppressed' : 'failed',
+                suppressed ? 'Recipient suppressed' : msg.slice(0, 1000),
+                'auto-reply',
+                parsed.replyTo,
+              )
+              // Do not fail the form submission if the auto-reply cannot be sent
+              console.error('Failed to send applicant auto-reply', { error: msg })
+            }
+          }
+        }
 
         return Response.json({ success: true }, { headers: corsHeaders })
       },
