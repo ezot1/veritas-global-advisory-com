@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import { template as formNotification } from './form-notification'
 import { template as adminReply } from './admin-reply'
+import { template as autoReply } from './auto-reply'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -14,4 +15,5 @@ export interface TemplateEntry {
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'form-notification': formNotification,
   'admin-reply': adminReply,
+  'auto-reply': autoReply,
 }
