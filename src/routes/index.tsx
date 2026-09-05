@@ -94,7 +94,7 @@ function Index() {
             <span className="inline-block h-2 w-2 rounded-full bg-[var(--gold)] animate-pulse" />
             Live
           </span>
-          <span className="hidden md:inline">Miami · London · Singapore · Beijing · Nairobi · Dubai · São Paulo</span>
+          <span className="hidden md:inline">Miami · London · Singapore · Beijing · Nairobi · Dubai · São Paulo · Melbourne</span>
         </div>
         <style>{`@keyframes kenburns{0%{transform:scale(1) translateX(0)}100%{transform:scale(1.12) translateX(-3%)}}`}</style>
       </div>
