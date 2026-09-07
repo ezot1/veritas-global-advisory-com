@@ -247,7 +247,7 @@ function AdminPage() {
   );
 }
 
-const DEPARTMENTS = [
+const COMPOSE_FROM = [
   ["general", "info@veritasglobaladvisory.org"],
   ["business", "business@veritasglobaladvisory.org"],
   ["research", "research@veritasglobaladvisory.org"],
@@ -266,7 +266,7 @@ type SentEmail = {
 
 function ComposePanel() {
   const [to, setTo] = useState("");
-  const [dept, setDept] = useState<(typeof DEPARTMENTS)[number][0]>("general");
+  const [dept, setDept] = useState<(typeof COMPOSE_FROM)[number][0]>("general");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
@@ -343,10 +343,10 @@ function ComposePanel() {
             <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Send from</span>
             <select
               value={dept}
-              onChange={(e) => setDept(e.target.value as (typeof DEPARTMENTS)[number][0])}
+              onChange={(e) => setDept(e.target.value as (typeof COMPOSE_FROM)[number][0])}
               className="mt-2 w-full border border-border px-3 py-2 text-sm bg-white"
             >
-              {DEPARTMENTS.map(([key, addr]) => (
+              {COMPOSE_FROM.map(([key, addr]) => (
                 <option key={key} value={key}>{addr}</option>
               ))}
             </select>
