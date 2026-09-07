@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages } from "@/lib/admin/reply.functions";
+import { sendComposedEmail, listSentEmails } from "@/lib/admin/compose.functions";
 import {
   listReplyTemplates,
   createReplyTemplate,
@@ -150,6 +151,7 @@ function AdminPage() {
         <div className="flex items-center gap-1 mb-5 border-b border-border">
           {([
             ["inbox", "Inbox"],
+            ["compose", "New email"],
             ["snippets", "Reply snippets"],
             ["settings", "Email branding"],
             ["shares", "Share analytics"],
@@ -235,11 +237,201 @@ function AdminPage() {
           </>
         )}
 
+        {tab === "compose" && <ComposePanel />}
         {tab === "snippets" && <SnippetsPanel />}
         {tab === "settings" && <EmailSettingsPanel />}
         {tab === "shares" && <ShareAnalyticsPanel />}
       </div>
 
+    </div>
+  );
+}
+
+const DEPARTMENTS = [
+  ["general", "info@veritasglobaladvisory.org"],
+  ["business", "business@veritasglobaladvisory.org"],
+  ["research", "research@veritasglobaladvisory.org"],
+  ["careers", "careers@veritasglobaladvisory.org"],
+  ["media", "media@veritasglobaladvisory.org"],
+] as const;
+
+type SentEmail = {
+  id: string;
+  recipient_email: string;
+  status: string;
+  error_message: string | null;
+  subject: string;
+  created_at: string;
+};
+
+function ComposePanel() {
+  const [to, setTo] = useState("");
+  const [dept, setDept] = useState<(typeof DEPARTMENTS)[number][0]>("general");
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+  const [notice, setNotice] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [snippets, setSnippets] = useState<{ id: string; name: string; subject: string; body: string }[]>([]);
+  const [sent, setSent] = useState<SentEmail[]>([]);
+
+  async function refreshSent() {
+    try {
+      const res = await listSentEmails();
+      setSent(res.messages as SentEmail[]);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await listReplyTemplates();
+        setSnippets((res.templates ?? []) as { id: string; name: string; subject: string; body: string }[]);
+      } catch {
+        /* ignore */
+      }
+    })();
+    refreshSent();
+  }, []);
+
+  async function send() {
+    setNotice(null);
+    if (!to.trim() || !subject.trim() || !body.trim()) {
+      setNotice({ kind: "err", text: "Recipient, subject and message are all required." });
+      return;
+    }
+    setSending(true);
+    try {
+      const res = await sendComposedEmail({
+        data: { toEmail: to.trim(), subject: subject.trim(), body: body.trim(), fromDepartment: dept },
+      });
+      if (res.suppressed) {
+        setNotice({ kind: "err", text: "This address has opted out of our emails, so nothing was delivered." });
+      } else {
+        setNotice({ kind: "ok", text: `Email sent to ${to.trim()}.` });
+        setTo("");
+        setSubject("");
+        setBody("");
+      }
+      refreshSent();
+    } catch (e) {
+      setNotice({ kind: "err", text: e instanceof Error ? e.message : "Could not send the email." });
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <div className="grid lg:grid-cols-[1fr_360px] gap-6">
+      <section className="border border-border bg-white p-6 md:p-8">
+        <span className="eyebrow">Compose</span>
+        <h2 className="display-3 mt-2 mb-6">Write a new email</h2>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <label className="block">
+            <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Send to</span>
+            <input
+              type="email"
+              value={to}
+              onChange={(e) => setTo(e.target.value)}
+              placeholder="name@example.com"
+              className="mt-2 w-full border border-border px-3 py-2 text-sm"
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Send from</span>
+            <select
+              value={dept}
+              onChange={(e) => setDept(e.target.value as (typeof DEPARTMENTS)[number][0])}
+              className="mt-2 w-full border border-border px-3 py-2 text-sm bg-white"
+            >
+              {DEPARTMENTS.map(([key, addr]) => (
+                <option key={key} value={key}>{addr}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <label className="block mt-4">
+          <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Subject</span>
+          <input
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className="mt-2 w-full border border-border px-3 py-2 text-sm"
+          />
+        </label>
+
+        {snippets.length > 0 && (
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="text-xs text-muted-foreground">Start from a saved snippet:</span>
+            {snippets.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  if (!subject.trim()) setSubject(s.subject);
+                  setBody((b) => (b.trim() ? b + "\n\n" + s.body : s.body));
+                }}
+                className="px-3 py-1 text-xs border border-border hover:bg-muted/50"
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <label className="block mt-4">
+          <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Message</span>
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={14}
+            placeholder="Write your message here."
+            className="mt-2 w-full border border-border px-3 py-2 text-sm leading-relaxed"
+          />
+        </label>
+
+        {notice && (
+          <div className={`mt-4 text-sm ${notice.kind === "ok" ? "text-green-700" : "text-red-600"}`}>
+            {notice.text}
+          </div>
+        )}
+
+        <div className="mt-6 flex items-center gap-3">
+          <button
+            onClick={send}
+            disabled={sending}
+            className="px-6 py-3 bg-[var(--navy-deep)] text-white text-xs uppercase tracking-[0.16em] hover:bg-[var(--gold)] transition-colors disabled:opacity-60"
+          >
+            {sending ? "Sending…" : "Send email"}
+          </button>
+          <button
+            onClick={() => { setTo(""); setSubject(""); setBody(""); setNotice(null); }}
+            className="text-xs underline text-muted-foreground hover:text-foreground"
+          >
+            Clear
+          </button>
+        </div>
+        <p className="mt-4 text-xs text-muted-foreground">
+          One recipient per message. For anything going to a large list, use a dedicated marketing platform.
+        </p>
+      </section>
+
+      <aside className="border border-border bg-white p-6 max-h-[75vh] overflow-y-auto">
+        <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Recently sent</div>
+        {sent.length === 0 && <p className="mt-3 text-sm text-muted-foreground">Nothing sent from here yet.</p>}
+        <ul className="mt-3 space-y-3">
+          {sent.map((m) => (
+            <li key={m.id} className="border-b border-border pb-3">
+              <div className="text-sm font-medium line-clamp-1">{m.subject || "(no subject)"}</div>
+              <div className="text-xs text-muted-foreground line-clamp-1">{m.recipient_email}</div>
+              <div className="text-[10px] text-muted-foreground mt-1">
+                {new Date(m.created_at).toLocaleString()} · {m.status}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </aside>
     </div>
   );
 }
