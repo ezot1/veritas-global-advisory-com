@@ -1240,3 +1240,161 @@ function ShareAnalyticsPanel() {
     </div>
   );
 }
+
+type SentRecord = {
+  id: string;
+  template_name: string;
+  recipient_email: string;
+  status: string;
+  error_message: string | null;
+  subject: string;
+  body: string;
+  from_email: string;
+  created_at: string;
+};
+
+const SENT_KIND_LABELS: Record<string, string> = {
+  "admin-compose": "Composed",
+  "admin-reply": "Reply",
+  "auto-reply": "Auto reply",
+};
+
+function SentPanel() {
+  const [rows, setRows] = useState<SentRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [kind, setKind] = useState<string>("all");
+  const [search, setSearch] = useState("");
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await listAllSentEmails({ data: { limit: 300 } });
+      setRows(res.messages as SentRecord[]);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load sent emails.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const kinds = useMemo(
+    () => ["all", ...Array.from(new Set(rows.map((r) => r.template_name).filter(Boolean)))],
+    [rows],
+  );
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return rows.filter((r) => {
+      if (kind !== "all" && r.template_name !== kind) return false;
+      if (!q) return true;
+      return (
+        r.recipient_email.toLowerCase().includes(q) ||
+        r.subject.toLowerCase().includes(q) ||
+        r.body.toLowerCase().includes(q)
+      );
+    });
+  }, [rows, kind, search]);
+
+  const selected = filtered.find((r) => r.id === selectedId) ?? null;
+
+  return (
+    <>
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        {kinds.map((k) => (
+          <button
+            key={k}
+            onClick={() => setKind(k)}
+            className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
+              kind === k
+                ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {k === "all" ? "All" : SENT_KIND_LABELS[k] ?? k}
+          </button>
+        ))}
+        <input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search recipient or text"
+          className="border border-border px-3 py-1.5 text-xs min-w-[220px]"
+        />
+        <button onClick={load} className="text-xs underline text-muted-foreground hover:text-foreground">
+          Refresh
+        </button>
+        <span className="ml-auto text-xs text-muted-foreground">{filtered.length} of {rows.length}</span>
+      </div>
+
+      {error && <div className="text-sm text-red-600 mb-4">{error}</div>}
+
+      <div className="grid lg:grid-cols-[380px_1fr] gap-6">
+        <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
+          {loading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
+          {!loading && filtered.length === 0 && (
+            <div className="p-6 text-sm text-muted-foreground">No sent emails yet.</div>
+          )}
+          <ul>
+            {filtered.map((r) => (
+              <li key={r.id}>
+                <button
+                  onClick={() => setSelectedId(r.id)}
+                  className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 transition ${
+                    selected?.id === r.id ? "bg-muted/60" : ""
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs uppercase tracking-wider text-[var(--gold)]">
+                      {SENT_KIND_LABELS[r.template_name] ?? r.template_name}
+                    </span>
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full ${
+                        r.status === "sent"
+                          ? "bg-green-100 text-green-700"
+                          : r.status === "failed"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {r.status}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-sm font-medium line-clamp-1">{r.recipient_email}</div>
+                  <div className="text-xs text-muted-foreground line-clamp-1">{r.subject || "(no subject)"}</div>
+                  <div className="text-[10px] text-muted-foreground mt-1">{new Date(r.created_at).toLocaleString()}</div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
+          {!selected ? (
+            <div className="text-sm text-muted-foreground">Select an email to read it.</div>
+          ) : (
+            <div>
+              <span className="eyebrow">{SENT_KIND_LABELS[selected.template_name] ?? selected.template_name}</span>
+              <h2 className="display-3 mt-2">{selected.subject || "(no subject)"}</h2>
+              <div className="mt-4 text-sm text-muted-foreground space-y-1">
+                <div>To: {selected.recipient_email}</div>
+                {selected.from_email && <div>From: {selected.from_email}</div>}
+                <div>Sent: {new Date(selected.created_at).toLocaleString()}</div>
+                <div>Status: {selected.status}</div>
+                {selected.error_message && <div className="text-red-600">Problem: {selected.error_message}</div>}
+              </div>
+              <div className="mt-6 border-t border-border pt-6 text-sm leading-relaxed whitespace-pre-wrap">
+                {selected.body || "The text of this message was not stored."}
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </>
+  );
+}
