@@ -129,7 +129,7 @@ function Index() {
       <section className="border-y border-border bg-[var(--secondary)]">
         <div className="container-x py-20 grid grid-cols-2 md:grid-cols-4 gap-10">
           <StatCounter value={12} label="Countries Covered" />
-          <StatCounter value={40} label="Experts Worldwide" />
+          <StatCounter value={52} label="Experts Worldwide" />
           <StatCounter value={100} label="Research Publications" />
           <StatCounter value={5} label="Regional Divisions" />
         </div>
