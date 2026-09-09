@@ -121,7 +121,7 @@ export function LiftoffHero() {
         >
           {[
             { v: "12", l: "Countries Covered" },
-            { v: "40", l: "Experts Worldwide" },
+            { v: "52", l: "Experts Worldwide" },
             { v: "100", l: "Research Publications" },
             { v: "5", l: "Regional Divisions" },
           ].map((s) => (
