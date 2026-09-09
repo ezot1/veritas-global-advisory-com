@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages } from "@/lib/admin/reply.functions";
-import { sendComposedEmail, listSentEmails } from "@/lib/admin/compose.functions";
+import { sendComposedEmail, listSentEmails, listAllSentEmails } from "@/lib/admin/compose.functions";
 import {
   listReplyTemplates,
   createReplyTemplate,
@@ -43,7 +43,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
-  const [tab, setTab] = useState<"inbox" | "compose" | "snippets" | "settings" | "shares">("inbox");
+  const [tab, setTab] = useState<"inbox" | "compose" | "sent" | "snippets" | "settings" | "shares">("inbox");
   const [error, setError] = useState<string | null>(null);
 
 
@@ -152,6 +152,7 @@ function AdminPage() {
           {([
             ["inbox", "Inbox"],
             ["compose", "New email"],
+            ["sent", "Sent"],
             ["snippets", "Reply snippets"],
             ["settings", "Email branding"],
             ["shares", "Share analytics"],
