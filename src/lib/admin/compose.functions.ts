@@ -82,7 +82,13 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
         recipient_email: data.toEmail,
         status,
         error_message: errorMessage,
-        metadata: { department: deptKey, subject: data.subject, sent_by: userId },
+        metadata: {
+          department: deptKey,
+          subject: data.subject,
+          body: data.body,
+          from_email: fromEmail,
+          sent_by: userId,
+        },
       })
       if (error) console.error('Failed to write email_send_log', { code: error.code, message: error.message })
     }

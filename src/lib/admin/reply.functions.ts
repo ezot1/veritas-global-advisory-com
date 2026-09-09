@@ -117,7 +117,13 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
         recipient_email: recipient,
         status,
         error_message: errorMessage,
-        metadata: { submission_id: submission.id, department: deptKey },
+        metadata: {
+          submission_id: submission.id,
+          department: deptKey,
+          subject: data.subject,
+          body: data.body,
+          from_email: fromEmail,
+        },
       })
       if (error) console.error('Failed to write email_send_log', { code: error.code, message: error.message })
     }
