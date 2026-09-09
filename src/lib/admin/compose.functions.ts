@@ -151,3 +151,40 @@ export const listSentEmails = createServerFn({ method: 'POST' })
       })),
     }
   })
+
+/** Every outbound email this site has sent: composed, replies, and automatic messages. */
+export const listAllSentEmails = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { limit?: number } | undefined) =>
+    z.object({ limit: z.number().int().min(1).max(500).optional() }).parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context
+    const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })
+    if (!isAdmin) throw new Error('Forbidden')
+
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const { data: rows, error } = await supabaseAdmin
+      .from('email_send_log')
+      .select('id, template_name, recipient_email, status, error_message, metadata, created_at')
+      .order('created_at', { ascending: false })
+      .limit(data.limit ?? 200)
+    if (error) throw new Error(error.message)
+
+    return {
+      messages: (rows ?? []).map((r) => {
+        const meta = (r.metadata ?? {}) as { subject?: string; body?: string; from_email?: string; form_type?: string }
+        return {
+          id: r.id as string,
+          template_name: (r.template_name as string) ?? '',
+          recipient_email: r.recipient_email as string,
+          status: r.status as string,
+          error_message: (r.error_message as string | null) ?? null,
+          subject: meta.subject ?? meta.form_type ?? '',
+          body: meta.body ?? '',
+          from_email: meta.from_email ?? '',
+          created_at: r.created_at as string,
+        }
+      }),
+    }
+  })
