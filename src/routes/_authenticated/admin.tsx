@@ -239,6 +239,7 @@ function AdminPage() {
         )}
 
         {tab === "compose" && <ComposePanel />}
+        {tab === "sent" && <SentPanel />}
         {tab === "snippets" && <SnippetsPanel />}
         {tab === "settings" && <EmailSettingsPanel />}
         {tab === "shares" && <ShareAnalyticsPanel />}
