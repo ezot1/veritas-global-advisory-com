@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { sendAdminReply, listSubmissionMessages } from "@/lib/admin/reply.functions";
+import { sendAdminReply, listSubmissionMessages, listInboundReplies, type InboundReply } from "@/lib/admin/reply.functions";
 import { sendComposedEmail, listSentEmails, listAllSentEmails } from "@/lib/admin/compose.functions";
 import { listReplyTracking, type ReplyTrackingContact } from "@/lib/admin/reply-tracking.functions";
 import {
@@ -45,7 +45,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
-  const [tab, setTab] = useState<"inbox" | "compose" | "sent" | "snippets" | "settings" | "shares" | "replies">("inbox");
+  const [tab, setTab] = useState<"inbox" | "received" | "compose" | "sent" | "snippets" | "settings" | "shares" | "replies">("inbox");
   const [error, setError] = useState<string | null>(null);
 
 
@@ -153,6 +153,7 @@ function AdminPage() {
         <div className="flex items-center gap-1 mb-5 border-b border-border">
           {([
             ["inbox", "Inbox"],
+            ["received", "Received replies"],
             ["compose", "New email"],
             ["sent", "Sent"],
             ["snippets", "Reply snippets"],
@@ -243,6 +244,7 @@ function AdminPage() {
           </>
         )}
 
+        {tab === "received" && <ReceivedRepliesPanel />}
         {tab === "compose" && <ComposePanel />}
         {tab === "sent" && <SentPanel />}
         {tab === "snippets" && <SnippetsPanel />}
@@ -1569,6 +1571,93 @@ function ReplyTrackingPanel() {
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+function ReceivedRepliesPanel() {
+  const [rows, setRows] = useState<InboundReply[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [q, setQ] = useState("");
+
+  async function load() {
+    setLoading(true);
+    try {
+      const res = await listInboundReplies({ data: undefined as never });
+      setRows(res.replies);
+      setErr(null);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Could not load replies");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    if (!term) return rows;
+    return rows.filter((r) =>
+      [r.from_email, r.from_label, r.subject, r.body_text].some((v) => (v ?? "").toLowerCase().includes(term)),
+    );
+  }, [rows, q]);
+
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search replies"
+          className="border border-border px-3 py-2 text-sm w-64"
+        />
+        <button onClick={load} className="text-xs underline text-muted-foreground hover:text-foreground">
+          Refresh
+        </button>
+        <span className="ml-auto text-xs text-muted-foreground">{filtered.length} replies</span>
+      </div>
+
+      {err && <div className="text-sm text-red-600 mb-4">{err}</div>}
+      {loading && <div className="text-sm text-muted-foreground">Loading…</div>}
+      {!loading && filtered.length === 0 && (
+        <div className="border border-border bg-white p-8 text-sm text-muted-foreground">
+          No replies received yet. Replies people send from your message links appear here.
+        </div>
+      )}
+
+      <div className="border border-border bg-white divide-y divide-border">
+        {filtered.map((r) => (
+          <div key={r.id}>
+            <button
+              onClick={() => setOpenId(openId === r.id ? null : r.id)}
+              className="w-full text-left px-4 py-3 hover:bg-muted/40 transition"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium">{r.from_label || r.from_email}</span>
+                <span className="text-[10px] text-muted-foreground">{new Date(r.created_at).toLocaleString()}</span>
+              </div>
+              <div className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{r.subject}</div>
+              <div className="text-[11px] text-muted-foreground mt-1">
+                {r.from_email}
+                {r.sender_country ? ` · ${r.sender_country}` : ""}
+                {r.form_type ? ` · ${r.form_type}` : ""}
+              </div>
+            </button>
+            {openId === r.id && (
+              <div className="px-4 pb-4">
+                <pre className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/40 border border-border p-4">
+                  {r.body_text}
+                </pre>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

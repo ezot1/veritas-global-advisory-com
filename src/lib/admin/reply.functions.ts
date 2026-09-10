@@ -198,3 +198,50 @@ export const listSubmissionMessages = createServerFn({ method: 'POST' })
     if (error) throw new Error(error.message)
     return { messages: rows ?? [] }
   })
+
+export type InboundReply = {
+  id: string
+  submission_id: string
+  from_email: string
+  from_label: string | null
+  subject: string
+  body_text: string
+  created_at: string
+  sender_country: string | null
+  form_type: string | null
+}
+
+/** Every reply received through the in-house reply pages, newest first. */
+export const listInboundReplies = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ replies: InboundReply[] }> => {
+    const { supabase, userId } = context
+    const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' })
+    if (!isAdmin) throw new Error('Forbidden')
+
+    const { data: rows, error } = await supabase
+      .from('submission_messages')
+      .select('id, submission_id, from_email, from_label, subject, body_text, created_at')
+      .eq('direction', 'inbound')
+      .order('created_at', { ascending: false })
+      .limit(300)
+    if (error) throw new Error(error.message)
+
+    const ids = Array.from(new Set((rows ?? []).map((r) => r.submission_id)))
+    const meta = new Map<string, { sender_country: string | null; form_type: string | null }>()
+    if (ids.length) {
+      const { data: subs } = await supabase
+        .from('form_submissions')
+        .select('id, sender_country, form_type')
+        .in('id', ids)
+      for (const s of subs ?? []) meta.set(s.id, { sender_country: s.sender_country, form_type: s.form_type })
+    }
+
+    return {
+      replies: (rows ?? []).map((r) => ({
+        ...r,
+        sender_country: meta.get(r.submission_id)?.sender_country ?? null,
+        form_type: meta.get(r.submission_id)?.form_type ?? null,
+      })),
+    }
+  })
