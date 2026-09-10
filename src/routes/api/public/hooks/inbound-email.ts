@@ -149,6 +149,13 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           let raw: Record<string, unknown>
           if (contentType.includes('application/json')) {
             raw = (await request.json()) as Record<string, unknown>
+          } else if (
+            contentType.includes('message/rfc822') ||
+            contentType.includes('text/plain') ||
+            contentType === ''
+          ) {
+            // Raw MIME message (Cloudflare Email Worker forwarding message.raw)
+            raw = parseRawEmail(await request.text()) as unknown as Record<string, unknown>
           } else {
             // Form-encoded / multipart providers (Mailgun routes, Zapier, Make, ImprovMX)
             const form = await request.formData()
