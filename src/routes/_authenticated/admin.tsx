@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages, listInboundReplies, type InboundReply } from "@/lib/admin/reply.functions";
 import { sendComposedEmail, listSentEmails, listAllSentEmails } from "@/lib/admin/compose.functions";
+import { syncMailboxReplies } from "@/lib/admin/mailbox-sync.functions";
 import { listReplyTracking, type ReplyTrackingContact } from "@/lib/admin/reply-tracking.functions";
 import {
   listReplyTemplates,
@@ -70,6 +71,11 @@ function AdminPage() {
 
   async function loadSubmissions() {
     setLoading(true);
+    try {
+      await syncMailboxReplies();
+    } catch (syncError) {
+      setError(syncError instanceof Error ? syncError.message : "Could not refresh the receiving mailbox.");
+    }
     const { data, error } = await supabase
       .from("form_submissions")
       .select("*")
@@ -1585,9 +1591,10 @@ function ReceivedRepliesPanel() {
   async function load() {
     setLoading(true);
     try {
+      const sync = await syncMailboxReplies();
       const res = await listInboundReplies({ data: undefined as never });
       setRows(res.replies);
-      setErr(null);
+      setErr(sync.imported > 0 ? `${sync.imported} new ${sync.imported === 1 ? "reply" : "replies"} received.` : null);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Could not load replies");
     } finally {
@@ -1626,7 +1633,7 @@ function ReceivedRepliesPanel() {
       {loading && <div className="text-sm text-muted-foreground">Loading…</div>}
       {!loading && filtered.length === 0 && (
         <div className="border border-border bg-white p-8 text-sm text-muted-foreground">
-          No replies received yet. Replies people send from your message links appear here.
+          No replies received yet. Email replies and replies sent from secure message links appear here.
         </div>
       )}
 
