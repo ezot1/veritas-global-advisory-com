@@ -189,14 +189,15 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           const suppressed = error instanceof EmailAPIError && error.code === 'recipient_suppressed'
           const msg = error instanceof Error ? error.message : String(error)
           await logSend(suppressed ? 'suppressed' : 'failed', suppressed ? 'Recipient suppressed' : msg.slice(0, 1000))
-          if (suppressed) {
-            return Response.json({ success: true }, { headers: corsHeaders })
+          // Do not stop here: the internal @veritasglobaladvisory.org address has no mail
+          // host and may be suppressed, but the monitored mailbox copy below must still go out.
+          if (!suppressed) {
+            console.error('Failed to send form notification')
           }
-          console.error('Failed to send form notification')
-          return Response.json({ error: 'Failed to send' }, { status: 500, headers: corsHeaders })
+          notificationDelivered = false
         }
 
-        await logSend('sent')
+        if (notificationDelivered) await logSend('sent')
 
         // Also deliver a copy to a real, monitored mailbox. The @veritasglobaladvisory.org
         // addresses have no mail host, so notifications sent only there are never received.
