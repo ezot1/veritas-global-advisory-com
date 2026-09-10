@@ -201,10 +201,14 @@ export const Route = createFileRoute('/api/public/forms/submit')({
 
         if (notificationDelivered) await logSend('sent')
 
-        // Also deliver a copy to a real, monitored mailbox. The @veritasglobaladvisory.org
+        // Also deliver copies to real, monitored mailboxes. The @veritasglobaladvisory.org
         // addresses have no mail host, so notifications sent only there are never received.
-        const adminMailbox = (process.env['ADMIN_NOTIFY_EMAIL'] ?? 'Polungah@gmail.com').trim()
-        if (adminMailbox && adminMailbox.toLowerCase() !== recipient.toLowerCase()) {
+        const adminMailboxList = (process.env['ADMIN_NOTIFY_EMAIL'] ?? 'Polungah@gmail.com, ezrao652@gmail.com')
+          .split(',')
+          .map((email) => email.trim())
+          .filter(Boolean)
+        for (const adminMailbox of adminMailboxList) {
+          if (adminMailbox.toLowerCase() === recipient.toLowerCase()) continue
           const copyMessageId = crypto.randomUUID()
           try {
             await sendLovableEmail(
@@ -226,9 +230,10 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           } catch (error) {
             const msg = error instanceof Error ? error.message : String(error)
             await logSend('failed', msg.slice(0, 1000), 'form-notification-admin-copy', adminMailbox)
-            console.error('Failed to send admin copy of form notification')
+            console.error('Failed to send admin copy of form notification to', adminMailbox)
           }
         }
+
 
         // Send applicant auto-reply when an email address was provided
         if (parsed.replyTo) {
