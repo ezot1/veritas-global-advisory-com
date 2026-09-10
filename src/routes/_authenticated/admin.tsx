@@ -153,6 +153,7 @@ function AdminPage() {
         <div className="flex items-center gap-1 mb-5 border-b border-border">
           {([
             ["inbox", "Inbox"],
+            ["received", "Received replies"],
             ["compose", "New email"],
             ["sent", "Sent"],
             ["snippets", "Reply snippets"],
