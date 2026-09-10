@@ -183,7 +183,6 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           if (contentType.includes('application/json')) {
             raw = (await request.json()) as Record<string, unknown>
             raw = normalizeBrevo(raw)
-          }
           } else if (
             contentType.includes('message/rfc822') ||
             contentType.includes('text/plain') ||
