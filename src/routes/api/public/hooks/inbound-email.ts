@@ -51,7 +51,8 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
         if (!secret) {
           return Response.json({ error: 'Server configuration error' }, { status: 500 })
         }
-        const provided = request.headers.get('x-inbound-secret') ?? ''
+        const url = new URL(request.url)
+        const provided = request.headers.get('x-inbound-secret') ?? url.searchParams.get('secret') ?? ''
         if (provided !== secret) {
           return Response.json({ error: 'Unauthorized' }, { status: 401 })
         }
@@ -64,13 +65,38 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
 
         let parsed: z.infer<typeof bodySchema>
         try {
-          parsed = bodySchema.parse(await request.json())
+          const contentType = request.headers.get('content-type') ?? ''
+          let raw: Record<string, unknown>
+          if (contentType.includes('application/json')) {
+            raw = (await request.json()) as Record<string, unknown>
+          } else {
+            // Form-encoded / multipart providers (Mailgun routes, Zapier, Make, ImprovMX)
+            const form = await request.formData()
+            const get = (...keys: string[]) => {
+              for (const k of keys) {
+                const v = form.get(k)
+                if (typeof v === 'string' && v.trim()) return v
+              }
+              return undefined
+            }
+            raw = {
+              from: get('from', 'sender', 'From'),
+              fromName: get('fromName', 'from_name'),
+              to: get('to', 'recipient', 'To'),
+              subject: get('subject', 'Subject'),
+              text: get('text', 'stripped-text', 'body-plain'),
+              html: get('html', 'stripped-html', 'body-html'),
+              messageId: get('messageId', 'Message-Id', 'message-id'),
+            }
+          }
+          parsed = bodySchema.parse(raw)
         } catch (err) {
           return Response.json(
             { error: 'Invalid payload', detail: err instanceof Error ? err.message : 'parse error' },
             { status: 400 },
           )
         }
+
 
         const senderEmail = extractEmail(parsed.from)
         if (!senderEmail) return Response.json({ error: 'Unparsable sender address' }, { status: 400 })
