@@ -45,7 +45,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
-  const [tab, setTab] = useState<"inbox" | "compose" | "sent" | "snippets" | "settings" | "shares">("inbox");
+  const [tab, setTab] = useState<"inbox" | "compose" | "sent" | "snippets" | "settings" | "shares" | "replies">("inbox");
   const [error, setError] = useState<string | null>(null);
 
 
@@ -158,6 +158,7 @@ function AdminPage() {
             ["snippets", "Reply snippets"],
             ["settings", "Email branding"],
             ["shares", "Share analytics"],
+            ["replies", "Reply tracking"],
           ] as const).map(([id, label]) => (
             <button
               key={id}
@@ -247,6 +248,7 @@ function AdminPage() {
         {tab === "snippets" && <SnippetsPanel />}
         {tab === "settings" && <EmailSettingsPanel />}
         {tab === "shares" && <ShareAnalyticsPanel />}
+        {tab === "replies" && <ReplyTrackingPanel />}
       </div>
 
     </div>
