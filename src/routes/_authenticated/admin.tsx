@@ -45,7 +45,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
-  const [tab, setTab] = useState<"inbox" | "compose" | "sent" | "snippets" | "settings" | "shares" | "replies">("inbox");
+  const [tab, setTab] = useState<"inbox" | "received" | "compose" | "sent" | "snippets" | "settings" | "shares" | "replies">("inbox");
   const [error, setError] = useState<string | null>(null);
 
 
