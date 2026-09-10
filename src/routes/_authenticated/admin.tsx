@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages } from "@/lib/admin/reply.functions";
 import { sendComposedEmail, listSentEmails, listAllSentEmails } from "@/lib/admin/compose.functions";
+import { listReplyTracking, type ReplyTrackingContact } from "@/lib/admin/reply-tracking.functions";
 import {
   listReplyTemplates,
   createReplyTemplate,
@@ -44,7 +45,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
-  const [tab, setTab] = useState<"inbox" | "compose" | "sent" | "snippets" | "settings" | "shares">("inbox");
+  const [tab, setTab] = useState<"inbox" | "compose" | "sent" | "snippets" | "settings" | "shares" | "replies">("inbox");
   const [error, setError] = useState<string | null>(null);
 
 
@@ -157,6 +158,7 @@ function AdminPage() {
             ["snippets", "Reply snippets"],
             ["settings", "Email branding"],
             ["shares", "Share analytics"],
+            ["replies", "Reply tracking"],
           ] as const).map(([id, label]) => (
             <button
               key={id}
@@ -246,6 +248,7 @@ function AdminPage() {
         {tab === "snippets" && <SnippetsPanel />}
         {tab === "settings" && <EmailSettingsPanel />}
         {tab === "shares" && <ShareAnalyticsPanel />}
+        {tab === "replies" && <ReplyTrackingPanel />}
       </div>
 
     </div>
@@ -1427,5 +1430,145 @@ function SentPanel() {
         </main>
       </div>
     </>
+  );
+}
+
+function fmtHours(h: number | null) {
+  if (h === null) return "n/a";
+  if (h < 1) return `${Math.max(1, Math.round(h * 60))} min`;
+  if (h < 48) return `${h} hr`;
+  return `${Math.round((h / 24) * 10) / 10} days`;
+}
+
+function ReplyTrackingPanel() {
+  const [rows, setRows] = useState<ReplyTrackingContact[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState<string | null>(null);
+  const [region, setRegion] = useState<string>("all");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await listReplyTracking();
+        setRows(res.contacts as ReplyTrackingContact[]);
+      } catch (e) {
+        setErr(e instanceof Error ? e.message : "Failed to load reply tracking");
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const regions = useMemo(
+    () => Array.from(new Set(rows.map((r) => r.region))).sort(),
+    [rows],
+  );
+  const visible = useMemo(
+    () => (region === "all" ? rows : rows.filter((r) => r.region === region)),
+    [rows, region],
+  );
+  const grouped = useMemo(() => {
+    const map = new Map<string, ReplyTrackingContact[]>();
+    for (const r of visible) map.set(r.region, [...(map.get(r.region) ?? []), r]);
+    return Array.from(map.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [visible]);
+
+  const totalReplies = visible.reduce((sum, r) => sum + r.replyCount, 0);
+  const withTime = visible.filter((r) => r.avgReplyHours !== null);
+  const overallAvg =
+    withTime.length > 0
+      ? Math.round((withTime.reduce((s, r) => s + (r.avgReplyHours ?? 0), 0) / withTime.length) * 10) / 10
+      : null;
+
+  if (loading) return <div className="p-6 text-sm text-muted-foreground">Loading reply tracking…</div>;
+  if (err) return <div className="p-6 text-sm text-red-600">{err}</div>;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid sm:grid-cols-3 gap-4">
+        {[
+          ["People who replied", String(visible.length)],
+          ["Total replies received", String(totalReplies)],
+          ["Average response time", fmtHours(overallAvg)],
+        ].map(([label, value]) => (
+          <div key={label} className="border border-border bg-white p-5">
+            <div className="text-xs uppercase tracking-wider text-muted-foreground">{label}</div>
+            <div className="text-2xl font-semibold mt-1">{value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2 flex-wrap">
+        {["all", ...regions].map((r) => (
+          <button
+            key={r}
+            onClick={() => setRegion(r)}
+            className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
+              region === r
+                ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {r} {r !== "all" && `(${rows.filter((x) => x.region === r).length})`}
+          </button>
+        ))}
+      </div>
+
+      {grouped.length === 0 && (
+        <div className="border border-border bg-white p-6 text-sm text-muted-foreground">
+          No replies recorded yet. Once someone answers one of your emails, they appear here.
+        </div>
+      )}
+
+      {grouped.map(([regionName, list]) => (
+        <div key={regionName} className="border border-border bg-white">
+          <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+            <h3 className="text-sm font-semibold tracking-tight">{regionName}</h3>
+            <span className="text-xs text-muted-foreground">{list.length} respondents</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-xs uppercase tracking-wider text-muted-foreground">
+                <tr className="border-b border-border">
+                  <th className="text-left px-5 py-2 font-medium">Person</th>
+                  <th className="text-left px-5 py-2 font-medium">Country</th>
+                  <th className="text-left px-5 py-2 font-medium">Replies</th>
+                  <th className="text-left px-5 py-2 font-medium">First response</th>
+                  <th className="text-left px-5 py-2 font-medium">Average</th>
+                  <th className="text-left px-5 py-2 font-medium">Last reply</th>
+                  <th className="text-left px-5 py-2 font-medium">Topics</th>
+                </tr>
+              </thead>
+              <tbody>
+                {list.map((r) => (
+                  <tr key={r.submissionId} className="border-b border-border last:border-0 align-top">
+                    <td className="px-5 py-3">
+                      <div className="font-medium">{r.name}</div>
+                      <div className="text-xs text-muted-foreground">{r.email}</div>
+                    </td>
+                    <td className="px-5 py-3">{r.country ?? "-"}</td>
+                    <td className="px-5 py-3">{r.replyCount}</td>
+                    <td className="px-5 py-3">{fmtHours(r.firstReplyHours)}</td>
+                    <td className="px-5 py-3">{fmtHours(r.avgReplyHours)}</td>
+                    <td className="px-5 py-3 text-xs text-muted-foreground">
+                      {r.lastReplyAt ? new Date(r.lastReplyAt).toLocaleString() : "-"}
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex flex-wrap gap-1">
+                        {r.topics.map((t) => (
+                          <span key={t} className="px-2 py-0.5 text-xs bg-gray-100 border border-border">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
