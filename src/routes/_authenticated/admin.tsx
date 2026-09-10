@@ -35,6 +35,7 @@ type Submission = {
 };
 
 const STATUS_OPTIONS = ["new", "read", "replied", "archived"] as const;
+const FOLDER_OPTIONS = ["spam", "trash"] as const;
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ function AdminPage() {
   }
 
   async function remove(id: string) {
-    if (!confirm("Delete this submission?")) return;
+    if (!confirm("Permanently delete this submission? This cannot be undone.")) return;
     const { error } = await supabase.from("form_submissions").delete().eq("id", id);
     if (!error) {
       setItems((arr) => arr.filter((i) => i.id !== id));
