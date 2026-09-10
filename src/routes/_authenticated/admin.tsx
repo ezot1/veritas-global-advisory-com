@@ -244,6 +244,7 @@ function AdminPage() {
           </>
         )}
 
+        {tab === "received" && <ReceivedRepliesPanel />}
         {tab === "compose" && <ComposePanel />}
         {tab === "sent" && <SentPanel />}
         {tab === "snippets" && <SnippetsPanel />}
