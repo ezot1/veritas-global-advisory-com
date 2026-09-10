@@ -136,6 +136,26 @@ function parseRawEmail(raw: string): ParsedMime {
   }
 }
 
+/** Brevo Inbound Parsing posts { items: [ { From, To, Subject, RawTextBody, ... } ] }. */
+function normalizeBrevo(raw: Record<string, unknown>): Record<string, unknown> {
+  const items = (raw as { items?: unknown[] }).items
+  const item = Array.isArray(items) ? (items[0] as Record<string, any> | undefined) : undefined
+  if (!item) return raw
+  const headers = (item['Headers'] ?? {}) as Record<string, unknown>
+  const firstTo = Array.isArray(item['To']) ? (item['To'][0] as Record<string, unknown> | undefined) : undefined
+  return {
+    from: String(item['From']?.Address ?? ''),
+    fromName: item['From']?.Name ? String(item['From'].Name) : undefined,
+    to: firstTo?.['Address'] ? String(firstTo['Address']) : undefined,
+    subject: item['Subject'] ? String(item['Subject']) : undefined,
+    text: item['RawTextBody'] ? String(item['RawTextBody']) : undefined,
+    html: item['RawHtmlBody'] ? String(item['RawHtmlBody']) : undefined,
+    messageId: item['MessageId'] ? String(item['MessageId']).replace(/[<>]/g, '') : undefined,
+    inReplyTo: headers['In-Reply-To'] ? String(headers['In-Reply-To']).replace(/[<>]/g, '') : undefined,
+    references: headers['References'] ? String(headers['References']).replace(/[<>]/g, '').slice(0, 1000) : undefined,
+  }
+}
+
 export const Route = createFileRoute('/api/public/hooks/inbound-email')({
   server: {
     handlers: {
@@ -162,6 +182,7 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           let raw: Record<string, unknown>
           if (contentType.includes('application/json')) {
             raw = (await request.json()) as Record<string, unknown>
+            raw = normalizeBrevo(raw)
           } else if (
             contentType.includes('message/rfc822') ||
             contentType.includes('text/plain') ||
