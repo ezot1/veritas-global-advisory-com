@@ -31,6 +31,7 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
+import { Route as ApiPublicHooksInboundEmailRouteImport } from './routes/api/public/hooks/inbound-email'
 import { Route as ApiPublicHooksGenerateArticleRouteImport } from './routes/api/public/hooks/generate-article'
 import { Route as ApiPublicFormsSubmitRouteImport } from './routes/api/public/forms/submit'
 
@@ -147,6 +148,12 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   path: '/lovable/email/auth/preview',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksInboundEmailRoute =
+  ApiPublicHooksInboundEmailRouteImport.update({
+    id: '/api/public/hooks/inbound-email',
+    path: '/api/public/hooks/inbound-email',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksGenerateArticleRoute =
   ApiPublicHooksGenerateArticleRouteImport.update({
     id: '/api/public/hooks/generate-article',
@@ -180,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
+  '/api/public/hooks/inbound-email': typeof ApiPublicHooksInboundEmailRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -205,6 +213,7 @@ export interface FileRoutesByTo {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
+  '/api/public/hooks/inbound-email': typeof ApiPublicHooksInboundEmailRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -232,6 +241,7 @@ export interface FileRoutesById {
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/forms/submit': typeof ApiPublicFormsSubmitRoute
   '/api/public/hooks/generate-article': typeof ApiPublicHooksGenerateArticleRoute
+  '/api/public/hooks/inbound-email': typeof ApiPublicHooksInboundEmailRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -259,6 +269,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/forms/submit'
     | '/api/public/hooks/generate-article'
+    | '/api/public/hooks/inbound-email'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/forms/submit'
     | '/api/public/hooks/generate-article'
+    | '/api/public/hooks/inbound-email'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -310,6 +322,7 @@ export interface FileRouteTypes {
     | '/lovable/email/events'
     | '/api/public/forms/submit'
     | '/api/public/hooks/generate-article'
+    | '/api/public/hooks/inbound-email'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -336,6 +349,7 @@ export interface RootRouteChildren {
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicFormsSubmitRoute: typeof ApiPublicFormsSubmitRoute
   ApiPublicHooksGenerateArticleRoute: typeof ApiPublicHooksGenerateArticleRoute
+  ApiPublicHooksInboundEmailRoute: typeof ApiPublicHooksInboundEmailRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -497,6 +511,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailAuthPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/inbound-email': {
+      id: '/api/public/hooks/inbound-email'
+      path: '/api/public/hooks/inbound-email'
+      fullPath: '/api/public/hooks/inbound-email'
+      preLoaderRoute: typeof ApiPublicHooksInboundEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/generate-article': {
       id: '/api/public/hooks/generate-article'
       path: '/api/public/hooks/generate-article'
@@ -547,6 +568,7 @@ const rootRouteChildren: RootRouteChildren = {
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicFormsSubmitRoute: ApiPublicFormsSubmitRoute,
   ApiPublicHooksGenerateArticleRoute: ApiPublicHooksGenerateArticleRoute,
+  ApiPublicHooksInboundEmailRoute: ApiPublicHooksInboundEmailRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
