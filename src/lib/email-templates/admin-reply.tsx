@@ -12,6 +12,7 @@ interface Props {
   introText?: string
   signature?: string
   footerText?: string
+  replyUrl?: string
 }
 
 const Email = ({
