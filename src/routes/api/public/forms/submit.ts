@@ -169,6 +169,8 @@ export const Route = createFileRoute('/api/public/forms/submit')({
 
         const { EmailAPIError, sendLovableEmail } = await import('@lovable.dev/email-js')
 
+        let notificationDelivered = true
+
         try {
           await sendLovableEmail(
             {
@@ -189,14 +191,44 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           const suppressed = error instanceof EmailAPIError && error.code === 'recipient_suppressed'
           const msg = error instanceof Error ? error.message : String(error)
           await logSend(suppressed ? 'suppressed' : 'failed', suppressed ? 'Recipient suppressed' : msg.slice(0, 1000))
-          if (suppressed) {
-            return Response.json({ success: true }, { headers: corsHeaders })
+          // Do not stop here: the internal @veritasglobaladvisory.org address has no mail
+          // host and may be suppressed, but the monitored mailbox copy below must still go out.
+          if (!suppressed) {
+            console.error('Failed to send form notification')
           }
-          console.error('Failed to send form notification')
-          return Response.json({ error: 'Failed to send' }, { status: 500, headers: corsHeaders })
+          notificationDelivered = false
         }
 
-        await logSend('sent')
+        if (notificationDelivered) await logSend('sent')
+
+        // Also deliver a copy to a real, monitored mailbox. The @veritasglobaladvisory.org
+        // addresses have no mail host, so notifications sent only there are never received.
+        const adminMailbox = (process.env['ADMIN_NOTIFY_EMAIL'] ?? 'Polungah@gmail.com').trim()
+        if (adminMailbox && adminMailbox.toLowerCase() !== recipient.toLowerCase()) {
+          const copyMessageId = crypto.randomUUID()
+          try {
+            await sendLovableEmail(
+              {
+                to: adminMailbox,
+                from: `${fromLabel} <${fromAddress}>`,
+                sender_domain: SENDER_DOMAIN,
+                subject: parsed.formTitle,
+                html,
+                text,
+                purpose: 'transactional',
+                label: `form-${parsed.formType}-admin-copy`,
+                idempotency_key: copyMessageId,
+                reply_to: parsed.replyTo,
+              },
+              { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
+            )
+            await logSend('sent', undefined, 'form-notification-admin-copy', adminMailbox)
+          } catch (error) {
+            const msg = error instanceof Error ? error.message : String(error)
+            await logSend('failed', msg.slice(0, 1000), 'form-notification-admin-copy', adminMailbox)
+            console.error('Failed to send admin copy of form notification')
+          }
+        }
 
         // Send applicant auto-reply when an email address was provided
         if (parsed.replyTo) {
