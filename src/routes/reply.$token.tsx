@@ -68,7 +68,7 @@ function ReplyPage() {
       <PageHeader
         eyebrow="Secure message"
         title="Reply to Veritas Global Advisory"
-        subtitle="Your message goes straight to our team. No account needed."
+        intro="Your message goes straight to our team. No account needed."
       />
       <Section>
         <div className="mx-auto max-w-2xl">
