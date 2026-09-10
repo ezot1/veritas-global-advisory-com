@@ -21,6 +21,8 @@ const bodySchema = z.object({
   text: z.string().max(100000).optional(),
   html: z.string().max(400000).optional(),
   messageId: z.string().trim().max(400).optional(),
+  inReplyTo: z.string().trim().max(400).optional(),
+  references: z.string().trim().max(1000).optional(),
 })
 
 function extractEmail(value: string): string | null {
@@ -71,7 +73,16 @@ function decodeHeaderValue(value: string): string {
   )
 }
 
-type ParsedMime = { from: string; to?: string; subject?: string; text?: string; html?: string; messageId?: string }
+type ParsedMime = {
+  from: string
+  to?: string
+  subject?: string
+  text?: string
+  html?: string
+  messageId?: string
+  inReplyTo?: string
+  references?: string
+}
 
 /** Minimal RFC 822 parser: headers plus the best text/html part. */
 function parseRawEmail(raw: string): ParsedMime {
@@ -120,6 +131,8 @@ function parseRawEmail(raw: string): ParsedMime {
     text: text?.trim() || undefined,
     html: html?.trim() || undefined,
     messageId: headers.get('message-id')?.replace(/[<>]/g, '') || undefined,
+    inReplyTo: headers.get('in-reply-to')?.replace(/[<>]/g, '') || undefined,
+    references: headers.get('references')?.replace(/[<>]/g, '') || undefined,
   }
 }
 
@@ -154,10 +167,8 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
             contentType.includes('text/plain') ||
             contentType === ''
           ) {
-            // Raw MIME message (Cloudflare Email Worker forwarding message.raw)
             raw = parseRawEmail(await request.text()) as unknown as Record<string, unknown>
           } else {
-            // Form-encoded / multipart providers (Mailgun routes, Zapier, Make, ImprovMX)
             const form = await request.formData()
             const get = (...keys: string[]) => {
               for (const k of keys) {
@@ -174,6 +185,8 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
               text: get('text', 'stripped-text', 'body-plain'),
               html: get('html', 'stripped-html', 'body-html'),
               messageId: get('messageId', 'Message-Id', 'message-id'),
+              inReplyTo: get('inReplyTo', 'In-Reply-To'),
+              references: get('references', 'References'),
             }
           }
           parsed = bodySchema.parse(raw)
@@ -183,7 +196,6 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
             { status: 400 },
           )
         }
-
 
         const senderEmail = extractEmail(parsed.from)
         if (!senderEmail) return Response.json({ error: 'Unparsable sender address' }, { status: 400 })
@@ -198,7 +210,6 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           auth: { persistSession: false, autoRefreshToken: false },
         })
 
-        // Ignore duplicate deliveries of the same message
         if (parsed.messageId) {
           const { data: dupe } = await supabase
             .from('submission_messages')
@@ -208,16 +219,31 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           if (dupe) return Response.json({ ok: true, duplicate: true })
         }
 
-        // Attach to the most recent conversation from this sender, else open one
-        const { data: existing } = await supabase
-          .from('form_submissions')
-          .select('id')
-          .eq('sender_email', senderEmail)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle()
+        let submissionId: string | null = null
 
-        let submissionId = existing?.id ?? null
+        // 1. Try matching by In-Reply-To header
+        if (parsed.inReplyTo) {
+          const { data: parentMsg } = await supabase
+            .from('submission_messages')
+            .select('submission_id')
+            .eq('message_id', parsed.inReplyTo)
+            .maybeSingle()
+          if (parentMsg) {
+            submissionId = parentMsg.submission_id
+          }
+        }
+
+        // 2. Fallback to sender email if no match by message ID
+        if (!submissionId) {
+          const { data: existing } = await supabase
+            .from('form_submissions')
+            .select('id')
+            .eq('sender_email', senderEmail)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          submissionId = existing?.id ?? null
+        }
 
         if (!submissionId) {
           const { data: created, error: createErr } = await supabase
