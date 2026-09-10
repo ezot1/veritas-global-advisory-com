@@ -57,11 +57,11 @@ const services = [
 ];
 
 const regions = [
-  { name: "Africa", experts: "8 experts", reports: "20 reports" },
-  { name: "Asia-Pacific", experts: "10 experts", reports: "24 reports" },
-  { name: "Europe", experts: "9 experts", reports: "22 reports" },
-  { name: "Middle East", experts: "6 experts", reports: "16 reports" },
-  { name: "Americas", experts: "7 experts", reports: "18 reports" },
+  { name: "Africa", experts: "10 experts", reports: "20 reports" },
+  { name: "Asia-Pacific", experts: "13 experts", reports: "24 reports" },
+  { name: "Europe", experts: "12 experts", reports: "22 reports" },
+  { name: "Middle East", experts: "8 experts", reports: "16 reports" },
+  { name: "Americas", experts: "9 experts", reports: "18 reports" },
 ];
 
 function Index() {
