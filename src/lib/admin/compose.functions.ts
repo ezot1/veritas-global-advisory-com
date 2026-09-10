@@ -58,6 +58,55 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       .eq('template_name', 'admin-reply')
       .maybeSingle()
 
+    const messageId = crypto.randomUUID()
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+
+    // Open a conversation thread for this outbound email so any answer lands in the inbox
+    let threadId: string | null = null
+    const { data: threadRow } = await supabaseAdmin
+      .from('form_submissions')
+      .insert({
+        form_type: 'outreach',
+        department: deptKey,
+        recipient_email: fromEmail,
+        subject: data.subject,
+        sender_email: data.toEmail,
+        message: data.body,
+        status: 'replied',
+      })
+      .select('id')
+      .maybeSingle()
+    threadId = (threadRow?.id as string | undefined) ?? null
+
+    // Private in-house reply link so the recipient can answer on the site
+    let replyUrl = ''
+    if (threadId) {
+      const replyToken = `${crypto.randomUUID()}${crypto.randomUUID()}`.replace(/-/g, '')
+      const { error: linkErr } = await supabaseAdmin.from('reply_links').insert({
+        token: replyToken,
+        submission_id: threadId,
+        email: data.toEmail,
+      })
+      if (!linkErr) {
+        const base = process.env['SITE_URL'] ?? 'https://www.veritasglobaladvisory.org'
+        replyUrl = `${base.replace(/\/$/, '')}/reply/${replyToken}`
+      }
+
+      await supabaseAdmin.from('submission_messages').insert({
+        submission_id: threadId,
+        direction: 'outbound',
+        from_email: fromEmail,
+        from_label: fromLabel,
+        to_email: data.toEmail,
+        reply_to: fromEmail,
+        subject: data.subject,
+        body_text: data.body,
+        message_id: messageId,
+        status: 'queued',
+        sent_by: userId,
+      })
+    }
+
     const element = React.createElement(template.component, {
       subject: data.subject,
       bodyText: data.body,
@@ -67,13 +116,11 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
       introText: settingsRow?.intro_text ?? '',
       signature: settingsRow?.signature ?? fromLabel,
-      footerText: settingsRow?.footer_text ?? 'Reply directly to this email to reach us.',
+      footerText: settingsRow?.footer_text ?? 'Use the reply button above to reach us.',
+      replyUrl,
     })
     const html = await render(element)
     const text = await render(element, { plainText: true })
-
-    const messageId = crypto.randomUUID()
-    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
 
     const logSend = async (status: string, errorMessage?: string) => {
       const { error } = await supabaseAdmin.from('email_send_log').insert({
@@ -115,6 +162,10 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       const suppressed = error instanceof EmailAPIError && error.code === 'recipient_suppressed'
       const msg = error instanceof Error ? error.message : String(error)
       await logSend(suppressed ? 'suppressed' : 'failed', suppressed ? 'Recipient suppressed' : msg.slice(0, 1000))
+      await supabaseAdmin
+        .from('submission_messages')
+        .update({ status: 'failed', error_message: suppressed ? 'Recipient suppressed' : msg.slice(0, 1000) })
+        .eq('message_id', messageId)
       if (suppressed) {
         return { success: false, suppressed: true, messageId }
       }
@@ -122,6 +173,7 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
     }
 
     await logSend('sent')
+    await supabaseAdmin.from('submission_messages').update({ status: 'sent' }).eq('message_id', messageId)
     return { success: true, suppressed: false, messageId }
   })
 
