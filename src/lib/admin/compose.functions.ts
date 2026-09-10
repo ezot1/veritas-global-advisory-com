@@ -162,6 +162,10 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       const suppressed = error instanceof EmailAPIError && error.code === 'recipient_suppressed'
       const msg = error instanceof Error ? error.message : String(error)
       await logSend(suppressed ? 'suppressed' : 'failed', suppressed ? 'Recipient suppressed' : msg.slice(0, 1000))
+      await supabaseAdmin
+        .from('submission_messages')
+        .update({ status: 'failed', error_message: suppressed ? 'Recipient suppressed' : msg.slice(0, 1000) })
+        .eq('message_id', messageId)
       if (suppressed) {
         return { success: false, suppressed: true, messageId }
       }
@@ -169,6 +173,7 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
     }
 
     await logSend('sent')
+    await supabaseAdmin.from('submission_messages').update({ status: 'sent' }).eq('message_id', messageId)
     return { success: true, suppressed: false, messageId }
   })
 
