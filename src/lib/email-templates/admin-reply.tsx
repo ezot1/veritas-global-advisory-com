@@ -12,6 +12,7 @@ interface Props {
   introText?: string
   signature?: string
   footerText?: string
+  replyUrl?: string
 }
 
 const Email = ({
@@ -24,6 +25,7 @@ const Email = ({
   introText = '',
   signature = 'Veritas Global Advisory',
   footerText = 'Reply directly to this email to reach us.',
+  replyUrl = '',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -48,6 +50,16 @@ const Email = ({
         {signature ? (
           <Section>
             <Text style={p}>{signature}</Text>
+          </Section>
+        ) : null}
+        {replyUrl ? (
+          <Section style={{ margin: '8px 0 4px' }}>
+            <a href={replyUrl} style={{ ...button, backgroundColor: '#0b1c3a' }}>
+              Reply to this message
+            </a>
+            <Text style={{ ...footer, marginTop: '10px' }}>
+              Your reply reaches our team directly and securely.
+            </Text>
           </Section>
         ) : null}
         <Hr style={hr} />
@@ -86,3 +98,12 @@ const hr: React.CSSProperties = { borderColor: '#e5e7eb', margin: '20px 0' }
 const intro: React.CSSProperties = { fontSize: '14px', color: '#4a5568', margin: '0 0 14px', lineHeight: 1.6, fontStyle: 'italic' }
 const p: React.CSSProperties = { fontSize: '15px', color: '#0b1c3a', margin: '0 0 14px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }
 const footer: React.CSSProperties = { fontSize: '12px', color: '#6b7280', margin: 0, lineHeight: 1.55 }
+const button: React.CSSProperties = {
+  display: 'inline-block',
+  padding: '12px 22px',
+  borderRadius: '4px',
+  color: '#ffffff',
+  fontSize: '14px',
+  fontWeight: 600,
+  textDecoration: 'none',
+}

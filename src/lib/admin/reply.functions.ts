@@ -73,6 +73,21 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       .eq('template_name', 'admin-reply')
       .maybeSingle()
 
+    // Private in-house reply link so the recipient can answer on the site
+    const { supabaseAdmin: admin } = await import('@/integrations/supabase/client.server')
+    const replyToken = `${crypto.randomUUID()}${crypto.randomUUID()}`.replace(/-/g, '')
+    let replyUrl = ''
+    const { error: linkErr } = await admin.from('reply_links').insert({
+      token: replyToken,
+      submission_id: submission.id,
+      email: recipient,
+      name: submission.sender_name,
+    })
+    if (!linkErr) {
+      const base = process.env['SITE_URL'] ?? 'https://www.veritasglobaladvisory.org'
+      replyUrl = `${base.replace(/\/$/, '')}/reply/${replyToken}`
+    }
+
     const templateData = {
       subject: data.subject,
       bodyText: data.body,
@@ -82,7 +97,8 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
       introText: settingsRow?.intro_text ?? '',
       signature: settingsRow?.signature ?? fromLabel,
-      footerText: settingsRow?.footer_text ?? 'Reply directly to this email to reach us.',
+      footerText: settingsRow?.footer_text ?? 'Use the reply button above to reach us.',
+      replyUrl,
     }
 
     const element = React.createElement(template.component, templateData)

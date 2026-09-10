@@ -326,6 +326,50 @@ export type Database = {
         }
         Relationships: []
       }
+      reply_links: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          last_used_at: string | null
+          name: string | null
+          submission_id: string
+          token: string
+          use_count: number
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          last_used_at?: string | null
+          name?: string | null
+          submission_id: string
+          token: string
+          use_count?: number
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          last_used_at?: string | null
+          name?: string | null
+          submission_id?: string
+          token?: string
+          use_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reply_links_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "form_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reply_templates: {
         Row: {
           body: string

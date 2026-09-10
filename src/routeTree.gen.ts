@@ -21,6 +21,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReplyTokenRouteImport } from './routes/reply.$token'
 import { Route as InsightsSlugRouteImport } from './routes/insights_.$slug'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -92,6 +93,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReplyTokenRoute = ReplyTokenRouteImport.update({
+  id: '/reply/$token',
+  path: '/reply/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsSlugRoute = InsightsSlugRouteImport.update({
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/insights/$slug': typeof InsightsSlugRoute
+  '/reply/$token': typeof ReplyTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
@@ -208,6 +215,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/insights/$slug': typeof InsightsSlugRoute
+  '/reply/$token': typeof ReplyTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
@@ -236,6 +244,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/insights_/$slug': typeof InsightsSlugRoute
+  '/reply/$token': typeof ReplyTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/insights/$slug'
+    | '/reply/$token'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/lovable/email/events'
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/insights/$slug'
+    | '/reply/$token'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/lovable/email/events'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
     | '/insights_/$slug'
+    | '/reply/$token'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/lovable/email/events'
@@ -344,6 +356,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   InsightsSlugRoute: typeof InsightsSlugRoute
+  ReplyTokenRoute: typeof ReplyTokenRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
@@ -439,6 +452,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reply/$token': {
+      id: '/reply/$token'
+      path: '/reply/$token'
+      fullPath: '/reply/$token'
+      preLoaderRoute: typeof ReplyTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights_/$slug': {
@@ -563,6 +583,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   InsightsSlugRoute: InsightsSlugRoute,
+  ReplyTokenRoute: ReplyTokenRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
