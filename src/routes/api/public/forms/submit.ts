@@ -169,6 +169,8 @@ export const Route = createFileRoute('/api/public/forms/submit')({
 
         const { EmailAPIError, sendLovableEmail } = await import('@lovable.dev/email-js')
 
+        let notificationDelivered = true
+
         try {
           await sendLovableEmail(
             {
