@@ -97,7 +97,8 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
       introText: settingsRow?.intro_text ?? '',
       signature: settingsRow?.signature ?? fromLabel,
-      footerText: settingsRow?.footer_text ?? 'Reply directly to this email to reach us.',
+      footerText: settingsRow?.footer_text ?? 'Use the reply button above to reach us.',
+      replyUrl,
     }
 
     const element = React.createElement(template.component, templateData)
