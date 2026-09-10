@@ -177,7 +177,7 @@ function AdminPage() {
         {tab === "inbox" && (
           <>
             <div className="flex items-center gap-2 mb-4 flex-wrap">
-              {(["all", ...STATUS_OPTIONS] as const).map((s) => (
+              {(["all", ...STATUS_OPTIONS, ...FOLDER_OPTIONS] as const).map((s) => (
                 <button
                   key={s}
                   onClick={() => setFilter(s)}
@@ -215,7 +215,9 @@ function AdminPage() {
                           {it.status !== "read" && it.status !== "archived" && (
                             <span className={`text-[10px] px-2 py-0.5 rounded-full ${
                               it.status === "new" ? "bg-blue-100 text-blue-700" :
-                              it.status === "replied" ? "bg-green-100 text-green-700" : "bg-gray-100"
+                              it.status === "replied" ? "bg-green-100 text-green-700" :
+                              it.status === "spam" ? "bg-amber-100 text-amber-800" :
+                              it.status === "trash" ? "bg-red-100 text-red-700" : "bg-gray-100"
                             }`}>{it.status}</span>
                           )}
                         </div>
@@ -524,15 +526,43 @@ function SubmissionDetail({
           </div>
           <h2 className="display-3 mt-1">{s.subject}</h2>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <select
             value={s.status}
             onChange={(e) => onStatus(s.id, e.target.value)}
             className="h-9 px-3 text-xs border border-border bg-background"
           >
-            {STATUS_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+            {[...STATUS_OPTIONS, ...FOLDER_OPTIONS].map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
-          <button onClick={() => onDelete(s.id)} className="text-xs text-red-600 hover:underline">Delete</button>
+          {s.status !== "spam" && s.status !== "trash" && (
+            <>
+              <button
+                onClick={() => onStatus(s.id, "spam")}
+                className="text-xs text-amber-700 hover:underline"
+              >
+                Spam
+              </button>
+              <button
+                onClick={() => onStatus(s.id, "trash")}
+                className="text-xs text-red-600 hover:underline"
+              >
+                Move to trash
+              </button>
+            </>
+          )}
+          {(s.status === "spam" || s.status === "trash") && (
+            <button
+              onClick={() => onStatus(s.id, "new")}
+              className="text-xs text-[var(--navy-deep)] hover:underline"
+            >
+              Restore to inbox
+            </button>
+          )}
+          {s.status === "trash" && (
+            <button onClick={() => onDelete(s.id)} className="text-xs text-red-600 hover:underline">
+              Delete permanently
+            </button>
+          )}
         </div>
       </div>
 
