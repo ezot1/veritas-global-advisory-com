@@ -198,6 +198,35 @@ export const Route = createFileRoute('/api/public/forms/submit')({
 
         await logSend('sent')
 
+        // Also deliver a copy to a real, monitored mailbox. The @veritasglobaladvisory.org
+        // addresses have no mail host, so notifications sent only there are never received.
+        const adminMailbox = (process.env['ADMIN_NOTIFY_EMAIL'] ?? 'Polungah@gmail.com').trim()
+        if (adminMailbox && adminMailbox.toLowerCase() !== recipient.toLowerCase()) {
+          const copyMessageId = crypto.randomUUID()
+          try {
+            await sendLovableEmail(
+              {
+                to: adminMailbox,
+                from: `${fromLabel} <${fromAddress}>`,
+                sender_domain: SENDER_DOMAIN,
+                subject: parsed.formTitle,
+                html,
+                text,
+                purpose: 'transactional',
+                label: `form-${parsed.formType}-admin-copy`,
+                idempotency_key: copyMessageId,
+                reply_to: parsed.replyTo,
+              },
+              { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
+            )
+            await logSend('sent', undefined, 'form-notification-admin-copy', adminMailbox)
+          } catch (error) {
+            const msg = error instanceof Error ? error.message : String(error)
+            await logSend('failed', msg.slice(0, 1000), 'form-notification-admin-copy', adminMailbox)
+            console.error('Failed to send admin copy of form notification')
+          }
+        }
+
         // Send applicant auto-reply when an email address was provided
         if (parsed.replyTo) {
           const autoReplyTemplate = TEMPLATES['auto-reply']
