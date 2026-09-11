@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Body,
+  Button,
   Container,
   Head,
   Heading,
@@ -19,6 +20,7 @@ interface Props {
   headerText?: string
   footerText?: string
   fromEmail?: string
+  replyUrl?: string
 }
 
 const Email = ({
@@ -28,6 +30,7 @@ const Email = ({
   headerText = 'VERITAS GLOBAL ADVISORY',
   footerText = 'This is an automated confirmation. Please do not reply to this email.',
   fromEmail = 'info@veritasglobaladvisory.org',
+  replyUrl = '',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
