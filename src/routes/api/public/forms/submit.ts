@@ -144,7 +144,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
         const messageVal =
           findField('message') ?? findField('cover') ?? findField('summary') ?? null
 
-        await supabase.from('form_submissions').insert({
+        const { data: insertedSubmission } = await supabase.from('form_submissions').insert({
           form_type: parsed.formType,
           department: parsed.department ?? null,
           recipient_email: recipient,
@@ -156,7 +156,24 @@ export const Route = createFileRoute('/api/public/forms/submit')({
           message: messageVal,
           fields: enrichedFields,
           status: 'new',
-        })
+        }).select('id').maybeSingle()
+
+        // In-house reply link: the sender answers on our own site and the message
+        // lands straight in the admin inbox thread, with no external mailbox needed.
+        let publicReplyUrl = ''
+        if (insertedSubmission?.id && parsed.replyTo) {
+          const replyToken = `${crypto.randomUUID()}${crypto.randomUUID()}`.replace(/-/g, '')
+          const { error: linkErr } = await supabase.from('reply_links').insert({
+            token: replyToken,
+            submission_id: insertedSubmission.id,
+            email: parsed.replyTo,
+            name: findField('name'),
+          })
+          if (!linkErr) {
+            const base = process.env['SITE_URL'] ?? 'https://www.veritasglobaladvisory.org'
+            publicReplyUrl = `${base.replace(/\/$/, '')}/reply/${replyToken}`
+          }
+        }
 
         const logSend = async (status: string, errorMessage?: string, templateName = 'form-notification', recipientEmail = recipient) => {
           const { error } = await supabase.from('email_send_log').insert({
@@ -258,6 +275,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
                 settingsRow?.footer_text ??
                 'Submitted via the Veritas Global Advisory website.',
               fromEmail: 'info@veritasglobaladvisory.org',
+              replyUrl: publicReplyUrl,
             }
             const autoReplyElement = React.createElement(autoReplyTemplate.component, autoReplyData)
             const autoReplyHtml = await render(autoReplyElement)
