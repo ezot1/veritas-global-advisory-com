@@ -275,6 +275,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
                 settingsRow?.footer_text ??
                 'Submitted via the Veritas Global Advisory website.',
               fromEmail: 'info@veritasglobaladvisory.org',
+              replyUrl: publicReplyUrl,
             }
             const autoReplyElement = React.createElement(autoReplyTemplate.component, autoReplyData)
             const autoReplyHtml = await render(autoReplyElement)
