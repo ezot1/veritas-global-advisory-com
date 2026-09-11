@@ -50,6 +50,16 @@ const Email = ({
             We have received your email. We will be in touch in the shortest time possible.
           </Text>
         </Section>
+        {replyUrl ? (
+          <Section style={{ textAlign: 'center', padding: '8px 0 4px' }}>
+            <Button href={replyUrl} style={{ ...button, backgroundColor: '#0b1c3a' }}>
+              Reply to this message
+            </Button>
+            <Text style={{ ...p, fontSize: '13px', color: '#5b6577' }}>
+              Your reply arrives directly with our team.
+            </Text>
+          </Section>
+        ) : null}
         <Hr style={hr} />
         <Text style={footer}>
           Veritas Global Advisory<br />
