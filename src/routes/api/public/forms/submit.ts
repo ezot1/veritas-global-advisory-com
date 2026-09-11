@@ -280,6 +280,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
                   purpose: 'transactional',
                   label: `auto-reply-${parsed.formType}`,
                   idempotency_key: autoReplyMessageId,
+                  reply_to: receivingInbox(),
                 },
                 { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
               )
