@@ -144,7 +144,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
         const messageVal =
           findField('message') ?? findField('cover') ?? findField('summary') ?? null
 
-        await supabase.from('form_submissions').insert({
+        const { data: insertedSubmission } = await supabase.from('form_submissions').insert({
           form_type: parsed.formType,
           department: parsed.department ?? null,
           recipient_email: recipient,
