@@ -106,6 +106,15 @@ const h1: React.CSSProperties = {
   lineHeight: 1.3,
 }
 const hr: React.CSSProperties = { borderColor: '#e5e7eb', margin: '24px 0' }
+const button: React.CSSProperties = {
+  color: '#ffffff',
+  fontSize: '14px',
+  fontWeight: 600,
+  padding: '12px 22px',
+  borderRadius: '4px',
+  textDecoration: 'none',
+  display: 'inline-block',
+}
 const greeting: React.CSSProperties = {
   fontSize: '16px',
   fontWeight: 600,
