@@ -76,11 +76,11 @@ function ReplyPage() {
             <p className="text-muted-foreground">Loading your conversation...</p>
           ) : !data?.valid ? (
             <p className="text-muted-foreground">
-              This reply link has expired or is not valid. Please write to us at{" "}
-              <a className="underline" href="mailto:info@veritasglobaladvisory.org">
-                info@veritasglobaladvisory.org
-              </a>
-              .
+              This reply link has expired or is not valid. Please use our{" "}
+              <a className="underline" href="/contact">
+                contact form
+              </a>{" "}
+              and we will get back to you.
             </p>
           ) : sent ? (
             <div className="rounded-lg border border-border bg-card p-8 text-center">

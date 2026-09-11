@@ -8,6 +8,9 @@ import { TEMPLATES } from '@/lib/email-templates/registry'
 const SITE_NAME = 'Veritas Global Advisory'
 const SENDER_DOMAIN = 'notify.veritasglobaladvisory.org'
 const FROM_DOMAIN = 'veritasglobaladvisory.org'
+// Monitored mailbox that can actually receive mail. The @veritasglobaladvisory.org
+// addresses have no MX record, so any reply sent there bounces.
+const receivingInbox = () => process.env['REPLY_INBOX'] ?? 'ezrao652@gmail.com'
 
 const DEPARTMENT_INBOXES: Record<string, string> = {
   general: 'info@veritasglobaladvisory.org',
@@ -277,6 +280,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
                   purpose: 'transactional',
                   label: `auto-reply-${parsed.formType}`,
                   idempotency_key: autoReplyMessageId,
+                  reply_to: receivingInbox(),
                 },
                 { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
               )
