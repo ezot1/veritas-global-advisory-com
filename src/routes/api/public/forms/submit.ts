@@ -10,7 +10,7 @@ const SENDER_DOMAIN = 'notify.veritasglobaladvisory.org'
 const FROM_DOMAIN = 'veritasglobaladvisory.org'
 // Monitored mailbox that can actually receive mail. The @veritasglobaladvisory.org
 // addresses have no MX record, so any reply sent there bounces.
-const RECEIVING_INBOX = process.env['REPLY_INBOX'] ?? 'ezrao652@gmail.com'
+const receivingInbox = () => process.env['REPLY_INBOX'] ?? 'ezrao652@gmail.com'
 
 const DEPARTMENT_INBOXES: Record<string, string> = {
   general: 'info@veritasglobaladvisory.org',
