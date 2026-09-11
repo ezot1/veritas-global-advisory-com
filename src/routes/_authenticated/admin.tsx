@@ -91,7 +91,12 @@ function AdminPage() {
   }, [isAdmin]);
 
   const filtered = useMemo(
-    () => (filter === "all" ? items : items.filter((i) => i.status === filter)),
+    () =>
+      filter === "all"
+        ? items.filter(
+            (i) => i.form_type !== "outreach" && !FOLDER_OPTIONS.includes(i.status as (typeof FOLDER_OPTIONS)[number]),
+          )
+        : items.filter((i) => i.status === filter),
     [items, filter],
   );
   const selected = filtered.find((i) => i.id === selectedId) ?? filtered[0] ?? null;
