@@ -148,14 +148,27 @@ function AuthPage() {
           </svg>
           Continue with Google
         </button>
-        <div className="mt-6 text-center text-sm text-muted-foreground">
+        <div className="mt-6 text-center text-sm text-muted-foreground space-y-2">
           {mode === "signin" ? (
-            <button onClick={() => setMode("signup")} className="underline hover:text-[var(--navy-deep)]">
-              Need an account? Sign up
+            <>
+              <div>
+                <button onClick={() => setMode("reset")} className="underline hover:text-[var(--navy-deep)]">
+                  Forgot password?
+                </button>
+              </div>
+              <div>
+                <button onClick={() => setMode("signup")} className="underline hover:text-[var(--navy-deep)]">
+                  Need an account? Sign up
+                </button>
+              </div>
+            </>
+          ) : mode === "signup" ? (
+            <button onClick={() => setMode("signin")} className="underline hover:text-[var(--navy-deep)]">
+              Already have an account? Sign in
             </button>
           ) : (
             <button onClick={() => setMode("signin")} className="underline hover:text-[var(--navy-deep)]">
-              Already have an account? Sign in
+              Back to sign in
             </button>
           )}
         </div>
