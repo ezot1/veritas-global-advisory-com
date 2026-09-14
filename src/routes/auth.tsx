@@ -85,7 +85,9 @@ function AuthPage() {
       <div className="card-elevated w-full max-w-md p-8 md:p-10">
         <div className="text-center mb-6">
           <span className="eyebrow">Admin Console</span>
-          <h1 className="display-3 mt-3">{mode === "signin" ? "Sign in" : "Create account"}</h1>
+          <h1 className="display-3 mt-3">
+            {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Reset password"}
+          </h1>
           <p className="text-sm text-muted-foreground mt-2">
             Restricted access for Veritas Global Advisory staff.
           </p>
@@ -96,14 +98,17 @@ function AuthPage() {
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
               className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
           </div>
-          <div>
-            <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Password</label>
-            <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
-          </div>
+          {mode !== "reset" && (
+            <div>
+              <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Password</label>
+              <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)}
+                className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+            </div>
+          )}
           {error && <p className="text-sm text-red-600">{error}</p>}
+          {message && <p className="text-sm text-green-600">{message}</p>}
           <button type="submit" disabled={busy} className="btn-primary w-full disabled:opacity-60">
-            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}
+            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Sign up" : "Send reset link"}
           </button>
         </form>
         <div className="my-6 flex items-center gap-3">
