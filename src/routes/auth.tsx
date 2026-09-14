@@ -26,10 +26,11 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { next } = Route.useSearch();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "reset">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   function goNext() {
@@ -50,20 +51,28 @@ function AuthPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setMessage(null);
     setBusy(true);
     try {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-      } else {
+        goNext();
+      } else if (mode === "signup") {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin + (next ?? "/admin") },
         });
         if (error) throw error;
+        setMessage("Check your email to confirm your account before signing in.");
+      } else {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (error) throw error;
+        setMessage("If this account exists, a password-reset email has been sent.");
       }
-      goNext();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
@@ -76,7 +85,9 @@ function AuthPage() {
       <div className="card-elevated w-full max-w-md p-8 md:p-10">
         <div className="text-center mb-6">
           <span className="eyebrow">Admin Console</span>
-          <h1 className="display-3 mt-3">{mode === "signin" ? "Sign in" : "Create account"}</h1>
+          <h1 className="display-3 mt-3">
+            {mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Reset password"}
+          </h1>
           <p className="text-sm text-muted-foreground mt-2">
             Restricted access for Veritas Global Advisory staff.
           </p>
@@ -87,14 +98,17 @@ function AuthPage() {
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
               className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
           </div>
-          <div>
-            <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Password</label>
-            <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
-          </div>
+          {mode !== "reset" && (
+            <div>
+              <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Password</label>
+              <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)}
+                className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+            </div>
+          )}
           {error && <p className="text-sm text-red-600">{error}</p>}
+          {message && <p className="text-sm text-green-600">{message}</p>}
           <button type="submit" disabled={busy} className="btn-primary w-full disabled:opacity-60">
-            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}
+            {busy ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Sign up" : "Send reset link"}
           </button>
         </form>
         <div className="my-6 flex items-center gap-3">
@@ -134,14 +148,27 @@ function AuthPage() {
           </svg>
           Continue with Google
         </button>
-        <div className="mt-6 text-center text-sm text-muted-foreground">
+        <div className="mt-6 text-center text-sm text-muted-foreground space-y-2">
           {mode === "signin" ? (
-            <button onClick={() => setMode("signup")} className="underline hover:text-[var(--navy-deep)]">
-              Need an account? Sign up
+            <>
+              <div>
+                <button onClick={() => setMode("reset")} className="underline hover:text-[var(--navy-deep)]">
+                  Forgot password?
+                </button>
+              </div>
+              <div>
+                <button onClick={() => setMode("signup")} className="underline hover:text-[var(--navy-deep)]">
+                  Need an account? Sign up
+                </button>
+              </div>
+            </>
+          ) : mode === "signup" ? (
+            <button onClick={() => setMode("signin")} className="underline hover:text-[var(--navy-deep)]">
+              Already have an account? Sign in
             </button>
           ) : (
             <button onClick={() => setMode("signin")} className="underline hover:text-[var(--navy-deep)]">
-              Already have an account? Sign in
+              Back to sign in
             </button>
           )}
         </div>
