@@ -3,7 +3,13 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
 import { useRef, useState } from "react";
-import { submitForm, uploadResume } from "@/lib/forms/submit";
+import { submitForm, uploadAttachment } from "@/lib/forms/submit";
+import {
+  INQUIRY_TYPES,
+  PREFERRED_CONTACT_METHODS,
+  SERVICES,
+  departmentForInquiryType,
+} from "@/lib/email/config";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
