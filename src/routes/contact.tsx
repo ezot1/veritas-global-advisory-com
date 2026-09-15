@@ -267,12 +267,12 @@ function ContactPage() {
   );
 }
 
-function Field({ label, name, type = "text", required, className = "" }: { label: string; name: string; type?: string; required?: boolean; className?: string }) {
+function Field({ label, name, type = "text", required, className = "", autoComplete }: { label: string; name: string; type?: string; required?: boolean; className?: string; autoComplete?: string }) {
   const id = `contact-${name}`;
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">{label}{required && <span className="text-[var(--gold)]"> *</span>}</label>
-      <input id={id} name={name} type={type} required={required} maxLength={500} className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
+      <input id={id} name={name} type={type} required={required} maxLength={500} autoComplete={autoComplete} className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
     </div>
   );
 }
