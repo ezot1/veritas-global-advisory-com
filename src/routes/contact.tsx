@@ -55,52 +55,84 @@ const emails = [
   ["Media", "media@veritasglobaladvisory.org"],
 ];
 
-const DEPARTMENTS = [
-  { value: "general", label: "General inquiry" },
-  { value: "business", label: "Business / consulting" },
-  { value: "research", label: "Research & analysis" },
-  { value: "careers", label: "Careers" },
-  { value: "media", label: "Media & press" },
-] as const;
-
-type DeptValue = (typeof DEPARTMENTS)[number]["value"];
-
 function ContactPage() {
   const [sent, setSent] = useState(false);
+  const [reference, setReference] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [inquiryType, setInquiryType] = useState<string>(INQUIRY_TYPES[0]);
 
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [resume, setResume] = useState<File | null>(null);
 
+  const isMedia = inquiryType === "Media";
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setSending(true);
     const fd = new FormData(e.currentTarget);
-    const department = (fd.get("department") as DeptValue) || "general";
-    const deptLabel = DEPARTMENTS.find(d => d.value === department)?.label ?? "General";
+
+    const email = String(fd.get("email") || "").trim();
+    const name = String(fd.get("name") || "").trim();
+    const subject = String(fd.get("subject") || "").trim();
+    const message = String(fd.get("message") || "").trim();
+    if (!name || !subject || !message) {
+      setError("Please complete all required fields.");
+      return;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    if (!fd.get("consent")) {
+      setError("Please confirm you consent to us handling your details.");
+      return;
+    }
+
+    setSending(true);
+    const department = departmentForInquiryType(inquiryType);
+    const deadline = String(fd.get("deadline") || "").trim();
     try {
       let resumeInfo: { path: string; name: string } | null = null;
-      if (resume) resumeInfo = await uploadResume(resume, "contact");
-      await submitForm({
-        formType: "contact",
+      if (resume) resumeInfo = await uploadAttachment(resume, "contact");
+      const result = await submitForm({
+        formType: isMedia ? "media" : "contact",
         department,
-        formTitle: `New contact inquiry - ${deptLabel}`,
+        inquiryType,
+        service: String(fd.get("service") || ""),
+        phone: String(fd.get("phone") || ""),
+        country: String(fd.get("country") || ""),
+        organization: String(fd.get("org") || ""),
+        preferredContactMethod: String(fd.get("preferred") || "Email"),
+        priority: isMedia && deadline ? "high" : "normal",
+        consent: true,
+        website: String(fd.get("website") || ""),
+        formTitle: `${inquiryType} - ${subject}`,
         formSubtitle: "A visitor submitted the contact form on veritasglobaladvisory.org.",
-        replyTo: String(fd.get("email") || ""),
+        replyTo: email,
         resumePath: resumeInfo?.path,
         resumeName: resumeInfo?.name,
         fields: [
-          { label: "Name", value: String(fd.get("name") || "") },
+          { label: "Full name", value: name },
           { label: "Organization", value: String(fd.get("org") || "") },
+          { label: "Email", value: email },
+          { label: "Phone", value: String(fd.get("phone") || "") },
           { label: "Country", value: String(fd.get("country") || "") },
-          { label: "Email", value: String(fd.get("email") || "") },
-          { label: "Department", value: deptLabel },
-          { label: "Subject", value: String(fd.get("subject") || "") },
-          { label: "Message", value: String(fd.get("message") || "") },
+          { label: "Inquiry type", value: inquiryType },
+          { label: "Service of interest", value: String(fd.get("service") || "") },
+          ...(isMedia
+            ? [
+                { label: "Publication", value: String(fd.get("publication") || "") },
+                { label: "Topic", value: String(fd.get("topic") || "") },
+                { label: "Deadline", value: deadline },
+              ]
+            : []),
+          { label: "Subject", value: subject },
+          { label: "Message", value: message },
+          { label: "Preferred contact method", value: String(fd.get("preferred") || "Email") },
         ],
       });
+      setReference(result.reference);
       setSent(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not send. Please email us directly.");
