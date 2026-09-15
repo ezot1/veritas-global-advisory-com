@@ -16,6 +16,7 @@ import type { TemplateEntry } from './registry'
 interface Props {
   firstName?: string
   subject?: string
+  referenceNumber?: string
   brandColor?: string
   headerText?: string
   footerText?: string
@@ -25,10 +26,11 @@ interface Props {
 
 const Email = ({
   firstName = '',
-  subject = 'We have received your message',
+  subject = 'We have received your inquiry',
+  referenceNumber = '',
   brandColor = '#b08838',
   headerText = 'VERITAS GLOBAL ADVISORY',
-  footerText = 'This is an automated confirmation. Please do not reply to this email.',
+  footerText = 'This is an automated confirmation of receipt.',
   fromEmail = 'info@veritasglobaladvisory.org',
   replyUrl = '',
 }: Props) => (
