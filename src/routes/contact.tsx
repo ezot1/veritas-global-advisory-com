@@ -169,21 +169,47 @@ function ContactPage() {
           </aside>
 
           <form onSubmit={handleSubmit} className="card-elevated p-8 md:p-12 grid sm:grid-cols-2 gap-6 self-start">
-            <Field label="Name" name="name" required />
-            <Field label="Organization" name="org" />
-            <Field label="Country" name="country" />
-            <Field label="Email" name="email" type="email" required />
-            <div className="sm:col-span-2">
-              <label htmlFor="contact-department" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">
-                Department <span className="text-[var(--gold)]">*</span>
+            <Field label="Full name" name="name" required autoComplete="name" />
+            <Field label="Organization" name="org" autoComplete="organization" />
+            <Field label="Email" name="email" type="email" required autoComplete="email" />
+            <Field label="Phone" name="phone" type="tel" autoComplete="tel" />
+            <Field label="Country" name="country" autoComplete="country-name" />
+            <div>
+              <label htmlFor="contact-preferred" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                Preferred contact method
               </label>
-              <select id="contact-department" name="department" required defaultValue="general"
+              <select id="contact-preferred" name="preferred" defaultValue="Email"
                 className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]">
-                {DEPARTMENTS.map((d) => (
-                  <option key={d.value} value={d.value}>{d.label}</option>
-                ))}
+                {PREFERRED_CONTACT_METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
               </select>
             </div>
+            <div>
+              <label htmlFor="contact-inquiry-type" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                Inquiry type <span className="text-[var(--gold)]">*</span>
+              </label>
+              <select id="contact-inquiry-type" name="inquiryType" required value={inquiryType}
+                onChange={(e) => setInquiryType(e.target.value)}
+                className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]">
+                {INQUIRY_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="contact-service" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">
+                Service of interest
+              </label>
+              <select id="contact-service" name="service" defaultValue=""
+                className="w-full h-12 px-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]">
+                <option value="">Not specified</option>
+                {SERVICES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </select>
+            </div>
+            {isMedia && (
+              <>
+                <Field label="Publication" name="publication" />
+                <Field label="Topic" name="topic" />
+                <Field label="Deadline" name="deadline" type="date" className="sm:col-span-2" />
+              </>
+            )}
             <Field label="Subject" name="subject" required className="sm:col-span-2" />
             <div className="sm:col-span-2">
               <label htmlFor="contact-message" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Message</label>
