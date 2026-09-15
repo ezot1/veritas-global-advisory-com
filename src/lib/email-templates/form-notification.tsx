@@ -37,6 +37,7 @@ const Email = ({
   brandColor = '#b08838',
   headerText = 'VERITAS GLOBAL ADVISORY',
   footerText = 'Submitted via the Veritas Global Advisory website.',
+  dashboardUrl = '',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -59,6 +60,26 @@ const Email = ({
             </Section>
           ))}
         </Section>
+
+        {dashboardUrl ? (
+          <Section style={{ textAlign: 'center', padding: '4px 0 8px' }}>
+            <Button
+              href={dashboardUrl}
+              style={{
+                backgroundColor: '#0b1c3a',
+                color: '#ffffff',
+                fontSize: '14px',
+                fontWeight: 600,
+                padding: '12px 22px',
+                borderRadius: '4px',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >
+              Open this inquiry in the dashboard
+            </Button>
+          </Section>
+        ) : null}
 
         <Hr style={hr} />
 
