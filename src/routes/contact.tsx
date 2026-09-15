@@ -216,23 +216,45 @@ function ContactPage() {
               <textarea id="contact-message" name="message" rows={6} required maxLength={5000} className="w-full px-4 py-3 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]" />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="contact-resume" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Attach Resume / CV <span className="normal-case tracking-normal text-muted-foreground">(optional · PDF or Word, max 10 MB)</span></label>
+              <label htmlFor="contact-resume" className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Attachment <span className="normal-case tracking-normal text-muted-foreground">(optional · PDF, Word, Excel, PNG or JPG, max 10 MB)</span></label>
               <input
                 id="contact-resume"
                 ref={fileRef}
                 type="file"
-                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
                 onChange={(e) => setResume(e.target.files?.[0] ?? null)}
                 className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-[var(--navy-deep)] file:text-white file:text-xs file:uppercase file:tracking-[0.16em] file:cursor-pointer"
               />
               {resume && <div className="mt-2 text-xs text-muted-foreground">Selected: {resume.name}</div>}
             </div>
-            <div className="sm:col-span-2 flex items-center justify-between gap-4 pt-2">
-              {sent
-                ? <p className="text-[var(--navy-deep)] font-medium">Thank you. We'll respond shortly.</p>
-                : error
-                  ? <p className="text-sm text-red-600">{error}</p>
-                  : <span className="text-xs text-muted-foreground">Replies typically within two business days.</span>}
+
+            {/* Anti-spam honeypot: hidden from people, ignored by the server when filled */}
+            <div aria-hidden="true" className="hidden">
+              <label htmlFor="contact-website">Website</label>
+              <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
+
+            <div className="sm:col-span-2 flex items-start gap-3">
+              <input id="contact-consent" name="consent" type="checkbox" required
+                className="mt-1 h-4 w-4 accent-[var(--navy-deep)]" />
+              <label htmlFor="contact-consent" className="text-sm text-muted-foreground leading-relaxed">
+                I consent to Veritas Global Advisory storing and using the details above to respond to my
+                inquiry. <span className="text-[var(--gold)]">*</span>
+              </label>
+            </div>
+
+            <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-4 pt-2">
+              <div aria-live="polite" className="min-w-0">
+                {sent ? (
+                  <p className="text-[var(--navy-deep)] font-medium">
+                    Thank you. Your inquiry has been received{reference ? <> under reference <strong>{reference}</strong></> : null}. A confirmation is on its way to your inbox.
+                  </p>
+                ) : error ? (
+                  <p role="alert" className="text-sm text-red-600">{error}</p>
+                ) : (
+                  <span className="text-xs text-muted-foreground">The relevant Veritas team will review your inquiry.</span>
+                )}
+              </div>
               <button type="submit" disabled={sending || sent} className="btn-primary disabled:opacity-60">
                 {sending ? "Sending…" : sent ? "Sent" : "Send Inquiry"}
               </button>
