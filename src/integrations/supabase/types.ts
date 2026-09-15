@@ -62,6 +62,92 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          resource: string
+          resource_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource: string
+          resource_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          resource?: string
+          resource_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      email_logs: {
+        Row: {
+          created_at: string
+          direction: string
+          error_message: string | null
+          from_address: string | null
+          id: string
+          inquiry_id: string | null
+          provider_message_id: string | null
+          received_at: string | null
+          reply_to: string | null
+          sent_at: string | null
+          status: string
+          subject: string | null
+          to_address: string | null
+        }
+        Insert: {
+          created_at?: string
+          direction: string
+          error_message?: string | null
+          from_address?: string | null
+          id?: string
+          inquiry_id?: string | null
+          provider_message_id?: string | null
+          received_at?: string | null
+          reply_to?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          to_address?: string | null
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          error_message?: string | null
+          from_address?: string | null
+          id?: string
+          inquiry_id?: string | null
+          provider_message_id?: string | null
+          received_at?: string | null
+          reply_to?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          to_address?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_logs_inquiry_id_fkey"
+            columns: ["inquiry_id"]
+            isOneToOne: false
+            referencedRelation: "form_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -122,6 +208,39 @@ export type Database = {
           send_delay_ms?: number
           transactional_email_ttl_minutes?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      email_settings: {
+        Row: {
+          auto_reply_enabled: boolean
+          default_notification_email: string
+          department_addresses: Json
+          email_signature: string
+          id: number
+          notification_preferences: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          auto_reply_enabled?: boolean
+          default_notification_email?: string
+          department_addresses?: Json
+          email_signature?: string
+          id?: number
+          notification_preferences?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          auto_reply_enabled?: boolean
+          default_notification_email?: string
+          department_addresses?: Json
+          email_signature?: string
+          id?: number
+          notification_preferences?: Json
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -187,52 +306,85 @@ export type Database = {
       }
       form_submissions: {
         Row: {
+          assigned_to: string | null
+          closed_at: string | null
           created_at: string
           department: string | null
+          email_status: string | null
           fields: Json
+          first_response_at: string | null
           form_type: string
           id: string
+          inquiry_type: string | null
           message: string | null
           notes: string | null
+          preferred_contact_method: string | null
+          priority: string
           recipient_email: string
+          reference_number: string | null
           sender_country: string | null
           sender_email: string | null
           sender_name: string | null
           sender_organization: string | null
+          sender_phone: string | null
+          service: string | null
+          source: string
           status: string
           subject: string
           updated_at: string
         }
         Insert: {
+          assigned_to?: string | null
+          closed_at?: string | null
           created_at?: string
           department?: string | null
+          email_status?: string | null
           fields?: Json
+          first_response_at?: string | null
           form_type: string
           id?: string
+          inquiry_type?: string | null
           message?: string | null
           notes?: string | null
+          preferred_contact_method?: string | null
+          priority?: string
           recipient_email: string
+          reference_number?: string | null
           sender_country?: string | null
           sender_email?: string | null
           sender_name?: string | null
           sender_organization?: string | null
+          sender_phone?: string | null
+          service?: string | null
+          source?: string
           status?: string
           subject: string
           updated_at?: string
         }
         Update: {
+          assigned_to?: string | null
+          closed_at?: string | null
           created_at?: string
           department?: string | null
+          email_status?: string | null
           fields?: Json
+          first_response_at?: string | null
           form_type?: string
           id?: string
+          inquiry_type?: string | null
           message?: string | null
           notes?: string | null
+          preferred_contact_method?: string | null
+          priority?: string
           recipient_email?: string
+          reference_number?: string | null
           sender_country?: string | null
           sender_email?: string | null
           sender_name?: string | null
           sender_organization?: string | null
+          sender_phone?: string | null
+          service?: string | null
+          source?: string
           status?: string
           subject?: string
           updated_at?: string
@@ -325,6 +477,76 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      inquiry_activity: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          detail: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          submission_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          submission_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          detail?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_activity_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "form_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inquiry_notes: {
+        Row: {
+          author_id: string | null
+          body: string
+          created_at: string
+          id: string
+          submission_id: string
+        }
+        Insert: {
+          author_id?: string | null
+          body: string
+          created_at?: string
+          id?: string
+          submission_id: string
+        }
+        Update: {
+          author_id?: string | null
+          body?: string
+          created_at?: string
+          id?: string
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_notes_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "form_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reply_links: {
         Row: {
@@ -517,6 +739,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_staff_manager_or_admin: {
+        Args: { _user_id: string }
         Returns: boolean
       }
     }
