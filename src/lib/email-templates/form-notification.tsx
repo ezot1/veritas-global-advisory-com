@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Body,
+  Button,
   Container,
   Head,
   Heading,
@@ -25,6 +26,7 @@ interface Props {
   brandColor?: string
   headerText?: string
   footerText?: string
+  dashboardUrl?: string
 }
 
 const Email = ({
