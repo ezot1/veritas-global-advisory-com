@@ -16,6 +16,7 @@ import type { TemplateEntry } from './registry'
 interface Props {
   firstName?: string
   subject?: string
+  referenceNumber?: string
   brandColor?: string
   headerText?: string
   footerText?: string
@@ -25,10 +26,11 @@ interface Props {
 
 const Email = ({
   firstName = '',
-  subject = 'We have received your message',
+  subject = 'We have received your inquiry',
+  referenceNumber = '',
   brandColor = '#b08838',
   headerText = 'VERITAS GLOBAL ADVISORY',
-  footerText = 'This is an automated confirmation. Please do not reply to this email.',
+  footerText = 'This is an automated confirmation of receipt.',
   fromEmail = 'info@veritasglobaladvisory.org',
   replyUrl = '',
 }: Props) => (
@@ -47,8 +49,15 @@ const Email = ({
             Greetings {firstName ? firstName.trim() : 'there'},
           </Text>
           <Text style={p}>
-            We have received your email. We will be in touch in the shortest time possible.
+            Thank you for contacting Veritas Global Advisory. We have received your inquiry, and the
+            appropriate team will review it.
           </Text>
+          {referenceNumber ? (
+            <Text style={p}>
+              Your reference number is <strong>{referenceNumber}</strong>. Please quote it in any further
+              correspondence.
+            </Text>
+          ) : null}
         </Section>
         {replyUrl ? (
           <Section style={{ textAlign: 'center', padding: '8px 0 4px' }}>
@@ -63,6 +72,7 @@ const Email = ({
         <Hr style={hr} />
         <Text style={footer}>
           Veritas Global Advisory<br />
+          veritasglobaladvisory.org<br />
           {footerText}{' '}
           {fromEmail && <>Reach us at {fromEmail}.</>}
         </Text>
@@ -73,11 +83,15 @@ const Email = ({
 
 export const template = {
   component: Email,
-  subject: () => 'We have received your message - Veritas Global Advisory',
-  displayName: 'Applicant auto-reply',
+  subject: (data: Record<string, any>) =>
+    data?.referenceNumber
+      ? `We have received your inquiry | ${data.referenceNumber} | Veritas Global Advisory`
+      : 'We have received your inquiry | Veritas Global Advisory',
+  displayName: 'Inquiry confirmation (visitor)',
   previewData: {
     firstName: 'Jane',
-    subject: 'We have received your message',
+    subject: 'We have received your inquiry',
+    referenceNumber: 'VG-1001',
   },
 } satisfies TemplateEntry
 
