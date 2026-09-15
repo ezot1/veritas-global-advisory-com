@@ -4,11 +4,43 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 
-const WORLD_FOCUS = {
-  region: "Worldwide",
-  tag: "Global Affairs",
-  image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80",
-};
+const REGIONAL_FOCUSES = [
+  {
+    region: "Asia-Pacific",
+    tag: "Asia Focus",
+    focus: "Indo-Pacific security, technology supply chains, trade, and regional diplomacy",
+    author: "Dr. Maya Chen, Senior Fellow for Asia-Pacific Strategy",
+    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    region: "Europe",
+    tag: "Europe & Eurasia",
+    focus: "European security, industrial policy, energy resilience, and transatlantic relations",
+    author: "Dr. Elias Moreau, Senior Fellow for European Affairs",
+    image: "https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    region: "Africa",
+    tag: "Africa Watch",
+    focus: "African trade, critical minerals, governance, infrastructure, and regional integration",
+    author: "Amara Okafor, Senior Fellow for African Markets and Governance",
+    image: "https://images.unsplash.com/photo-1489493512598-d08130f49bea?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    region: "Middle East",
+    tag: "Middle East Insights",
+    focus: "Middle Eastern security, energy transitions, capital flows, and economic diversification",
+    author: "Dr. Samir Haddad, Senior Fellow for Middle East Strategy",
+    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=1600&q=80",
+  },
+  {
+    region: "Americas",
+    tag: "Americas Briefing",
+    focus: "trade, investment, democratic governance, and strategic competition across the Americas",
+    author: "Sofia Alvarez, Senior Fellow for the Americas",
+    image: "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=1600&q=80",
+  },
+] as const;
 
 
 function slugify(title: string) {
@@ -42,17 +74,16 @@ async function generate() {
     .eq("id", 1)
     .maybeSingle();
   const idx = state?.next_index ?? 0;
-  const pick = WORLD_FOCUS;
+  const pick = REGIONAL_FOCUSES[idx % REGIONAL_FOCUSES.length];
 
   const gateway = createLovableAiGatewayProvider(lovableKey);
 
-  const prompt = `Write an in-depth, ~1200 word institutional research briefing from Veritas Global Advisory focused on current, real-world worldwide developments for 2026. Cover geopolitics, economics, security, and business implications across multiple regions. Voice must be authoritative, analytical, and comparable to a top-tier think tank or consulting firm. Do NOT use em dashes; use hyphens with spaces instead. Cite specific countries, institutions, figures, and recent events. Structure as 10-14 substantive paragraphs.
+  const prompt = `Write an in-depth, ~1200 word institutional research briefing from Veritas Global Advisory focused on current, real-world developments in ${pick.region} for 2026, with particular attention to ${pick.focus}. Connect regional developments to global geopolitical, economic, security, and business implications. Voice must be authoritative, analytical, and comparable to a top-tier think tank or consulting firm. Do NOT use em dashes; use hyphens with spaces instead. Cite specific countries, institutions, figures, and recent events. Structure as 10-14 substantive paragraphs.
 
 Return:
 - title: sharp, editorial (max 140 chars, no colon-heavy academic style)
 - summary: 2-3 sentence executive summary (max 400 chars)
-- body: array of 10-14 paragraph strings (each 120-220 words)
-- author: a plausible senior fellow name for Veritas Global Advisory`;
+- body: array of 10-14 paragraph strings (each 120-220 words)`;
 
   const { output } = await generateText({
     model: gateway("google/gemini-3.6-flash"),
@@ -61,7 +92,6 @@ Return:
         title: z.string(),
         summary: z.string(),
         body: z.array(z.string()),
-        author: z.string(),
       }),
     }),
     prompt,
@@ -73,13 +103,13 @@ Return:
 
   const { error: insertError } = await admin.from("generated_articles").insert({
     slug,
-    continent: "Worldwide",
+    continent: pick.region,
     tag: pick.tag,
     region: pick.region,
     title: generated.title,
     summary: generated.summary,
     body: generated.body,
-    author: generated.author || "Veritas Research Desk",
+    author: pick.author,
     image_url: pick.image,
     published_date: formatDate(new Date()),
   });
