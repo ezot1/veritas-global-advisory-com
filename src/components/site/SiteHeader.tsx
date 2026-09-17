@@ -88,6 +88,14 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
+            <Link
+              to="/admin"
+              onClick={() => setOpen(false)}
+              className="py-3 text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] border-b border-border/60"
+            >
+              Inbox
+            </Link>
+
             <Link to="/contact" onClick={() => setOpen(false)} className="btn-primary mt-4 !w-full">Engage Us</Link>
           </div>
         </div>
