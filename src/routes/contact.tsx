@@ -107,7 +107,7 @@ function ContactPage() {
         priority: isMedia && deadline ? "high" : "normal",
         consent: true,
         website: String(fd.get("website") || ""),
-        formTitle: `${inquiryType} - ${subject}`,
+        formTitle: `${inquiryType} - ${subject}`.slice(0, 160),
         formSubtitle: "A visitor submitted the contact form on veritasglobaladvisory.org.",
         replyTo: email,
         resumePath: resumeInfo?.path,
