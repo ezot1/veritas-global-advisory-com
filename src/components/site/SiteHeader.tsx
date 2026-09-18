@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { LanguageBar } from "./LanguageBar";
 import { BrandLockup } from "./Logo";
 
@@ -17,7 +18,36 @@ const nav = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkAdmin() {
+      const { data } = await supabase.auth.getUser();
+      const user = data.user;
+      if (!user) {
+        if (!cancelled) setIsAdmin(false);
+        return;
+      }
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .limit(1);
+      if (!cancelled) setIsAdmin((roles?.length ?? 0) > 0);
+    }
+
+    checkAdmin();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      checkAdmin();
+    });
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
@@ -39,9 +69,11 @@ export function SiteHeader() {
 
         <div className="hidden lg:flex items-center gap-5">
           <LanguageBar />
-          <Link to="/admin" className="text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] hover:text-[var(--navy-deep)]">
-            Inbox
-          </Link>
+          {isAdmin && (
+            <Link to="/admin" className="text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] hover:text-[var(--navy-deep)]">
+              Inbox
+            </Link>
+          )}
 
           <Link to="/contact" className="btn-primary !py-2.5 !px-5 !text-xs">Engage Us</Link>
         </div>
@@ -71,13 +103,15 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <Link
-              to="/admin"
-              onClick={() => setOpen(false)}
-              className="py-3 text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] border-b border-border/60"
-            >
-              Inbox
-            </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="py-3 text-[11px] uppercase tracking-[0.18em] text-[var(--gold)] border-b border-border/60"
+              >
+                Inbox
+              </Link>
+            )}
 
             <Link to="/contact" onClick={() => setOpen(false)} className="btn-primary mt-4 !w-full">Engage Us</Link>
           </div>
