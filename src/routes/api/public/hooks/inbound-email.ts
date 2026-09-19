@@ -1,6 +1,36 @@
 import { createClient } from '@supabase/supabase-js'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import {
+  DEPARTMENT_INBOXES,
+  FALLBACK_INBOX,
+  SENDER_DOMAIN,
+  type DepartmentKey,
+} from '@/lib/email/config'
+
+/** Maps a delivered-to address (info@, business@, careers@...) to a department. */
+function departmentForAddress(address: string): DepartmentKey {
+  const target = address.toLowerCase()
+  for (const [key, inbox] of Object.entries(DEPARTMENT_INBOXES)) {
+    if (inbox.toLowerCase() === target) return key as DepartmentKey
+  }
+  const local = target.split('@')[0] ?? ''
+  if (local in DEPARTMENT_INBOXES) return local as DepartmentKey
+  return 'general'
+}
+
+/** VG-1001 style reference, as printed in outgoing subjects. */
+function referenceInSubject(subject: string): string | null {
+  return subject.match(/\bVG-\d{3,}\b/i)?.[0]?.toUpperCase() ?? null
+}
+
+/** Never re-ingest our own outgoing mail or automated bounce chatter. */
+function isLoop(senderEmail: string): boolean {
+  const domain = senderEmail.split('@')[1] ?? ''
+  const local = senderEmail.split('@')[0] ?? ''
+  if (domain === SENDER_DOMAIN) return true
+  return ['mailer-daemon', 'postmaster', 'no-reply', 'noreply', 'bounce', 'bounces'].includes(local)
+}
 
 /**
  * Inbound email receiver.
@@ -221,7 +251,10 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
         const senderEmail = extractEmail(parsed.from)
         if (!senderEmail) return Response.json({ error: 'Unparsable sender address' }, { status: 400 })
 
-        const toEmail = (parsed.to && extractEmail(parsed.to)) || 'info@veritasglobaladvisory.org'
+        if (isLoop(senderEmail)) return Response.json({ ok: true, skipped: 'loop' })
+
+        const toEmail = (parsed.to && extractEmail(parsed.to)) || FALLBACK_INBOX
+        const department = departmentForAddress(toEmail)
         const subject = parsed.subject?.trim() || '(no subject)'
         const bodyText = (parsed.text?.trim() || (parsed.html ? stripHtml(parsed.html) : '')).slice(0, 50000)
         const senderName =
@@ -242,8 +275,19 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
 
         let submissionId: string | null = null
 
+        // 0. Reference number in the subject line (VG-1001) is the strongest match
+        const reference = referenceInSubject(subject)
+        if (reference) {
+          const { data: byReference } = await supabase
+            .from('form_submissions')
+            .select('id')
+            .eq('reference_number', reference)
+            .maybeSingle()
+          submissionId = byReference?.id ?? null
+        }
+
         // 1. Try matching by In-Reply-To header
-        if (parsed.inReplyTo) {
+        if (!submissionId && parsed.inReplyTo) {
           const { data: parentMsg } = await supabase
             .from('submission_messages')
             .select('submission_id')
@@ -270,15 +314,19 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           const { data: created, error: createErr } = await supabase
             .from('form_submissions')
             .insert({
-              form_type: 'contact',
-              department: 'general',
+              form_type: department === 'careers' ? 'careers' : 'contact',
+              department,
               subject,
               recipient_email: toEmail,
               sender_email: senderEmail,
               sender_name: senderName,
               message: bodyText,
               status: 'new',
-              fields: [{ label: 'Source', value: 'Email reply' }],
+              source: 'Inbound Email',
+              fields: [
+                { label: 'Source', value: 'Email reply' },
+                { label: 'Received at', value: toEmail },
+              ],
             })
             .select('id')
             .single()
@@ -307,7 +355,26 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           .update({ status: 'new', updated_at: new Date().toISOString() })
           .eq('id', submissionId)
 
-        return Response.json({ ok: true, submissionId })
+        await supabase.from('email_logs').insert({
+          inquiry_id: submissionId,
+          direction: 'inbound',
+          from_address: senderEmail,
+          to_address: toEmail,
+          reply_to: senderEmail,
+          subject,
+          provider_message_id: parsed.messageId ?? null,
+          status: 'received',
+          received_at: new Date().toISOString(),
+        })
+
+        await supabase.from('inquiry_activity').insert({
+          submission_id: submissionId,
+          event_type: 'email_received',
+          detail: `Reply received at ${toEmail}`,
+          metadata: { department, from: senderEmail },
+        })
+
+        return Response.json({ ok: true, submissionId, department })
       },
     },
   },
