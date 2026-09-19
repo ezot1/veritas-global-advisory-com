@@ -1,6 +1,36 @@
 import { createClient } from '@supabase/supabase-js'
 import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
+import {
+  DEPARTMENT_INBOXES,
+  FALLBACK_INBOX,
+  SENDER_DOMAIN,
+  type DepartmentKey,
+} from '@/lib/email/config'
+
+/** Maps a delivered-to address (info@, business@, careers@...) to a department. */
+function departmentForAddress(address: string): DepartmentKey {
+  const target = address.toLowerCase()
+  for (const [key, inbox] of Object.entries(DEPARTMENT_INBOXES)) {
+    if (inbox.toLowerCase() === target) return key as DepartmentKey
+  }
+  const local = target.split('@')[0] ?? ''
+  if (local in DEPARTMENT_INBOXES) return local as DepartmentKey
+  return 'general'
+}
+
+/** VG-1001 style reference, as printed in outgoing subjects. */
+function referenceInSubject(subject: string): string | null {
+  return subject.match(/\bVG-\d{3,}\b/i)?.[0]?.toUpperCase() ?? null
+}
+
+/** Never re-ingest our own outgoing mail or automated bounce chatter. */
+function isLoop(senderEmail: string): boolean {
+  const domain = senderEmail.split('@')[1] ?? ''
+  const local = senderEmail.split('@')[0] ?? ''
+  if (domain === SENDER_DOMAIN) return true
+  return ['mailer-daemon', 'postmaster', 'no-reply', 'noreply', 'bounce', 'bounces'].includes(local)
+}
 
 /**
  * Inbound email receiver.
