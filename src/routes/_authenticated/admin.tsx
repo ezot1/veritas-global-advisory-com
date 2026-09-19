@@ -99,7 +99,9 @@ function AdminPage() {
         : items.filter((i) => i.status === filter),
     [items, filter],
   );
-  const selected = filtered.find((i) => i.id === selectedId) ?? filtered[0] ?? null;
+  // Look up the opened conversation in the full list so that changing its
+  // status (e.g. new -> read the moment it is opened) does not blank the panel.
+  const selected = items.find((i) => i.id === selectedId) ?? filtered[0] ?? null;
 
   async function updateStatus(id: string, status: string) {
     const { error } = await supabase.from("form_submissions").update({ status }).eq("id", id);
