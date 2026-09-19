@@ -314,15 +314,19 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           const { data: created, error: createErr } = await supabase
             .from('form_submissions')
             .insert({
-              form_type: 'contact',
-              department: 'general',
+              form_type: department === 'careers' ? 'careers' : 'contact',
+              department,
               subject,
               recipient_email: toEmail,
               sender_email: senderEmail,
               sender_name: senderName,
               message: bodyText,
               status: 'new',
-              fields: [{ label: 'Source', value: 'Email reply' }],
+              source: 'Inbound Email',
+              fields: [
+                { label: 'Source', value: 'Email reply' },
+                { label: 'Received at', value: toEmail },
+              ],
             })
             .select('id')
             .single()
@@ -351,7 +355,26 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
           .update({ status: 'new', updated_at: new Date().toISOString() })
           .eq('id', submissionId)
 
-        return Response.json({ ok: true, submissionId })
+        await supabase.from('email_logs').insert({
+          inquiry_id: submissionId,
+          direction: 'inbound',
+          from_address: senderEmail,
+          to_address: toEmail,
+          reply_to: senderEmail,
+          subject,
+          provider_message_id: parsed.messageId ?? null,
+          status: 'received',
+          received_at: new Date().toISOString(),
+        })
+
+        await supabase.from('inquiry_activity').insert({
+          submission_id: submissionId,
+          event_type: 'email_received',
+          detail: `Reply received at ${toEmail}`,
+          metadata: { department, from: senderEmail },
+        })
+
+        return Response.json({ ok: true, submissionId, department })
       },
     },
   },
