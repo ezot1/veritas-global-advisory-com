@@ -99,7 +99,9 @@ function AdminPage() {
         : items.filter((i) => i.status === filter),
     [items, filter],
   );
-  const selected = filtered.find((i) => i.id === selectedId) ?? filtered[0] ?? null;
+  // Look up the opened conversation in the full list so that changing its
+  // status (e.g. new -> read the moment it is opened) does not blank the panel.
+  const selected = items.find((i) => i.id === selectedId) ?? filtered[0] ?? null;
 
   async function updateStatus(id: string, status: string) {
     const { error } = await supabase.from("form_submissions").update({ status }).eq("id", id);
@@ -248,7 +250,7 @@ function AdminPage() {
                 {!selected ? (
                   <div className="text-sm text-muted-foreground">Select a submission to view.</div>
                 ) : (
-                  <SubmissionDetail submission={selected} onStatus={updateStatus} onDelete={remove} />
+                  <SubmissionDetail submission={selected} onStatus={updateStatus} onDelete={remove} opened={selectedId === selected.id} />
                 )}
               </main>
             </div>
@@ -519,16 +521,20 @@ function SubmissionDetail({
   submission: s,
   onStatus,
   onDelete,
+  opened,
 }: {
   submission: Submission;
   onStatus: (id: string, status: string) => void;
   onDelete: (id: string) => void;
+  opened: boolean;
 }) {
-  // Mark as read when opened
+  // Mark as read only when the admin actually opens a conversation. The detail
+  // panel previews the first row of the list, and that auto-preview must not
+  // silently clear the "new" badge on freshly arrived replies.
   useEffect(() => {
-    if (s.status === "new") onStatus(s.id, "read");
+    if (opened && s.status === "new") onStatus(s.id, "read");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [s.id]);
+  }, [s.id, opened]);
 
 
 
