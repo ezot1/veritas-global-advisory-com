@@ -251,7 +251,10 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
         const senderEmail = extractEmail(parsed.from)
         if (!senderEmail) return Response.json({ error: 'Unparsable sender address' }, { status: 400 })
 
-        const toEmail = (parsed.to && extractEmail(parsed.to)) || 'info@veritasglobaladvisory.org'
+        if (isLoop(senderEmail)) return Response.json({ ok: true, skipped: 'loop' })
+
+        const toEmail = (parsed.to && extractEmail(parsed.to)) || FALLBACK_INBOX
+        const department = departmentForAddress(toEmail)
         const subject = parsed.subject?.trim() || '(no subject)'
         const bodyText = (parsed.text?.trim() || (parsed.html ? stripHtml(parsed.html) : '')).slice(0, 50000)
         const senderName =
@@ -272,8 +275,19 @@ export const Route = createFileRoute('/api/public/hooks/inbound-email')({
 
         let submissionId: string | null = null
 
+        // 0. Reference number in the subject line (VG-1001) is the strongest match
+        const reference = referenceInSubject(subject)
+        if (reference) {
+          const { data: byReference } = await supabase
+            .from('form_submissions')
+            .select('id')
+            .eq('reference_number', reference)
+            .maybeSingle()
+          submissionId = byReference?.id ?? null
+        }
+
         // 1. Try matching by In-Reply-To header
-        if (parsed.inReplyTo) {
+        if (!submissionId && parsed.inReplyTo) {
           const { data: parentMsg } = await supabase
             .from('submission_messages')
             .select('submission_id')
