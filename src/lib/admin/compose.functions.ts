@@ -98,7 +98,7 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
         from_email: fromEmail,
         from_label: fromLabel,
         to_email: data.toEmail,
-        reply_to: RECEIVING_INBOX,
+        reply_to: fromEmail,
         subject: data.subject,
         body_text: data.body,
         message_id: messageId,
@@ -154,7 +154,7 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
           purpose: 'transactional',
           label: 'admin-compose',
           idempotency_key: messageId,
-          reply_to: RECEIVING_INBOX,
+          reply_to: fromEmail,
         },
         { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
       )

@@ -115,7 +115,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
       from_email: fromEmail,
       from_label: fromLabel,
       to_email: recipient,
-      reply_to: RECEIVING_INBOX,
+      reply_to: fromEmail,
       subject: data.subject,
       body_text: data.body,
       message_id: messageId,
@@ -156,7 +156,7 @@ export const sendAdminReply = createServerFn({ method: 'POST' })
           purpose: 'transactional',
           label: 'admin-reply',
           idempotency_key: messageId,
-          reply_to: RECEIVING_INBOX,
+          reply_to: fromEmail,
         },
         { apiKey: process.env['LOVABLE_API_KEY']!, sendUrl: process.env['LOVABLE_SEND_URL'] },
       )
