@@ -6,7 +6,6 @@ import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
 import { TEMPLATES } from '@/lib/email-templates/registry'
 
 const SENDER_DOMAIN = 'notify.veritasglobaladvisory.org'
-const RECEIVING_INBOX = 'ezrao652@gmail.com'
 
 const DEPARTMENT_INBOXES: Record<string, string> = {
   general: 'info@veritasglobaladvisory.org',

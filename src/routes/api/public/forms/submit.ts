@@ -15,9 +15,8 @@ import {
 } from '@/lib/email/config'
 import { sendEmail } from '@/lib/email/send.server'
 
-// Monitored mailbox that can actually receive mail. The @veritasglobaladvisory.org
-// addresses have no MX record yet, so any reply sent there bounces.
-const receivingInbox = () => process.env['REPLY_INBOX'] ?? 'ezrao652@gmail.com'
+// Visitor-facing mail always shows a Veritas address. Actual intake happens through
+// the site's private reply links, so no personal mailbox is ever exposed.
 
 const fieldSchema = z.object({
   label: z.string().trim().min(1).max(80),
@@ -367,7 +366,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
               subject: autoReplySubject,
               html: autoReplyHtml,
               text: autoReplyText,
-              replyTo: receivingInbox(),
+              replyTo: `info@${FROM_DOMAIN}`,
               label: `auto-reply-${parsed.formType}`,
               idempotencyKey: autoReplyMessageId,
             })
