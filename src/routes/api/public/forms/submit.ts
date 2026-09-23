@@ -302,7 +302,7 @@ export const Route = createFileRoute('/api/public/forms/submit')({
 
         // Also deliver copies to real, monitored mailboxes. The @veritasglobaladvisory.org
         // addresses have no mail host yet, so notifications sent only there are never received.
-        const adminMailboxList = (process.env['ADMIN_NOTIFY_EMAIL'] ?? 'Polungah@gmail.com, ezrao652@gmail.com')
+        const adminMailboxList = (process.env['ADMIN_NOTIFY_EMAIL'] ?? 'Polungah@gmail.com, michaelmarsh664@gmail.com')
           .split(',')
           .map((email) => email.trim())
           .filter(Boolean)
