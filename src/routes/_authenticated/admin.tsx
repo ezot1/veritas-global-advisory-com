@@ -213,6 +213,8 @@ function AdminPage() {
         </div>
 
         {error && <div className="text-sm text-red-600 mb-4">{error}</div>}
+        {articleNotice && <div className="text-sm text-muted-foreground mb-4">{articleNotice}</div>}
+
 
         {tab === "inbox" && (
           <>
