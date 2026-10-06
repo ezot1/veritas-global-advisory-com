@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages, listInboundReplies, type InboundReply } from "@/lib/admin/reply.functions";
 import { sendComposedEmail, listSentEmails, listAllSentEmails } from "@/lib/admin/compose.functions";
 import { syncMailboxReplies } from "@/lib/admin/mailbox-sync.functions";
+import { generateArticleNow } from "@/lib/admin/generate-article.functions";
 import { listReplyTracking, type ReplyTrackingContact } from "@/lib/admin/reply-tracking.functions";
 import {
   listReplyTemplates,
@@ -48,6 +49,22 @@ function AdminPage() {
   const [filter, setFilter] = useState<string>("all");
   const [tab, setTab] = useState<"inbox" | "received" | "compose" | "sent" | "snippets" | "settings" | "shares" | "replies">("inbox");
   const [error, setError] = useState<string | null>(null);
+  const [generatingArticle, setGeneratingArticle] = useState(false);
+  const [articleNotice, setArticleNotice] = useState<string | null>(null);
+
+  async function handleGenerateArticle() {
+    setGeneratingArticle(true);
+    setArticleNotice(null);
+    try {
+      const result = await generateArticleNow();
+      setArticleNotice(`New briefing published: ${result.title}`);
+    } catch (e) {
+      setArticleNotice(e instanceof Error ? e.message : "Article generation failed");
+    } finally {
+      setGeneratingArticle(false);
+    }
+  }
+
 
 
   // Check admin role
@@ -157,6 +174,13 @@ function AdminPage() {
             <button onClick={loadSubmissions} className="text-xs underline text-muted-foreground hover:text-foreground">
               Refresh
             </button>
+            <button
+              onClick={handleGenerateArticle}
+              disabled={generatingArticle}
+              className="btn-ghost !py-2 !px-4 !text-xs disabled:opacity-50"
+            >
+              {generatingArticle ? "Generating..." : "Generate article"}
+            </button>
             <button onClick={signOut} className="btn-ghost !py-2 !px-4 !text-xs">Sign out</button>
           </div>
         </div>
@@ -189,6 +213,8 @@ function AdminPage() {
         </div>
 
         {error && <div className="text-sm text-red-600 mb-4">{error}</div>}
+        {articleNotice && <div className="text-sm text-muted-foreground mb-4">{articleNotice}</div>}
+
 
         {tab === "inbox" && (
           <>
