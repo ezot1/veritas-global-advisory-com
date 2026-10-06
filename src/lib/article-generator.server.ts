@@ -84,7 +84,7 @@ Return:
 - body: array of 10-14 paragraph strings (each 120-220 words)`;
 
   const { output } = await generateText({
-    model: gateway("google/gemini-3.6-flash"),
+    model: gateway("openai/gpt-6-astra"),
     output: Output.object({
       schema: z.object({
         title: z.string(),
