@@ -78,7 +78,7 @@ export async function generateArticle() {
 
   const prompt = `Write an in-depth, ~1200 word institutional research briefing from Veritas Global Advisory focused on current, real-world developments in ${pick.region} for 2026, with particular attention to ${pick.focus}. Connect regional developments to global geopolitical, economic, security, and business implications. Voice must be authoritative, analytical, and comparable to a top-tier think tank or consulting firm. Do NOT use em dashes; use hyphens with spaces instead. Cite specific countries, institutions, figures, and recent events. Structure as 10-14 substantive paragraphs.
 
-Return:
+Return the result as JSON with:
 - title: sharp, editorial (max 140 chars, no colon-heavy academic style)
 - summary: 2-3 sentence executive summary (max 400 chars)
 - body: array of 10-14 paragraph strings (each 120-220 words)`;
