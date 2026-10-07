@@ -42,7 +42,11 @@ export const Route = createFileRoute("/")({
     ]);
     return { generated };
   },
-  errorComponent: ({ error }) => <div role="alert" className="container-x py-24">{error.message}</div>,
+  errorComponent: ({ error }) => (
+    <div role="alert" className="container-x py-24">
+      {error instanceof Error ? error.message : "Something went wrong."}
+    </div>
+  ),
   notFoundComponent: () => <div className="container-x py-24">Not found.</div>,
   component: Index,
 });
