@@ -15,6 +15,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { listGlobeMarkers } from "@/lib/globe-markers.functions";
 import { listGeneratedArticles } from "@/lib/articles.functions";
 import { articles as staticArticles } from "@/data/articles";
+import { countPublishedBriefings } from "@/lib/publication-count";
 import { LatestBriefing } from "@/components/site/LatestBriefing";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -29,6 +30,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Veritas Global Advisory | Strategic Intelligence" },
       { property: "og:description", content: "Global insights, strategic solutions, and trusted expertise across five regional divisions." },
       { property: "og:url", content: "https://veritasglobaladvisory.org/" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/" }],
   }),
@@ -134,7 +137,7 @@ function Index() {
         <div className="container-x py-20 grid grid-cols-2 md:grid-cols-4 gap-10">
           <StatCounter value={12} label="Countries Covered" />
           <StatCounter value={52} label="Experts Worldwide" />
-          <StatCounter value={100} label="Research Publications" />
+          <StatCounter value={countPublishedBriefings(staticArticles, generated)} label="Published Briefings" />
           <StatCounter value={5} label="Regional Divisions" />
         </div>
       </section>
