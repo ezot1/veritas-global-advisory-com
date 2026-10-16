@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { articles as staticArticles } from "@/data/articles";
 import { listGeneratedArticles } from "@/lib/articles.functions";
+import { Button } from "@/components/ui/button";
 
 const PAGE_SIZE = 18;
 
@@ -26,6 +27,8 @@ export const Route = createFileRoute("/insights")({
       { property: "og:title", content: "Global Research - Veritas Global Advisory" },
       { property: "og:description", content: "Featured reports, country studies, and briefings from our editorial desks and network of senior fellows." },
       { property: "og:url", content: "https://veritasglobaladvisory.org/insights" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/insights" }],
   }),
@@ -81,6 +84,10 @@ function InsightsPage() {
         intro="Featured reports, country studies, and briefings from our analysts and senior fellows." />
 
       <Section>
+        <div className="mb-10 flex flex-wrap items-center justify-between gap-5 border-b border-border pb-6">
+          <p className="text-sm text-muted-foreground">Public research from Veritas Global Advisory</p>
+          <Button asChild variant="outline"><Link to="/sample-briefing">Read a sample briefing</Link></Button>
+        </div>
         <div className="card-elevated p-6 mb-12 grid lg:grid-cols-[1.4fr_1fr_1fr] gap-4">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

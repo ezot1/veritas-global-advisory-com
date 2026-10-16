@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Publication totals must be computed from the publicly listed static and generated briefing sources, deduplicated by slug, so claims track available research.
+- The sample briefing is a separate public route reusing an existing published article, not evidence of a client engagement, so content and provenance remain consistent.

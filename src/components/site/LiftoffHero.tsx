@@ -8,7 +8,7 @@ import heroWorld from "@/assets/hero-world.jpg";
  * a small mark rises with it and settles above the headline,
  * then the headline reveals line-by-line.
  */
-export function LiftoffHero() {
+export function LiftoffHero({ publicationCount }: { publicationCount: number }) {
   const [play, setPlay] = useState(false);
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export function LiftoffHero() {
           {[
             { v: "12", l: "Countries Covered" },
             { v: "52", l: "Experts Worldwide" },
-            { v: "100", l: "Research Publications" },
+            { v: publicationCount.toLocaleString(), l: "Published Briefings" },
             { v: "5", l: "Regional Divisions" },
           ].map((s) => (
             <div key={s.l} className="bg-[var(--navy-deep)] p-8">
