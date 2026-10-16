@@ -107,7 +107,7 @@ function Index() {
       </div>
 
       {/* HERO */}
-      <LiftoffHero />
+      <LiftoffHero publicationCount={countPublishedBriefings(staticArticles, generated)} />
 
       {/* LATEST BRIEFING */}
       {latest ? <LatestBriefing article={latest} /> : null}
