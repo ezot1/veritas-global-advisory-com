@@ -19,6 +19,7 @@ import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as LeadershipRouteImport } from './routes/leadership'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SampleBriefingRouteImport } from './routes/sample-briefing'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TalentRouteImport } from './routes/talent'
@@ -84,6 +85,11 @@ const McpRoute = McpRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SampleBriefingRoute = SampleBriefingRouteImport.update({
+  id: '/sample-briefing',
+  path: '/sample-briefing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ServicesRoute = ServicesRouteImport.update({
@@ -188,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/leadership': typeof LeadershipRoute
   '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sample-briefing': typeof SampleBriefingRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/talent': typeof TalentRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByTo {
   '/leadership': typeof LeadershipRoute
   '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sample-briefing': typeof SampleBriefingRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/talent': typeof TalentRoute
@@ -246,6 +254,7 @@ export interface FileRoutesById {
   '/leadership': typeof LeadershipRoute
   '/mcp': typeof McpRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sample-briefing': typeof SampleBriefingRoute
   '/services': typeof ServicesRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/talent': typeof TalentRoute
@@ -276,6 +285,7 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/mcp'
     | '/reset-password'
+    | '/sample-briefing'
     | '/services'
     | '/sitemap.xml'
     | '/talent'
@@ -304,6 +314,7 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/mcp'
     | '/reset-password'
+    | '/sample-briefing'
     | '/services'
     | '/sitemap.xml'
     | '/talent'
@@ -333,6 +344,7 @@ export interface FileRouteTypes {
     | '/leadership'
     | '/mcp'
     | '/reset-password'
+    | '/sample-briefing'
     | '/services'
     | '/sitemap.xml'
     | '/talent'
@@ -363,6 +375,7 @@ export interface RootRouteChildren {
   LeadershipRoute: typeof LeadershipRoute
   McpRoute: typeof McpRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SampleBriefingRoute: typeof SampleBriefingRoute
   ServicesRoute: typeof ServicesRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TalentRoute: typeof TalentRoute
@@ -451,6 +464,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sample-briefing': {
+      id: '/sample-briefing'
+      path: '/sample-briefing'
+      fullPath: '/sample-briefing'
+      preLoaderRoute: typeof SampleBriefingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/services': {
@@ -597,6 +617,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeadershipRoute: LeadershipRoute,
   McpRoute: McpRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SampleBriefingRoute: SampleBriefingRoute,
   ServicesRoute: ServicesRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TalentRoute: TalentRoute,
