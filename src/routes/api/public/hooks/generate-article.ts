@@ -2,15 +2,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import { generateArticle } from "@/lib/article-generator.server";
 
-const MIN_INTERVAL_MS = 12 * 60 * 60 * 1000; // one run per 12 hours max
+// Scheduler fires weekly; this keeps publishing to one article every ~14 days.
+const MIN_INTERVAL_MS = 13 * 24 * 60 * 60 * 1000;
 
 function isAuthorized(request: Request): boolean {
-  const expected = process.env.ARTICLE_GENERATE_SECRET;
-  if (!expected) return false;
+  const accepted = [process.env.ARTICLE_GENERATE_SECRET, process.env.ARTICLE_CRON_SECRET].filter(
+    (s): s is string => !!s,
+  );
+  if (accepted.length === 0) return false;
   const url = new URL(request.url);
   const provided =
     request.headers.get("x-generate-secret") ?? url.searchParams.get("secret");
-  return provided === expected;
+  return !!provided && accepted.includes(provided);
 }
 
 async function throttled(): Promise<boolean> {
