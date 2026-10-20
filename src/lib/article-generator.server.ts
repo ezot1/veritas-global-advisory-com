@@ -30,7 +30,7 @@ export const REGIONAL_FOCUSES = [
     tag: "Middle East Insights",
     focus: "Middle Eastern security, energy transitions, capital flows, and economic diversification",
     author: "Dr. Samir Haddad, Senior Fellow for Middle East Strategy",
-    image: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=1600&q=80",
+    image: "https://veritasglobaladvisory.org/__l5e/assets-v1/de6e278c-169e-44f5-bc8d-eddd4bfb6d44/insight-middle-east.jpg",
   },
   {
     region: "Americas",
