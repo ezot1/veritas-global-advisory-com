@@ -17,7 +17,7 @@ import {
 
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => ({ meta: [{ title: "Submissions | Veritas Admin" }] }),
+  head: () => ({ meta: [{ title: "Inbox | Veritas Global Advisory Admin" }, { name: "description", content: "Private Veritas inquiry and Google Workspace inbox." }, { property: "og:title", content: "Inbox | Veritas Global Advisory Admin" }, { property: "og:description", content: "Private Veritas inquiry and Google Workspace inbox." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: AdminPage,
 });
 
@@ -86,8 +86,9 @@ function AdminPage() {
     })();
   }, [navigate]);
 
-  async function loadSubmissions() {
-    setLoading(true);
+  async function loadSubmissions(background = false) {
+    if (!background) setLoading(true);
+    setError(null);
     try {
       await syncMailboxReplies();
     } catch (syncError) {
@@ -104,7 +105,17 @@ function AdminPage() {
   }
 
   useEffect(() => {
-    if (isAdmin) loadSubmissions();
+    if (!isAdmin) return;
+    let running = false;
+    const refresh = async () => {
+      if (running || document.visibilityState !== "visible") return;
+      running = true;
+      try { await loadSubmissions(true); } finally { running = false; }
+    };
+    void refresh();
+    const timer = window.setInterval(refresh, 60000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => { window.clearInterval(timer); document.removeEventListener("visibilitychange", refresh); };
   }, [isAdmin]);
 
   const filtered = useMemo(
@@ -171,7 +182,7 @@ function AdminPage() {
             <span className="text-xs text-muted-foreground">Submissions Inbox</span>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={loadSubmissions} className="text-xs underline text-muted-foreground hover:text-foreground">
+            <button onClick={() => loadSubmissions()} className="text-xs underline text-muted-foreground hover:text-foreground">
               Refresh
             </button>
             <button
