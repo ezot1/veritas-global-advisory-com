@@ -232,23 +232,6 @@ export const Route = createFileRoute('/api/public/forms/submit')({
 
         const messageId = crypto.randomUUID()
 
-        // In-house reply link: the sender answers on our own site and the message
-        // lands straight in the admin inbox thread, with no external mailbox needed.
-        let publicReplyUrl = ''
-        if (parsed.replyTo) {
-          const replyToken = `${crypto.randomUUID()}${crypto.randomUUID()}`.replace(/-/g, '')
-          const { error: linkErr } = await supabase.from('reply_links').insert({
-            token: replyToken,
-            submission_id: inquiryId,
-            email: parsed.replyTo,
-            name: findField('name'),
-          })
-          if (!linkErr) {
-            const base = process.env['SITE_URL'] ?? 'https://www.veritasglobaladvisory.org'
-            publicReplyUrl = `${base.replace(/\/$/, '')}/reply/${replyToken}`
-          }
-        }
-
         const logSend = async (
           status: string,
           errorMessage: string | undefined,
@@ -349,7 +332,6 @@ export const Route = createFileRoute('/api/public/forms/submit')({
                 ? settings.email_signature
                 : (settingsRow?.footer_text ?? 'Veritas Global Advisory | veritasglobaladvisory.org'),
               fromEmail: 'info@veritasglobaladvisory.org',
-              replyUrl: publicReplyUrl,
             }
             const autoReplyElement = React.createElement(autoReplyTemplate.component, autoReplyData)
             const autoReplyHtml = await render(autoReplyElement)

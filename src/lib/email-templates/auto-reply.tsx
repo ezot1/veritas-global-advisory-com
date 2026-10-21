@@ -10,7 +10,6 @@ interface Props {
   headerText?: string
   footerText?: string
   fromEmail?: string
-  replyUrl?: string
 }
 
 const Email = ({
@@ -21,7 +20,6 @@ const Email = ({
   headerText = 'VERITAS GLOBAL ADVISORY',
   footerText = 'This is an automated confirmation of receipt.',
   fromEmail = 'info@veritasglobaladvisory.org',
-  replyUrl = '',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -48,13 +46,6 @@ const Email = ({
             </Text>
           ) : null}
         </Section>
-        {replyUrl ? (
-          <Section>
-            <Text style={{ ...p, margin: 0 }}>
-              To respond, please visit: <a href={replyUrl} style={{ color: '#0b1c3a' }}>{replyUrl}</a>
-            </Text>
-          </Section>
-        ) : null}
         <Hr style={hr} />
         <Text style={footer}>
           Veritas Global Advisory<br />

@@ -78,20 +78,8 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       .maybeSingle()
     threadId = (threadRow?.id as string | undefined) ?? null
 
-    // Private in-house reply link so the recipient can answer on the site
-    let replyUrl = ''
-    if (threadId) {
-      const replyToken = `${crypto.randomUUID()}${crypto.randomUUID()}`.replace(/-/g, '')
-      const { error: linkErr } = await supabaseAdmin.from('reply_links').insert({
-        token: replyToken,
-        submission_id: threadId,
-        email: data.toEmail,
-      })
-      if (!linkErr) {
-        const base = process.env['SITE_URL'] ?? 'https://www.veritasglobaladvisory.org'
-        replyUrl = `${base.replace(/\/$/, '')}/reply/${replyToken}`
-      }
 
+    if (threadId) {
       await supabaseAdmin.from('submission_messages').insert({
         submission_id: threadId,
         direction: 'outbound',
@@ -116,8 +104,7 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
       introText: settingsRow?.intro_text ?? '',
       signature: settingsRow?.signature ?? fromLabel,
-      footerText: settingsRow?.footer_text ?? 'Use the reply button above to reach us.',
-      replyUrl,
+      footerText: settingsRow?.footer_text ?? 'Reply directly to this email to reach us.',
     })
     const html = await render(element)
     const text = await render(element, { plainText: true })
