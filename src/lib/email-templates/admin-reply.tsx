@@ -12,7 +12,6 @@ interface Props {
   introText?: string
   signature?: string
   footerText?: string
-  replyUrl?: string
 }
 
 const Email = ({
@@ -25,7 +24,6 @@ const Email = ({
   introText = '',
   signature = 'Veritas Global Advisory',
   footerText = 'Reply directly to this email to reach us.',
-  replyUrl = '',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
