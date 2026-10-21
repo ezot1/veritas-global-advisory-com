@@ -1,7 +1,7 @@
 import { DEPARTMENT_INBOXES, type DepartmentKey } from '@/lib/email/config'
 
 export function mailboxDepartment(recipients: string): DepartmentKey {
-  const addresses = recipients.toLowerCase().match(/[\w.!#$%&'*+/=?^`{|}~-]+@[\w-]+(?:\.[\w-]+)+/g) ?? []
+  const addresses: string[] = recipients.toLowerCase().match(/[\w.!#$%&'*+/=?^`{|}~-]+@[\w-]+(?:\.[\w-]+)+/g) ?? []
   for (const [department, address] of Object.entries(DEPARTMENT_INBOXES)) {
     if (addresses.includes(address)) return department as DepartmentKey
   }

@@ -165,7 +165,7 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
         (conversation) =>
           conversation.sender_email?.toLowerCase() === fromEmail && normalizeSubject(conversation.subject ?? '') === normalized,
       )
-      let conversation = matches.find((row) => row.reference_number === mailboxReference(subject)) ?? matches[0]
+      let conversation: NonNullable<typeof conversations>[number] | undefined = matches.find((row) => row.reference_number === mailboxReference(subject)) ?? matches.at(0)
       const reference = mailboxReference(subject)
       if (reference && fromEmail) {
         const { data: referenced } = await supabaseAdmin.from('form_submissions')
