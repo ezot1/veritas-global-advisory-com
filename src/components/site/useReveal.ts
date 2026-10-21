@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
  * into view, then disconnects. Respects prefers-reduced-motion.
  */
 export function useReveal<T extends HTMLElement = HTMLDivElement>(
-  options: IntersectionObserverInit = { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+  options: IntersectionObserverInit = { threshold: 0, rootMargin: "0px" },
 ) {
   const ref = useRef<T | null>(null);
   const [inView, setInView] = useState(false);
@@ -13,12 +13,12 @@ export function useReveal<T extends HTMLElement = HTMLDivElement>(
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (typeof IntersectionObserver === "undefined" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setInView(true);
       return;
     }
     const io = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
+      if (entries.some((entry) => entry.isIntersecting)) {
         setInView(true);
         io.disconnect();
       }

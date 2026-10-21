@@ -12,3 +12,4 @@
 - Publication totals must be computed from the publicly listed static and generated briefing sources, deduplicated by slug, so claims track available research.
 - The sample briefing is a separate public route reusing an existing published article, not evidence of a client engagement, so content and provenance remain consistent.
 - Google Workspace intake uses the authenticated admin mailbox sync, importing only Veritas-addressed mail into existing inquiry/thread tables with Gmail message-ID deduplication; unmatched mail creates an inquiry rather than being discarded.
+- Shared scroll reveals trigger on any intersection and fall back to visible without observer support, because full-section wrappers can exceed the viewport height.
