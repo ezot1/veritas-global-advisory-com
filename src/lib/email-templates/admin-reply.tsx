@@ -54,14 +54,8 @@ const Email = ({
         ) : null}
         {replyUrl ? (
           <Section style={replyBox}>
-            <Text style={{ ...p, fontWeight: 600, margin: '0 0 12px' }}>
-              To respond, please use the button below. Replies sent with your email app's Reply button may not reach us.
-            </Text>
-            <a href={replyUrl} style={{ ...button, backgroundColor: '#0b1c3a' }}>
-              Reply to this message
-            </a>
-            <Text style={{ ...footer, marginTop: '12px' }}>
-              If the button does not work, open this link: <a href={replyUrl} style={{ color: '#0b1c3a' }}>{replyUrl}</a>
+            <Text style={{ ...p, margin: 0 }}>
+              To respond, please visit: <a href={replyUrl} style={{ color: '#0b1c3a' }}>{replyUrl}</a>
             </Text>
           </Section>
         ) : null}
@@ -103,13 +97,4 @@ const p: React.CSSProperties = { fontSize: '15px', color: '#0b1c3a', margin: '0 
 const footer: React.CSSProperties = { fontSize: '12px', color: '#6b7280', margin: 0, lineHeight: 1.55 }
 const replyBox: React.CSSProperties = {
   margin: '12px 0 4px', padding: '18px 20px', border: '1px solid #b08838', borderRadius: '4px', backgroundColor: '#faf6ec',
-}
-const button: React.CSSProperties = {
-  display: 'inline-block',
-  padding: '12px 22px',
-  borderRadius: '4px',
-  color: '#ffffff',
-  fontSize: '14px',
-  fontWeight: 600,
-  textDecoration: 'none',
 }

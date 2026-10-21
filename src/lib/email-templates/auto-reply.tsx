@@ -1,16 +1,5 @@
 import React from 'react'
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
+import { Body, Container, Head, Heading, Hr, Html, Preview, Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
 
 interface Props {
@@ -60,12 +49,9 @@ const Email = ({
           ) : null}
         </Section>
         {replyUrl ? (
-          <Section style={{ textAlign: 'center', padding: '8px 0 4px' }}>
-            <Button href={replyUrl} style={{ ...button, backgroundColor: '#0b1c3a' }}>
-              Reply to this message
-            </Button>
-            <Text style={{ ...p, fontSize: '13px', color: '#5b6577' }}>
-              Your reply arrives directly with our team.
+          <Section>
+            <Text style={{ ...p, margin: 0 }}>
+              To respond, please visit: <a href={replyUrl} style={{ color: '#0b1c3a' }}>{replyUrl}</a>
             </Text>
           </Section>
         ) : null}
@@ -120,15 +106,6 @@ const h1: React.CSSProperties = {
   lineHeight: 1.3,
 }
 const hr: React.CSSProperties = { borderColor: '#e5e7eb', margin: '24px 0' }
-const button: React.CSSProperties = {
-  color: '#ffffff',
-  fontSize: '14px',
-  fontWeight: 600,
-  padding: '12px 22px',
-  borderRadius: '4px',
-  textDecoration: 'none',
-  display: 'inline-block',
-}
 const greeting: React.CSSProperties = {
   fontSize: '16px',
   fontWeight: 600,
