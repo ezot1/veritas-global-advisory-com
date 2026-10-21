@@ -1,9 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
 import { useEffect, useMemo, useState } from "react";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, LoaderCircle, RotateCw } from "lucide-react";
 import { articles as staticArticles } from "@/data/articles";
 import { listGeneratedArticles } from "@/lib/articles.functions";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,39 @@ export const Route = createFileRoute("/insights")({
     const generated = await listGeneratedArticles().catch(() => []);
     return { generated };
   },
+  pendingMs: 300,
+  pendingComponent: () => (
+    <>
+      <PageHeader eyebrow="Global Research" title="Research, analysis, and strategic foresight."
+        intro="Featured reports, country studies, and briefings from our analysts and senior fellows." />
+      <Section>
+        <div role="status" className="flex items-center gap-3 text-muted-foreground">
+          <LoaderCircle aria-hidden="true" className="h-5 w-5 animate-spin motion-reduce:animate-none" />
+          Loading research briefings…
+        </div>
+      </Section>
+    </>
+  ),
+  errorComponent: ({ reset }) => {
+    const router = useRouter();
+    return (
+      <Section>
+        <div role="alert" className="py-12">
+          <h1 className="display-2">Research could not load</h1>
+          <p className="mt-4 text-muted-foreground">Please try again in a moment.</p>
+          <Button className="mt-6" onClick={() => { void router.invalidate(); reset(); }}>
+            <RotateCw aria-hidden="true" className="h-4 w-4" /> Try again
+          </Button>
+        </div>
+      </Section>
+    );
+  },
+  notFoundComponent: () => (
+    <Section>
+      <h1 className="display-2">Research page not found</h1>
+      <Button asChild variant="outline" className="mt-6"><Link to="/insights">Return to research</Link></Button>
+    </Section>
+  ),
   head: () => ({
     meta: [
       { title: "Global Research | Veritas Global Advisory" },
