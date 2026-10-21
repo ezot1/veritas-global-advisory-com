@@ -98,12 +98,3 @@ const footer: React.CSSProperties = { fontSize: '12px', color: '#6b7280', margin
 const replyBox: React.CSSProperties = {
   margin: '12px 0 4px', padding: '18px 20px', border: '1px solid #b08838', borderRadius: '4px', backgroundColor: '#faf6ec',
 }
-const button: React.CSSProperties = {
-  display: 'inline-block',
-  padding: '12px 22px',
-  borderRadius: '4px',
-  color: '#ffffff',
-  fontSize: '14px',
-  fontWeight: 600,
-  textDecoration: 'none',
-}

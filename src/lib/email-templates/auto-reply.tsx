@@ -1,16 +1,5 @@
 import React from 'react'
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
+import { Body, Container, Head, Heading, Hr, Html, Preview, Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
 
 interface Props {
