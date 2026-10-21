@@ -102,8 +102,7 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       headerText: settingsRow?.header_text ?? 'VERITAS GLOBAL ADVISORY',
       introText: settingsRow?.intro_text ?? '',
       signature: settingsRow?.signature ?? fromLabel,
-      footerText: settingsRow?.footer_text ?? 'Use the reply button above to reach us.',
-      replyUrl,
+      footerText: settingsRow?.footer_text ?? 'Reply directly to this email to reach us.',
     })
     const html = await render(element)
     const text = await render(element, { plainText: true })
