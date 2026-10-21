@@ -1,5 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware'
+import { DEPARTMENT_INBOXES } from '@/lib/email/config'
+import { mailboxDepartment, mailboxReference, parseMailboxBatch } from './mailbox-utils'
 
 const GMAIL_API = 'https://connector-gateway.lovable.dev/google_mail/gmail/v1'
 const GMAIL_BATCH_API = 'https://connector-gateway.lovable.dev/google_mail/batch/gmail/v1'
@@ -12,6 +14,7 @@ type GmailPart = {
 }
 type GmailMessage = {
   id?: string
+  internalDate?: string
   labelIds?: string[]
   payload?: GmailPart & { headers?: GmailHeader[] }
 }
@@ -76,24 +79,6 @@ function messageBody(message: GmailMessage): string {
   return stripHtml(findBody(message.payload, 'text/html')).slice(0, 50000)
 }
 
-function parseBatchResponse(raw: string, contentType: string): GmailMessage[] {
-  const boundary = contentType.match(/boundary="?([^";]+)"?/i)?.[1]
-  if (!boundary) return []
-  const messages: GmailMessage[] = []
-  for (const part of raw.split(`--${boundary}`)) {
-    if (!/HTTP\/1\.1 2\d\d/.test(part)) continue
-    const start = part.indexOf('{')
-    const end = part.lastIndexOf('}')
-    if (start < 0 || end <= start) continue
-    try {
-      messages.push(JSON.parse(part.slice(start, end + 1)) as GmailMessage)
-    } catch {
-      // Ignore malformed individual batch entries; the next refresh can retry them.
-    }
-  }
-  return messages
-}
-
 /** Import genuine Gmail replies into existing Veritas conversations. */
 export const syncMailboxReplies = createServerFn({ method: 'POST' })
   .middleware([requireSupabaseAuth])
@@ -113,16 +98,22 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
       'X-Connection-Api-Key': gmailKey,
     }
     const listResponse = await fetch(
-      `${GMAIL_API}/users/me/messages?maxResults=50&q=${encodeURIComponent('in:anywhere newer_than:30d -from:me')}`,
+      `${GMAIL_API}/users/me/messages?maxResults=50&q=${encodeURIComponent(`in:inbox newer_than:30d {${Object.values(DEPARTMENT_INBOXES).map((address) => `to:${address}`).join(' ')}}`)}`,
       { headers: gatewayHeaders },
     )
     if (!listResponse.ok) {
       const detail = await listResponse.text()
       console.error(`Mailbox list failed [${listResponse.status}]: ${detail}`)
-      throw new Error('Could not refresh the receiving mailbox.')
+      throw new Error(`Could not refresh the receiving mailbox [${listResponse.status}]: ${detail}`)
     }
     const listed = (await listResponse.json()) as { messages?: { id?: string }[] }
-    const ids = (listed.messages ?? []).flatMap((item) => (item.id ? [item.id] : []))
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
+    const listedIds = (listed.messages ?? []).flatMap((item) => (item.id ? [item.id] : []))
+    if (!listedIds.length) return { imported: 0, checked: 0 }
+    const { data: stored, error: storedError } = await supabaseAdmin.from('submission_messages').select('message_id').in('message_id', listedIds.map((id) => `gmail:${id}`))
+    if (storedError) throw new Error('Could not check previously imported mail.')
+    const storedIds = new Set((stored ?? []).map((row) => row.message_id))
+    const ids = listedIds.filter((id) => !storedIds.has(`gmail:${id}`))
     if (ids.length === 0) return { imported: 0, checked: 0 }
 
     const requestBoundary = `batch_${crypto.randomUUID()}`
@@ -140,12 +131,11 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
     if (!batchResponse.ok) {
       const detail = await batchResponse.text()
       console.error(`Mailbox batch failed [${batchResponse.status}]: ${detail}`)
-      throw new Error('Could not read messages from the receiving mailbox.')
+      throw new Error(`Could not read messages from the receiving mailbox [${batchResponse.status}]: ${detail}`)
     }
-    const messages = parseBatchResponse(await batchResponse.text(), batchResponse.headers.get('content-type') ?? '')
+    const messages = parseMailboxBatch<GmailMessage>(await batchResponse.text(), batchResponse.headers.get('content-type') ?? '')
     if (messages.length === 0) return { imported: 0, checked: ids.length }
 
-    const { supabaseAdmin } = await import('@/integrations/supabase/client.server')
     const gmailIds = messages.flatMap((message) => (message.id ? [`gmail:${message.id}`] : []))
     const { data: existingRows } = await supabaseAdmin
       .from('submission_messages')
@@ -159,7 +149,7 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
     if (senders.length === 0) return { imported: 0, checked: messages.length }
     const { data: conversations, error: conversationError } = await supabaseAdmin
       .from('form_submissions')
-      .select('id, sender_email, sender_name, subject, recipient_email, created_at')
+      .select('id, sender_email, sender_name, subject, recipient_email, created_at, reference_number')
       .in('sender_email', senders)
       .order('created_at', { ascending: false })
     if (conversationError) throw new Error('Could not match mailbox replies to conversations.')
@@ -175,12 +165,37 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
         (conversation) =>
           conversation.sender_email?.toLowerCase() === fromEmail && normalizeSubject(conversation.subject ?? '') === normalized,
       )
-      const conversation = matches[0]
+      let conversation = matches.find((row) => row.reference_number === mailboxReference(subject)) ?? matches[0]
+      const reference = mailboxReference(subject)
+      if (reference && fromEmail) {
+        const { data: referenced } = await supabaseAdmin.from('form_submissions')
+          .select('id, sender_email, sender_name, subject, recipient_email, created_at, reference_number')
+          .eq('reference_number', reference).eq('sender_email', fromEmail).maybeSingle()
+        conversation = referenced ?? conversation
+      }
       const body = messageBody(message)
-      if (!fromEmail || !conversation || !body) continue
+      if (!fromEmail) continue
 
       const labels = message.labelIds ?? []
       const status = labels.includes('TRASH') ? 'trash' : labels.includes('SPAM') ? 'spam' : 'new'
+      const recipient = extractEmail(header(message, 'to')) ?? DEPARTMENT_INBOXES.general
+      const date = new Date(Number(message.internalDate ?? Date.now()))
+      const receivedAt = Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString()
+      if (!conversation) {
+        const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`gmail:${message.id}`)))
+        const hex = Array.from(digest.slice(0, 16), (byte) => byte.toString(16).padStart(2, '0')).join('')
+        const submissionId = `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20)}`
+        const { data: created, error: createError } = await supabaseAdmin.from('form_submissions').upsert({
+          id: submissionId, form_type: 'email', department: mailboxDepartment(`${header(message, 'to')} ${header(message, 'cc')}`),
+          recipient_email: recipient, subject, sender_email: fromEmail, sender_name: senderName(fromValue, fromEmail),
+          message: body || '(No message text)', fields: [], status, source: 'Google Workspace', created_at: receivedAt,
+        }, { onConflict: 'id', ignoreDuplicates: true })
+          .select('id, sender_email, sender_name, subject, recipient_email, created_at, reference_number').maybeSingle()
+        if (createError) throw new Error(`Could not save incoming mail: ${createError.message}`)
+        conversation = created ?? (await supabaseAdmin.from('form_submissions').select('id, sender_email, sender_name, subject, recipient_email, created_at, reference_number').eq('id', submissionId).single()).data ?? undefined
+        if (conversation) conversations?.unshift(conversation)
+      }
+      if (!conversation) throw new Error('Could not open the incoming mail conversation.')
       const { error: insertError } = await supabaseAdmin.from('submission_messages').insert({
         submission_id: conversation.id,
         direction: 'inbound',
@@ -189,15 +204,20 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
         to_email: extractEmail(header(message, 'to')) ?? conversation.recipient_email,
         reply_to: fromEmail,
         subject,
-        body_text: body,
+        body_text: body || '(No message text)',
+        created_at: receivedAt,
         message_id: `gmail:${message.id}`,
         status: 'received',
       })
-      if (insertError) continue
-      await supabaseAdmin
+      if (insertError) {
+        if (insertError.code === '23505') continue
+        throw new Error(`Could not save incoming message: ${insertError.message}`)
+      }
+      const { error: updateError } = await supabaseAdmin
         .from('form_submissions')
         .update({ status, updated_at: new Date().toISOString() })
         .eq('id', conversation.id)
+      if (updateError) throw new Error(`Could not update the inbox: ${updateError.message}`)
       imported += 1
     }
 
