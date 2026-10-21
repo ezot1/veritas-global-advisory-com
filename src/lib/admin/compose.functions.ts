@@ -78,7 +78,9 @@ export const sendComposedEmail = createServerFn({ method: 'POST' })
       .maybeSingle()
     threadId = (threadRow?.id as string | undefined) ?? null
 
-    await supabaseAdmin.from('submission_messages').insert({
+
+    if (threadId) {
+      await supabaseAdmin.from('submission_messages').insert({
         submission_id: threadId,
         direction: 'outbound',
         from_email: fromEmail,
