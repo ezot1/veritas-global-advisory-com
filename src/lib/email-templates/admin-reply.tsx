@@ -50,17 +50,10 @@ const Email = ({
             <Text style={p}>{signature}</Text>
           </Section>
         ) : null}
-        {replyUrl ? (
-          <Section style={replyBox}>
-            <Text style={{ ...p, margin: 0 }}>
-              To respond, please visit: <a href={replyUrl} style={{ color: '#0b1c3a' }}>{replyUrl}</a>
-            </Text>
-          </Section>
-        ) : null}
         <Hr style={hr} />
         <Text style={footer}>
           {fromLabel}<br />
-          {replyUrl ? 'Your reply reaches our team directly and securely.' : footerText}
+          {footerText}
         </Text>
       </Container>
     </Body>

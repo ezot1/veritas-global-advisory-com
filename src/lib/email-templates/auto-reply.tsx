@@ -46,13 +46,6 @@ const Email = ({
             </Text>
           ) : null}
         </Section>
-        {replyUrl ? (
-          <Section>
-            <Text style={{ ...p, margin: 0 }}>
-              To respond, please visit: <a href={replyUrl} style={{ color: '#0b1c3a' }}>{replyUrl}</a>
-            </Text>
-          </Section>
-        ) : null}
         <Hr style={hr} />
         <Text style={footer}>
           Veritas Global Advisory<br />
