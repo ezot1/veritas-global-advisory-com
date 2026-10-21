@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-r
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
 import { ImageStrip } from "@/components/site/ImageStrip";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Search, ChevronLeft, ChevronRight, LoaderCircle, RotateCw } from "lucide-react";
 import { articles as staticArticles } from "@/data/articles";
 import { listGeneratedArticles } from "@/lib/articles.functions";
@@ -104,11 +104,9 @@ function InsightsPage() {
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Reset to the first page whenever filters change.
-  useEffect(() => {
-    if (page !== 1) navigate({ search: {}, resetScroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q, cat, reg]);
+  const resetPageForFilter = () => {
+    if (page !== 1) void navigate({ search: {}, resetScroll: false });
+  };
 
 
   return (
@@ -126,16 +124,16 @@ function InsightsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => { setQ(e.target.value); resetPageForFilter(); }}
               placeholder="Search research, reports, regions..."
               aria-label="Search research and briefings"
               className="w-full h-12 pl-11 pr-4 border border-border bg-background text-sm focus:outline-none focus:border-[var(--navy-deep)]"
             />
           </div>
-          <select value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Filter by category" className="h-12 px-4 border border-border bg-background text-sm">
+          <select value={cat} onChange={(e) => { setCat(e.target.value); resetPageForFilter(); }} aria-label="Filter by category" className="h-12 px-4 border border-border bg-background text-sm">
             {categories.map((c) => <option key={c}>{c}</option>)}
           </select>
-          <select value={reg} onChange={(e) => setReg(e.target.value)} aria-label="Filter by region" className="h-12 px-4 border border-border bg-background text-sm">
+          <select value={reg} onChange={(e) => { setReg(e.target.value); resetPageForFilter(); }} aria-label="Filter by region" className="h-12 px-4 border border-border bg-background text-sm">
             {regions.map((c) => <option key={c}>{c}</option>)}
           </select>
         </div>

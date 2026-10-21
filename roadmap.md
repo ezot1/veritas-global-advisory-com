@@ -1,4 +1,5 @@
 # Trust updates
+- [x] Restore visible Research briefings on short screens and preserve direct archive page links; verify the existing admin Inbox with the owner's session.
 - [x] Connect Google Workspace mailbox to admin inbox; import unmatched Veritas mail and refresh while inbox is open.
 - [ ] Verify a received Workspace message is readable in admin inbox. Blocked: connected mailbox returns no received Veritas-addressed messages; needs a fresh message sent from another account.
 - [ ] Replace leadership profiles with real photos, bios and LinkedIn links. Blocked: user skipped the materials request; no verified profiles supplied.
