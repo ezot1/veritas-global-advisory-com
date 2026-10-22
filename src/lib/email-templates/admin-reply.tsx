@@ -1,6 +1,7 @@
 import React from 'react'
-import { Body, Container, Head, Heading, Hr, Html, Preview, Section, Text } from '@react-email/components'
+import { Body, Container, Head, Heading, Html, Preview, Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import * as s from './brand-styles'
 
 interface Props {
   subject?: string
@@ -19,7 +20,7 @@ const Email = ({
   bodyText = '',
   fromLabel = 'Veritas Global Advisory',
   fromEmail = 'info@veritasglobaladvisory.org',
-  brandColor = '#b08838',
+  brandColor = s.GOLD,
   headerText = 'VERITAS GLOBAL ADVISORY',
   introText = '',
   signature = 'Veritas Global Advisory',
@@ -28,33 +29,28 @@ const Email = ({
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>{subject}</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section>
-          <Text style={{ ...brandMark, color: brandColor }}>{headerText}</Text>
-          <Heading style={h1}>{subject}</Heading>
+    <Body style={s.main}>
+      <Container style={s.card}>
+        <Section style={s.band}>
+          <Text style={s.bandText(brandColor)}>{headerText}</Text>
         </Section>
-        <Hr style={hr} />
-        {introText ? (
-          <Section>
-            <Text style={intro}>{introText}</Text>
-          </Section>
-        ) : null}
-        <Section>
+        <Section style={s.goldRule(brandColor)}>&nbsp;</Section>
+        <Section style={s.content}>
+          <Heading style={s.h1}>{subject}</Heading>
+          {introText ? <Text style={s.muted}>{introText}</Text> : null}
           {bodyText.split(/\n{2,}/).map((para, i) => (
-            <Text key={i} style={p}>{para}</Text>
+            <Text key={i} style={s.p}>{para}</Text>
           ))}
+          {signature ? <Text style={s.signature}>{signature}</Text> : null}
+          <Text style={{ ...s.muted, margin: '0 0 20px' }}>{fromEmail}</Text>
         </Section>
-        {signature ? (
-          <Section>
-            <Text style={p}>{signature}</Text>
-          </Section>
-        ) : null}
-        <Hr style={hr} />
-        <Text style={footer}>
-          {fromLabel}<br />
-          {footerText}
-        </Text>
+        <Section style={s.footerWrap}>
+          <Text style={s.footer}>
+            {fromLabel} · Miami, Florida · veritasglobaladvisory.org
+            <br />
+            {footerText}
+          </Text>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -71,18 +67,3 @@ export const template = {
     fromEmail: 'business@veritasglobaladvisory.org',
   },
 } satisfies TemplateEntry
-
-const main: React.CSSProperties = {
-  backgroundColor: '#ffffff',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  color: '#0b1c3a',
-}
-const container: React.CSSProperties = { maxWidth: '600px', margin: '0 auto', padding: '32px 28px' }
-const brandMark: React.CSSProperties = {
-  fontSize: '11px', letterSpacing: '0.22em', margin: '0 0 16px', fontWeight: 600,
-}
-const h1: React.CSSProperties = { fontSize: '22px', fontWeight: 600, color: '#0b1c3a', margin: '0 0 8px', lineHeight: 1.3 }
-const hr: React.CSSProperties = { borderColor: '#e5e7eb', margin: '20px 0' }
-const intro: React.CSSProperties = { fontSize: '14px', color: '#4a5568', margin: '0 0 14px', lineHeight: 1.6, fontStyle: 'italic' }
-const p: React.CSSProperties = { fontSize: '15px', color: '#0b1c3a', margin: '0 0 14px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }
-const footer: React.CSSProperties = { fontSize: '12px', color: '#6b7280', margin: 0, lineHeight: 1.55 }
