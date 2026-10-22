@@ -98,7 +98,7 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
       'X-Connection-Api-Key': gmailKey,
     }
     const listResponse = await fetch(
-      `${GMAIL_API}/users/me/messages?maxResults=50&q=${encodeURIComponent(`in:inbox newer_than:30d {${Object.values(DEPARTMENT_INBOXES).map((address) => `to:${address}`).join(' ')}}`)}`,
+      `${GMAIL_API}/users/me/messages?maxResults=50&q=${encodeURIComponent(`in:inbox newer_than:30d -from:me -from:veritasglobaladvisory.org {${Object.values(DEPARTMENT_INBOXES).map((address) => `to:${address}`).join(' ')}}`)}`,
       { headers: gatewayHeaders },
     )
     if (!listResponse.ok) {
@@ -175,6 +175,8 @@ export const syncMailboxReplies = createServerFn({ method: 'POST' })
       }
       const body = messageBody(message)
       if (!fromEmail) continue
+      // Our own alerts/copies (sent from a Veritas address) are not incoming mail.
+      if (fromEmail.endsWith('@veritasglobaladvisory.org') || fromEmail.endsWith('.veritasglobaladvisory.org') || (message.labelIds ?? []).includes('SENT')) continue
 
       const labels = message.labelIds ?? []
       const status = labels.includes('TRASH') ? 'trash' : labels.includes('SPAM') ? 'spam' : 'new'
