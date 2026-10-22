@@ -1,17 +1,7 @@
 import React from 'react'
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Preview,
-  Section,
-  Text,
-} from '@react-email/components'
+import { Body, Column, Container, Head, Heading, Html, Preview, Row, Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import * as s from './brand-styles'
 
 interface FormField {
   label: string
@@ -34,65 +24,41 @@ const Email = ({
   formSubtitle = 'A new submission has been received from veritasglobaladvisory.org.',
   fields = [],
   submittedAt,
-  brandColor = '#b08838',
+  brandColor = s.GOLD,
   headerText = 'VERITAS GLOBAL ADVISORY',
   footerText = 'Submitted via the Veritas Global Advisory website.',
-  dashboardUrl = '',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>{formTitle}</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={header}>
-          <Text style={{ ...brandMark, color: brandColor }}>{headerText}</Text>
-          <Heading style={h1}>{formTitle}</Heading>
-          <Text style={lead}>{formSubtitle}</Text>
+    <Body style={s.main}>
+      <Container style={s.card}>
+        <Section style={s.band}>
+          <Text style={s.bandText(brandColor)}>{headerText}</Text>
         </Section>
-
-        <Hr style={hr} />
-
-        <Section>
-          {fields.map((f) => (
-            <Section key={f.label} style={row}>
-              <Text style={label}>{f.label}</Text>
-              <Text style={value}>{f.value || '-'}</Text>
-            </Section>
-          ))}
-        </Section>
-
-        {dashboardUrl ? (
-          <Section style={{ textAlign: 'center', padding: '4px 0 8px' }}>
-            <Button
-              href={dashboardUrl}
-              style={{
-                backgroundColor: '#0b1c3a',
-                color: '#ffffff',
-                fontSize: '14px',
-                fontWeight: 600,
-                padding: '12px 22px',
-                borderRadius: '4px',
-                textDecoration: 'none',
-                display: 'inline-block',
-              }}
-            >
-              Open this inquiry in the dashboard
-            </Button>
+        <Section style={s.goldRule(brandColor)}>&nbsp;</Section>
+        <Section style={s.content}>
+          <Heading style={s.h1}>{formTitle}</Heading>
+          <Text style={s.muted}>{formSubtitle}</Text>
+          <Section style={table}>
+            {fields.map((f, i) => (
+              <Row key={f.label} style={{ backgroundColor: i % 2 ? '#ffffff' : '#f8f9fb' }}>
+                <Column style={labelCell}>{f.label}</Column>
+                <Column style={valueCell}>{f.value || '-'}</Column>
+              </Row>
+            ))}
           </Section>
-        ) : null}
-
-        <Hr style={hr} />
-
-        <Text style={footer}>
-          {submittedAt ? `Submitted ${submittedAt}. ` : ''}{footerText}{' '}
-          Reply directly to this thread to respond to the sender (where an email
-          was provided).
-        </Text>
+        </Section>
+        <Section style={s.footerWrap}>
+          <Text style={s.footer}>
+            {submittedAt ? `Submitted ${new Date(submittedAt).toUTCString()}. ` : ''}
+            {footerText} Reply directly to respond to the sender where an email was provided.
+          </Text>
+        </Section>
       </Container>
     </Body>
   </Html>
 )
-
 
 export const template = {
   component: Email,
@@ -114,61 +80,14 @@ export const template = {
   },
 } satisfies TemplateEntry
 
-const main: React.CSSProperties = {
-  backgroundColor: '#ffffff',
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  color: '#0b1c3a',
-}
-const container: React.CSSProperties = {
-  maxWidth: '600px',
-  margin: '0 auto',
-  padding: '32px 28px',
-}
-const header: React.CSSProperties = { paddingBottom: '8px' }
-const brandMark: React.CSSProperties = {
-  fontSize: '11px',
-  letterSpacing: '0.22em',
-  margin: '0 0 16px',
-  fontWeight: 600,
-}
-
-const h1: React.CSSProperties = {
-  fontSize: '22px',
-  fontWeight: 600,
-  color: '#0b1c3a',
-  margin: '0 0 8px',
-  lineHeight: 1.3,
-}
-const lead: React.CSSProperties = {
-  fontSize: '14px',
-  color: '#4a5568',
-  margin: 0,
-  lineHeight: 1.55,
-}
-const hr: React.CSSProperties = {
-  borderColor: '#e5e7eb',
-  margin: '24px 0',
-}
-const row: React.CSSProperties = { margin: '0 0 14px' }
-const label: React.CSSProperties = {
-  fontSize: '11px',
-  letterSpacing: '0.16em',
-  color: '#6b7280',
-  margin: '0 0 4px',
+const table: React.CSSProperties = { border: '1px solid #e3e6eb', borderRadius: '4px', margin: '8px 0 24px' }
+const labelCell: React.CSSProperties = {
+  ...s.footer,
+  width: '32%',
+  padding: '10px 14px',
+  letterSpacing: '0.12em',
   textTransform: 'uppercase',
-  fontWeight: 600,
+  fontWeight: 700,
+  verticalAlign: 'top',
 }
-const value: React.CSSProperties = {
-  fontSize: '14px',
-  color: '#0b1c3a',
-  margin: 0,
-  lineHeight: 1.55,
-  whiteSpace: 'pre-wrap',
-}
-const footer: React.CSSProperties = {
-  fontSize: '12px',
-  color: '#6b7280',
-  margin: 0,
-  lineHeight: 1.55,
-}
+const valueCell: React.CSSProperties = { ...s.p, fontSize: '14px', margin: 0, padding: '10px 14px', verticalAlign: 'top' }

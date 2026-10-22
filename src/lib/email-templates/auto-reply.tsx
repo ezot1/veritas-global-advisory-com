@@ -1,6 +1,7 @@
 import React from 'react'
-import { Body, Container, Head, Heading, Hr, Html, Preview, Section, Text } from '@react-email/components'
+import { Body, Container, Head, Heading, Html, Preview, Section, Text } from '@react-email/components'
 import type { TemplateEntry } from './registry'
+import * as s from './brand-styles'
 
 interface Props {
   firstName?: string
@@ -16,7 +17,7 @@ const Email = ({
   firstName = '',
   subject = 'We have received your inquiry',
   referenceNumber = '',
-  brandColor = '#b08838',
+  brandColor = s.GOLD,
   headerText = 'VERITAS GLOBAL ADVISORY',
   footerText = 'This is an automated confirmation of receipt.',
   fromEmail = 'info@veritasglobaladvisory.org',
@@ -24,35 +25,36 @@ const Email = ({
   <Html lang="en" dir="ltr">
     <Head />
     <Preview>{subject}</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section>
-          <Text style={{ ...brandMark, color: brandColor }}>{headerText}</Text>
-          <Heading style={h1}>{subject}</Heading>
+    <Body style={s.main}>
+      <Container style={s.card}>
+        <Section style={s.band}>
+          <Text style={s.bandText(brandColor)}>{headerText}</Text>
         </Section>
-        <Hr style={hr} />
-        <Section>
-          <Text style={greeting}>
-            Greetings {firstName ? firstName.trim() : 'there'},
-          </Text>
-          <Text style={p}>
-            Thank you for contacting Veritas Global Advisory. We have received your inquiry, and the
-            appropriate team will review it.
+        <Section style={s.goldRule(brandColor)}>&nbsp;</Section>
+        <Section style={s.content}>
+          <Heading style={s.h1}>{subject}</Heading>
+          <Text style={s.p}>Dear {firstName ? firstName.trim() : 'Sir or Madam'},</Text>
+          <Text style={s.p}>
+            Thank you for contacting Veritas Global Advisory. We have received your inquiry and the appropriate
+            team will review it and respond shortly.
           </Text>
           {referenceNumber ? (
-            <Text style={p}>
-              Your reference number is <strong>{referenceNumber}</strong>. Please quote it in any further
-              correspondence.
-            </Text>
+            <Section style={refBox}>
+              <Text style={refLabel}>YOUR REFERENCE</Text>
+              <Text style={refValue}>{referenceNumber}</Text>
+            </Section>
           ) : null}
+          <Text style={s.p}>If you have anything to add, simply reply to this email.</Text>
+          <Text style={s.signature}>Veritas Global Advisory</Text>
+          <Text style={{ ...s.muted, margin: '0 0 20px' }}>{fromEmail}</Text>
         </Section>
-        <Hr style={hr} />
-        <Text style={footer}>
-          Veritas Global Advisory<br />
-          veritasglobaladvisory.org<br />
-          {footerText}{' '}
-          {fromEmail && <>Reach us at {fromEmail}.</>}
-        </Text>
+        <Section style={s.footerWrap}>
+          <Text style={s.footer}>
+            Veritas Global Advisory · Miami, Florida · veritasglobaladvisory.org
+            <br />
+            {footerText}
+          </Text>
+        </Section>
       </Container>
     </Body>
   </Html>
@@ -65,55 +67,14 @@ export const template = {
       ? `We have received your inquiry | ${data.referenceNumber} | Veritas Global Advisory`
       : 'We have received your inquiry | Veritas Global Advisory',
   displayName: 'Inquiry confirmation (visitor)',
-  previewData: {
-    firstName: 'Jane',
-    subject: 'We have received your inquiry',
-    referenceNumber: 'VG-1001',
-  },
+  previewData: { firstName: 'Jane', subject: 'We have received your inquiry', referenceNumber: 'VG-1001' },
 } satisfies TemplateEntry
 
-const main: React.CSSProperties = {
-  backgroundColor: '#ffffff',
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-  color: '#0b1c3a',
+const refBox: React.CSSProperties = {
+  backgroundColor: '#f7f3ea',
+  borderLeft: `3px solid ${s.GOLD}`,
+  padding: '12px 16px',
+  margin: '4px 0 18px',
 }
-const container: React.CSSProperties = {
-  maxWidth: '600px',
-  margin: '0 auto',
-  padding: '32px 28px',
-}
-const brandMark: React.CSSProperties = {
-  fontSize: '11px',
-  letterSpacing: '0.22em',
-  margin: '0 0 16px',
-  fontWeight: 600,
-}
-const h1: React.CSSProperties = {
-  fontSize: '22px',
-  fontWeight: 600,
-  color: '#0b1c3a',
-  margin: '0 0 8px',
-  lineHeight: 1.3,
-}
-const hr: React.CSSProperties = { borderColor: '#e5e7eb', margin: '24px 0' }
-const greeting: React.CSSProperties = {
-  fontSize: '16px',
-  fontWeight: 600,
-  color: '#0b1c3a',
-  margin: '0 0 14px',
-  lineHeight: 1.5,
-}
-const p: React.CSSProperties = {
-  fontSize: '15px',
-  color: '#0b1c3a',
-  margin: '0 0 14px',
-  lineHeight: 1.6,
-  whiteSpace: 'pre-wrap',
-}
-const footer: React.CSSProperties = {
-  fontSize: '12px',
-  color: '#6b7280',
-  margin: 0,
-  lineHeight: 1.55,
-}
+const refLabel: React.CSSProperties = { ...s.footer, letterSpacing: '0.18em', fontWeight: 700, margin: '0 0 2px' }
+const refValue: React.CSSProperties = { ...s.p, fontSize: '18px', fontWeight: 700, color: s.NAVY, margin: 0 }

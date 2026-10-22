@@ -174,31 +174,53 @@ function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-white">
-        <div className="container-x flex items-center justify-between h-16">
-          <div className="flex items-center gap-6">
-            <Link to="/" className="font-semibold tracking-tight">Veritas Admin</Link>
-            <span className="text-xs text-muted-foreground">Submissions Inbox</span>
+    <div className="min-h-screen bg-muted/30">
+      <header className="sticky top-0 z-30 bg-[var(--navy-deep)] text-white shadow-md">
+        <div className="container-x flex items-center justify-between h-16 gap-4">
+          <div className="flex items-center gap-4 min-w-0">
+            <Link to="/" className="font-semibold tracking-[0.18em] text-sm uppercase whitespace-nowrap">
+              Veritas <span className="text-[var(--gold)]">Admin</span>
+            </Link>
+            <span className="hidden sm:inline h-5 w-px bg-white/20" />
+            <span className="hidden sm:inline text-xs text-white/60 truncate">Inquiry and email desk</span>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => loadSubmissions()} className="text-xs underline text-muted-foreground hover:text-foreground">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => loadSubmissions()}
+              className="px-3 py-2 text-xs uppercase tracking-wider text-white/80 hover:text-white border border-white/20 hover:border-white/50 transition"
+            >
               Refresh
             </button>
             <button
               onClick={handleGenerateArticle}
               disabled={generatingArticle}
-              className="btn-ghost !py-2 !px-4 !text-xs disabled:opacity-50"
+              className="hidden sm:inline-block px-3 py-2 text-xs uppercase tracking-wider bg-[var(--gold)] text-[var(--navy-deep)] font-semibold hover:opacity-90 transition disabled:opacity-50"
             >
               {generatingArticle ? "Generating..." : "Generate article"}
             </button>
-            <button onClick={signOut} className="btn-ghost !py-2 !px-4 !text-xs">Sign out</button>
+            <button onClick={signOut} className="px-3 py-2 text-xs uppercase tracking-wider text-white/70 hover:text-white transition">
+              Sign out
+            </button>
           </div>
         </div>
       </header>
 
       <div className="container-x py-6">
-        <div className="flex items-center gap-1 mb-5 border-b border-border">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          {([
+            ["New", items.filter((i) => i.status === "new").length],
+            ["Replied", items.filter((i) => i.status === "replied").length],
+            ["Spam", items.filter((i) => i.status === "spam").length],
+            ["Total", items.length],
+          ] as const).map(([label, n]) => (
+            <div key={label} className="bg-white border border-border px-4 py-3 border-l-4 border-l-[var(--gold)]">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{label}</div>
+              <div className="text-2xl font-semibold text-[var(--navy-deep)] mt-1">{n}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-1 mb-5 border-b border-border overflow-x-auto whitespace-nowrap bg-white px-2">
           {([
             ["inbox", "Inbox"],
             ["received", "Received replies"],
@@ -212,9 +234,9 @@ function AdminPage() {
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`px-4 py-2 text-xs uppercase tracking-wider border-b-2 -mb-px ${
+              className={`px-4 py-3 text-xs uppercase tracking-wider border-b-2 -mb-px transition ${
                 tab === id
-                  ? "border-[var(--navy-deep)] text-[var(--navy-deep)] font-semibold"
+                  ? "border-[var(--gold)] text-[var(--navy-deep)] font-semibold"
                   : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -223,8 +245,8 @@ function AdminPage() {
           ))}
         </div>
 
-        {error && <div className="text-sm text-red-600 mb-4">{error}</div>}
-        {articleNotice && <div className="text-sm text-muted-foreground mb-4">{articleNotice}</div>}
+        {error && <div className="text-sm text-destructive bg-destructive/10 border border-destructive/30 px-4 py-3 mb-4">{error}</div>}
+        {articleNotice && <div className="text-sm bg-white border border-border border-l-4 border-l-[var(--gold)] px-4 py-3 mb-4">{articleNotice}</div>}
 
 
         {tab === "inbox" && (
@@ -234,10 +256,10 @@ function AdminPage() {
                 <button
                   key={s}
                   onClick={() => setFilter(s)}
-                  className={`px-3 py-1.5 text-xs uppercase tracking-wider border ${
+                  className={`px-3 py-1.5 text-xs uppercase tracking-wider border rounded-full transition ${
                     filter === s
                       ? "bg-[var(--navy-deep)] text-white border-[var(--navy-deep)]"
-                      : "border-border text-muted-foreground hover:text-foreground"
+                      : "bg-white border-border text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {s} {s !== "all" && `(${items.filter((i) => i.status === s).length})`}
@@ -247,22 +269,22 @@ function AdminPage() {
             </div>
 
             <div className="grid lg:grid-cols-[380px_1fr] gap-6">
-              <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto">
+              <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto shadow-sm">
                 {loading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
                 {!loading && filtered.length === 0 && (
-                  <div className="p-6 text-sm text-muted-foreground">No submissions yet.</div>
+                  <div className="p-10 text-center text-sm text-muted-foreground">Nothing here yet.</div>
                 )}
                 <ul>
                   {filtered.map((it) => (
                     <li key={it.id}>
                       <button
                         onClick={() => setSelectedId(it.id)}
-                        className={`w-full text-left px-4 py-3 border-b border-border hover:bg-muted/40 transition ${
-                          selected?.id === it.id ? "bg-muted/60" : ""
+                        className={`w-full text-left px-4 py-3 border-b border-border border-l-4 hover:bg-muted/40 transition ${
+                          selected?.id === it.id ? "bg-muted/60 border-l-[var(--gold)]" : it.status === "new" ? "border-l-[var(--navy-deep)]" : "border-l-transparent"
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-xs uppercase tracking-wider text-[var(--gold)]">
+                          <span className="text-[10px] uppercase tracking-wider text-[var(--gold)] font-semibold">
                             {it.form_type}{it.department ? ` · ${it.department}` : ""}
                           </span>
                           {it.status !== "read" && it.status !== "archived" && (
@@ -274,16 +296,16 @@ function AdminPage() {
                             }`}>{it.status}</span>
                           )}
                         </div>
-                        <div className="mt-1 text-sm font-medium line-clamp-1">{it.sender_name || it.sender_email || "Anonymous"}</div>
+                        <div className={`mt-1 text-sm line-clamp-1 ${it.status === "new" ? "font-semibold" : "font-medium"}`}>{it.sender_name || it.sender_email || "Anonymous"}</div>
                         <div className="text-xs text-muted-foreground line-clamp-1">{it.subject}</div>
-                        <div className="text-[10px] text-muted-foreground mt-1">{new Date(it.created_at).toLocaleString()}</div>
+                        <div className="text-[10px] text-muted-foreground mt-1">{new Date(it.created_at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</div>
                       </button>
                     </li>
                   ))}
                 </ul>
               </aside>
 
-              <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto">
+              <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto shadow-sm">
                 {!selected ? (
                   <div className="text-sm text-muted-foreground">Select a submission to view.</div>
                 ) : (
