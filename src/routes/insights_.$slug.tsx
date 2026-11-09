@@ -22,6 +22,8 @@ export const Route = createFileRoute("/insights_/$slug")({
           { property: "og:title", content: loaderData.article.title },
           { property: "og:description", content: loaderData.article.summary },
           { property: "og:type", content: "article" },
+          { name: "twitter:card", content: "summary_large_image" },
+          ...(loaderData.article.img.startsWith("https://") ? [{ name: "twitter:image", content: loaderData.article.img }] : []),
           { property: "og:url", content: `https://veritasglobaladvisory.org/insights/${params.slug}` },
           { property: "og:image", content: loaderData.article.img.startsWith("http") ? loaderData.article.img : `https://veritasglobaladvisory.org${loaderData.article.img}` },
           { property: "article:author", content: loaderData.article.author },

@@ -1,7 +1,7 @@
-import { createClient } from "@supabase/supabase-js";
-import { generateText, Output } from "ai";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { generateResponse, GatewayError } from "@lovable.dev/ai-gateway";
 import { z } from "zod";
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { researchArticleSchema, researchPrompt, validateResearchSources } from "./article-research";
 
 export const REGIONAL_FOCUSES = [
   {
@@ -55,68 +55,57 @@ function formatDate(d: Date) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export async function generateArticle() {
-  const supabaseUrl = process.env.SUPABASE_URL!;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  const lovableKey = process.env.LOVABLE_API_KEY!;
-  if (!supabaseUrl || !serviceKey || !lovableKey) {
-    throw new Error("Missing required env vars");
-  }
-
-  const admin = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
-
-  // Read + advance rotation
-  const { data: state } = await admin
-    .from("article_rotation_state")
-    .select("next_index")
-    .eq("id", 1)
-    .maybeSingle();
-  const idx = state?.next_index ?? 0;
+export async function generateArticle(manual = true) {
+  const token = crypto.randomUUID();
+  const { data: idx, error } = await supabaseAdmin.rpc("claim_article_generation", { p_token: token, p_manual: manual });
+  if (error) throw error;
+  if (idx === null) throw new Error("Article generation is paused, already running, or not yet due");
   const pick = REGIONAL_FOCUSES[idx % REGIONAL_FOCUSES.length];
-
-  const gateway = createLovableAiGatewayProvider(lovableKey);
-
-  const prompt = `Write an in-depth, ~1200 word institutional research briefing from Veritas Global Advisory focused on current, real-world developments in ${pick.region} for 2026, with particular attention to ${pick.focus}. Connect regional developments to global geopolitical, economic, security, and business implications. Voice must be authoritative, analytical, and comparable to a top-tier think tank or consulting firm. Do NOT use em dashes; use hyphens with spaces instead. Cite specific countries, institutions, figures, and recent events. Structure as 10-14 substantive paragraphs.
-
-Return the result as JSON with:
-- title: sharp, editorial (max 140 chars, no colon-heavy academic style)
-- summary: 2-3 sentence executive summary (max 400 chars)
-- body: array of 10-14 paragraph strings (each 120-220 words)`;
-
-  const { output } = await generateText({
-    model: gateway("openai/gpt-6-astra"),
-    output: Output.object({
-      schema: z.object({
-        title: z.string(),
-        summary: z.string(),
-        body: z.array(z.string()),
-      }),
-    }),
-    prompt,
-  });
-
-  const generated = output;
-  const baseSlug = slugify(generated.title) || "worldwide-briefing";
-  const slug = `${baseSlug}-${Date.now().toString(36)}`;
-
-  const { error: insertError } = await admin.from("generated_articles").insert({
-    slug,
-    continent: pick.region,
-    tag: pick.tag,
-    region: pick.region,
-    title: generated.title,
-    summary: generated.summary,
-    body: generated.body,
-    author: pick.author,
-    image_url: pick.image,
-    published_date: formatDate(new Date()),
-  });
-  if (insertError) throw insertError;
-
-  await admin
-    .from("article_rotation_state")
-    .update({ next_index: idx + 1, last_run_at: new Date().toISOString() })
-    .eq("id", 1);
-
-  return { slug, region: pick.region, title: generated.title };
+  if (!pick) throw new Error("Invalid regional rotation");
+  try {
+    const response = await generateResponse({
+      model: "openai/gpt-6-astra",
+      input: researchPrompt(pick.region, pick.focus, new Date().toISOString().slice(0, 10)),
+      tools: [{ type: "web_search", search_context_size: "high" }],
+      max_tool_calls: 10,
+      include: ["web_search_call.action.sources"],
+      text: { format: { type: "json_schema", name: "research_article", strict: true, schema: z.toJSONSchema(researchArticleSchema.extend({ sources: z.array(z.object({ title: z.string(), url: z.string() })).min(6).max(14) })) } },
+    });
+    const researchedUrls = new Set<string>();
+    let text = "";
+    for (const item of response.output) {
+      if (item.type === "web_search_call" && item.action) {
+        if (item.action.type === "search") item.action.sources?.forEach((s) => researchedUrls.add(s.url));
+        if ((item.action.type === "open_page" || item.action.type === "find_in_page") && item.action.url) researchedUrls.add(item.action.url);
+      }
+      if (item.type === "message") for (const part of item.content) {
+        if (part.type === "refusal") throw new Error("Research generation was refused");
+        if (part.type === "output_text") {
+          text += part.text;
+          for (const annotation of part.annotations) if (annotation.type === "url_citation") researchedUrls.add(annotation.url);
+        }
+      }
+    }
+    if (response.status !== "completed") throw new Error("Research generation did not complete");
+    const article = researchArticleSchema.parse(JSON.parse(text));
+    validateResearchSources(article, researchedUrls);
+    const slug = `${slugify(article.title)}-${token.slice(0, 8)}`;
+    const { data: completed, error: completeError } = await supabaseAdmin.rpc("complete_article_generation", {
+      p_token: token,
+      p_article: {
+        slug, continent: pick.region, tag: pick.tag, region: pick.region,
+        title: article.title, summary: article.summary,
+        body: [...article.body, "Sources and references", ...article.sources.map((s, i) => `[${i + 1}] ${s.title} - ${s.url}`)],
+        author: "Veritas Global Advisory Research Desk", image_url: pick.image,
+        published_date: formatDate(new Date()),
+      },
+    });
+    if (completeError) throw completeError;
+    if (!completed) throw new Error("Research publication lock was lost");
+    return { slug, region: pick.region, title: article.title };
+  } catch (err) {
+    const reason = err instanceof GatewayError ? `Research generation paused: ${err.code}` : "Research generation needs review before another attempt";
+    await supabaseAdmin.rpc("fail_article_generation", { p_token: token, p_reason: reason });
+    throw err;
+  }
 }

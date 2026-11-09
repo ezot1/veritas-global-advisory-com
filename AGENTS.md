@@ -13,3 +13,4 @@
 - The sample briefing is a separate public route reusing an existing published article, not evidence of a client engagement, so content and provenance remain consistent.
 - Google Workspace intake uses the authenticated admin mailbox sync, importing only Veritas-addressed mail into existing inquiry/thread tables with Gmail message-ID deduplication; unmatched mail creates an inquiry rather than being discarded.
 - Shared scroll reveals trigger on any intersection and fall back to visible without observer support, because full-section wrappers can exceed the viewport height.
+- Article generation uses the AI Gateway SDK with live research, validated source URLs and a database lease; publication and rotation advance atomically to prevent overlapping scheduled/admin runs. Permanent or uncertain failures pause automation for owner review.

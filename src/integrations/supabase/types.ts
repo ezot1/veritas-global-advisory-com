@@ -18,17 +18,26 @@ export type Database = {
         Row: {
           id: number
           last_run_at: string | null
+          lease_token: string | null
+          lease_until: string | null
           next_index: number
+          paused_reason: string | null
         }
         Insert: {
           id?: number
           last_run_at?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
           next_index?: number
+          paused_reason?: string | null
         }
         Update: {
           id?: number
           last_run_at?: string | null
+          lease_token?: string | null
+          lease_until?: string | null
           next_index?: number
+          paused_reason?: string | null
         }
         Relationships: []
       }
@@ -734,6 +743,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_article_generation: {
+        Args: { p_manual?: boolean; p_token: string }
+        Returns: number
+      }
+      complete_article_generation: {
+        Args: { p_article: Json; p_token: string }
+        Returns: boolean
+      }
+      fail_article_generation: {
+        Args: { p_reason?: string; p_token: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
