@@ -3,6 +3,7 @@ import { Section } from "@/components/site/Section";
 import { findArticle, articles } from "@/data/articles";
 import { listGeneratedArticles } from "@/lib/articles.functions";
 import { ShareButtons } from "@/components/site/ShareButtons";
+import { ArticleBody } from "@/components/site/ArticleBody";
 
 export const Route = createFileRoute("/insights_/$slug")({
   loader: async ({ params }) => {
@@ -103,11 +104,7 @@ function ArticlePage() {
           <div className="mb-8 pb-8 border-b border-border">
             <ShareButtons title={article.title} summary={article.summary} slug={article.slug} />
           </div>
-          <div className="prose-veritas">
-            {article.body.map((p: string, i: number) => (
-              <p key={i} className="text-[17px] leading-[1.85] text-foreground mb-6">{p}</p>
-            ))}
-          </div>
+          <ArticleBody body={article.body} />
           <div className="mt-12 pt-8 border-t border-border">
             <ShareButtons title={article.title} summary={article.summary} slug={article.slug} />
           </div>

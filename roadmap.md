@@ -1,4 +1,5 @@
 # Trust updates
+- [x] Make article source URLs clickable and organize references with citation navigation; preserve stored research.
 - [x] Strengthen generated articles with doctoral-level, specific, sourced analysis; generated the European gas-storage study and restored a fortnightly due-date gate. Updated automation requires publishing.
 - [x] Restore visible Research briefings on short screens and preserve direct archive page links; verify the existing admin Inbox with the owner's session.
 - [x] Connect Google Workspace mailbox to admin inbox; import unmatched Veritas mail and refresh while inbox is open.

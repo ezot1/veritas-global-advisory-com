@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { articles } from "@/data/articles";
 import { Button } from "@/components/ui/button";
+import { ArticleBody } from "@/components/site/ArticleBody";
 
 const sample = articles.find((article) => article.slug === "nearshoring-mexico-vs-vietnam-comparison");
 
@@ -48,9 +49,7 @@ function SampleBriefingPage() {
           </p>
           <img src={sample.img} alt="Mexico and Vietnam nearshoring research illustration" className="mb-10 aspect-video w-full object-cover" />
           <h2 className="mb-6 text-2xl font-semibold">The briefing</h2>
-          <div className="space-y-6">
-            {sample.body.map((paragraph, index) => <p key={index} className="text-base leading-relaxed md:text-lg">{paragraph}</p>)}
-          </div>
+          <ArticleBody body={sample.body} />
         </article>
         <aside className="space-y-8 border-t border-border pt-8 lg:border-t-0 lg:pt-0">
           <div>
