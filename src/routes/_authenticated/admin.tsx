@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { EmailMessageBody } from "@/components/admin/EmailMessageBody";
 import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages, listInboundReplies, type InboundReply } from "@/lib/admin/reply.functions";
 import { sendComposedEmail, listSentEmails, listAllSentEmails } from "@/lib/admin/compose.functions";
@@ -268,7 +269,7 @@ function AdminPage() {
               <span className="ml-auto text-xs text-muted-foreground">{filtered.length} of {items.length}</span>
             </div>
 
-            <div className="grid lg:grid-cols-[380px_1fr] gap-6">
+            <div className="grid lg:grid-cols-[320px_minmax(0,1fr)] gap-4">
               <aside className="border border-border bg-white max-h-[75vh] overflow-y-auto shadow-sm">
                 {loading && <div className="p-6 text-sm text-muted-foreground">Loading…</div>}
                 {!loading && filtered.length === 0 && (
@@ -305,7 +306,7 @@ function AdminPage() {
                 </ul>
               </aside>
 
-              <main className="border border-border bg-white p-6 md:p-8 max-h-[75vh] overflow-y-auto shadow-sm">
+              <main className="min-w-0 border border-border bg-card p-5 md:p-8 lg:max-h-[75vh] overflow-y-auto shadow-sm">
                 {!selected ? (
                   <div className="text-sm text-muted-foreground">Select a submission to view.</div>
                 ) : (
@@ -601,11 +602,11 @@ function SubmissionDetail({
   return (
     <article>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div>
-          <div className="text-xs uppercase tracking-wider text-[var(--gold)]">
-            {s.form_type}{s.department ? ` · ${s.department}` : ""} · routed to {s.recipient_email}
+        <div className="min-w-0 flex-1">
+          <div className="text-xs font-semibold text-muted-foreground">
+            {s.form_type}{s.department ? ` · ${s.department}` : ""}
           </div>
-          <h2 className="display-3 mt-1">{s.subject}</h2>
+          <h2 className="text-xl font-semibold leading-snug mt-2 [overflow-wrap:anywhere]">{s.subject}</h2>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <select
@@ -647,18 +648,19 @@ function SubmissionDetail({
         </div>
       </div>
 
-      <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm border-y border-border py-4 mb-6">
+      <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm border-y border-border py-4 mb-6 [overflow-wrap:anywhere]">
         <Row label="From" value={s.sender_name} />
         <Row label="Email" value={s.sender_email} link={s.sender_email ? `mailto:${s.sender_email}` : null} />
         <Row label="Organization" value={s.sender_organization} />
         <Row label="Country" value={s.sender_country} />
         <Row label="Received" value={new Date(s.created_at).toLocaleString()} />
+        <Row label="To" value={s.recipient_email} />
       </dl>
 
       {s.message && (
         <section className="mb-6">
           <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-2">Message</div>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed">{s.message}</p>
+          <EmailMessageBody text={s.message} />
         </section>
       )}
 
@@ -795,20 +797,22 @@ function ReplyThread({ submission: s, onReplied }: { submission: Submission; onR
       {messages.length > 0 && (
         <ul className="space-y-3 mb-6">
           {messages.map((m) => (
-            <li key={m.id} className="border border-border bg-muted/30 p-4">
-              <div className="flex items-center justify-between gap-3 mb-1">
-                <div className="text-xs text-muted-foreground">
-                  <span className="uppercase tracking-wider text-[var(--gold)] mr-2">
+            <li key={m.id} className="border border-border bg-card rounded-sm p-4 md:p-5 min-w-0">
+              <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border pb-3 mb-4">
+                <div className="min-w-0 text-xs text-muted-foreground [overflow-wrap:anywhere]">
+                  <span className="block font-semibold text-foreground mb-1">
                     {m.direction === "outbound" ? "Sent" : "Received"}
                   </span>
-                  {m.from_label ? `${m.from_label} <${m.from_email}>` : m.from_email} → {m.to_email}
+                  <div>{m.from_label || m.from_email}</div>
+                  {m.from_label ? <div>{m.from_email}</div> : null}
+                  <div className="mt-1">To: {m.to_email}</div>
                 </div>
                 <div className="text-[10px] text-muted-foreground">
                   {new Date(m.created_at).toLocaleString()} · {m.status}
                 </div>
               </div>
-              <div className="text-sm font-medium mb-1">{m.subject}</div>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.body_text}</p>
+              <div className="text-sm font-semibold mb-3 [overflow-wrap:anywhere]">{m.subject}</div>
+              <EmailMessageBody text={m.body_text} />
               {m.error_message && <div className="mt-2 text-xs text-red-600">{m.error_message}</div>}
             </li>
           ))}
@@ -1492,16 +1496,16 @@ function SentPanel() {
           ) : (
             <div>
               <span className="eyebrow">{SENT_KIND_LABELS[selected.template_name] ?? selected.template_name}</span>
-              <h2 className="display-3 mt-2">{selected.subject || "(no subject)"}</h2>
-              <div className="mt-4 text-sm text-muted-foreground space-y-1">
+              <h2 className="text-xl font-semibold leading-snug mt-2 [overflow-wrap:anywhere]">{selected.subject || "(no subject)"}</h2>
+              <div className="mt-4 text-sm text-muted-foreground space-y-1 [overflow-wrap:anywhere]">
                 <div>To: {selected.recipient_email}</div>
                 {selected.from_email && <div>From: {selected.from_email}</div>}
                 <div>Sent: {new Date(selected.created_at).toLocaleString()}</div>
                 <div>Status: {selected.status}</div>
                 {selected.error_message && <div className="text-red-600">Problem: {selected.error_message}</div>}
               </div>
-              <div className="mt-6 border-t border-border pt-6 text-sm leading-relaxed whitespace-pre-wrap">
-                {selected.body || "The text of this message was not stored."}
+              <div className="mt-6 border-t border-border pt-6">
+                <EmailMessageBody text={selected.body || "The text of this message was not stored."} />
               </div>
             </div>
           )}
@@ -1714,12 +1718,12 @@ function ReceivedRepliesPanel() {
               onClick={() => setOpenId(openId === r.id ? null : r.id)}
               className="w-full text-left px-4 py-3 hover:bg-muted/40 transition"
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium">{r.from_label || r.from_email}</span>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="min-w-0 text-sm font-medium [overflow-wrap:anywhere]">{r.from_label || r.from_email}</span>
                 <span className="text-[10px] text-muted-foreground">{new Date(r.created_at).toLocaleString()}</span>
               </div>
               <div className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{r.subject}</div>
-              <div className="text-[11px] text-muted-foreground mt-1">
+              <div className="text-[11px] text-muted-foreground mt-1 [overflow-wrap:anywhere]">
                 {r.from_email}
                 {r.sender_country ? ` · ${r.sender_country}` : ""}
                 {r.form_type ? ` · ${r.form_type}` : ""}
@@ -1727,9 +1731,7 @@ function ReceivedRepliesPanel() {
             </button>
             {openId === r.id && (
               <div className="px-4 pb-4">
-                <pre className="whitespace-pre-wrap text-sm leading-relaxed bg-muted/40 border border-border p-4">
-                  {r.body_text}
-                </pre>
+                <div className="border-t border-border pt-4"><EmailMessageBody text={r.body_text} /></div>
               </div>
             )}
           </div>
