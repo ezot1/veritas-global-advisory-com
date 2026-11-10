@@ -1,5 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { Button } from "@/components/ui/button";
 import { EmailMessageBody } from "@/components/admin/EmailMessageBody";
 import { supabase } from "@/integrations/supabase/client";
 import { sendAdminReply, listSubmissionMessages, listInboundReplies, type InboundReply } from "@/lib/admin/reply.functions";
@@ -52,13 +54,22 @@ function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [generatingArticle, setGeneratingArticle] = useState(false);
   const [articleNotice, setArticleNotice] = useState<string | null>(null);
+  const [articlePaused, setArticlePaused] = useState(false);
+  const generateArticleFn = useServerFn(generateArticleNow);
 
   async function handleGenerateArticle() {
+    if (articlePaused && !window.confirm("Review the previous failure and restore any required credits or provider access first. If the previous outcome was uncertain, check its request logs to avoid repeating billed work. Start one fresh article attempt? Automatic publication resumes only if it succeeds.")) return;
     setGeneratingArticle(true);
     setArticleNotice(null);
     try {
-      const result = await generateArticleNow();
-      setArticleNotice(`New briefing published: ${result.title}`);
+      const result = await generateArticleFn({ data: { resume: articlePaused } });
+      if (result.status === "paused") {
+        setArticlePaused(true);
+        setArticleNotice(`${result.reason}. Review the failure before approving a fresh attempt.`);
+      } else {
+        setArticlePaused(false);
+        setArticleNotice(`New briefing published: ${result.title}. Two-week automatic publication is active.`);
+      }
     } catch (e) {
       setArticleNotice(e instanceof Error ? e.message : "Article generation failed");
     } finally {
@@ -192,13 +203,15 @@ function AdminPage() {
             >
               Refresh
             </button>
-            <button
+            <Button
               onClick={handleGenerateArticle}
               disabled={generatingArticle}
-              className="hidden sm:inline-block px-3 py-2 text-xs uppercase tracking-wider bg-[var(--gold)] text-[var(--navy-deep)] font-semibold hover:opacity-90 transition disabled:opacity-50"
+              size="sm"
+              variant="secondary"
+              className="text-xs uppercase tracking-wider font-semibold"
             >
-              {generatingArticle ? "Generating..." : "Generate article"}
-            </button>
+              {generatingArticle ? "Generating..." : articlePaused ? "Retry paused article" : "Generate article"}
+            </Button>
             <button onClick={signOut} className="px-3 py-2 text-xs uppercase tracking-wider text-white/70 hover:text-white transition">
               Sign out
             </button>

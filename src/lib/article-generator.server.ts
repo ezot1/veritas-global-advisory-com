@@ -55,9 +55,9 @@ function formatDate(d: Date) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-export async function generateArticle(manual = true) {
+export async function generateArticle(manual = true, resume = false) {
   const token = crypto.randomUUID();
-  const { data: idx, error } = await supabaseAdmin.rpc("claim_article_generation", { p_token: token, p_manual: manual });
+  const { data: idx, error } = await supabaseAdmin.rpc("claim_article_generation", { p_token: token, p_manual: manual, p_resume: resume });
   if (error) throw error;
   if (idx === null) throw new Error("Article generation is paused, already running, or not yet due");
   const pick = REGIONAL_FOCUSES[idx % REGIONAL_FOCUSES.length];
@@ -105,7 +105,8 @@ export async function generateArticle(manual = true) {
     return { slug, region: pick.region, title: article.title };
   } catch (err) {
     const reason = err instanceof GatewayError ? `Research generation paused: ${err.code}` : "Research generation needs review before another attempt";
-    await supabaseAdmin.rpc("fail_article_generation", { p_token: token, p_reason: reason });
+    const { error: releaseError } = await supabaseAdmin.rpc("fail_article_generation", { p_token: token, p_reason: reason });
+    if (releaseError) console.error("Could not record article generation pause", releaseError);
     throw err;
   }
 }

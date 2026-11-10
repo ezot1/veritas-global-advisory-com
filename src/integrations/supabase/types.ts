@@ -743,10 +743,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      claim_article_generation: {
-        Args: { p_manual?: boolean; p_token: string }
-        Returns: number
-      }
+      claim_article_generation:
+        | { Args: { p_manual?: boolean; p_token: string }; Returns: number }
+        | {
+            Args: { p_manual?: boolean; p_resume?: boolean; p_token: string }
+            Returns: number
+          }
       complete_article_generation: {
         Args: { p_article: Json; p_token: string }
         Returns: boolean
