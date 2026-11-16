@@ -26,6 +26,7 @@ import { Route as TalentRouteImport } from './routes/talent'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdsDashboardRouteImport } from './routes/_authenticated/ads-dashboard'
 import { Route as InsightsSlugRouteImport } from './routes/insights_.$slug'
 import { Route as ReplyTokenRouteImport } from './routes/reply.$token'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -124,6 +125,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdsDashboardRoute =
+  AuthenticatedAdsDashboardRouteImport.update({
+    id: '/ads-dashboard',
+    path: '/ads-dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const InsightsSlugRoute = InsightsSlugRouteImport.update({
   id: '/insights_/$slug',
   path: '/insights/$slug',
@@ -201,6 +208,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/ads-dashboard': typeof AuthenticatedAdsDashboardRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/reply/$token': typeof ReplyTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -230,6 +238,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/ads-dashboard': typeof AuthenticatedAdsDashboardRoute
   '/insights/$slug': typeof InsightsSlugRoute
   '/reply/$token': typeof ReplyTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -261,6 +270,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/ads-dashboard': typeof AuthenticatedAdsDashboardRoute
   '/insights_/$slug': typeof InsightsSlugRoute
   '/reply/$token': typeof ReplyTokenRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -292,6 +302,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
+    | '/ads-dashboard'
     | '/insights/$slug'
     | '/reply/$token'
     | '/.lovable/oauth/consent'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
+    | '/ads-dashboard'
     | '/insights/$slug'
     | '/reply/$token'
     | '/.lovable/oauth/consent'
@@ -351,6 +363,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
+    | '/_authenticated/ads-dashboard'
     | '/insights_/$slug'
     | '/reply/$token'
     | '/.lovable/oauth/consent'
@@ -515,6 +528,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/ads-dashboard': {
+      id: '/_authenticated/ads-dashboard'
+      path: '/ads-dashboard'
+      fullPath: '/ads-dashboard'
+      preLoaderRoute: typeof AuthenticatedAdsDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/insights_/$slug': {
       id: '/insights_/$slug'
       path: '/insights/$slug'
@@ -597,10 +617,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdsDashboardRoute: typeof AuthenticatedAdsDashboardRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdsDashboardRoute: AuthenticatedAdsDashboardRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

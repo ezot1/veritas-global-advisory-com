@@ -16,3 +16,4 @@
 - Article generation uses the AI Gateway SDK with live research, validated source URLs and a database lease; publication and rotation advance atomically. Paused runs require an explicit authenticated admin-approved single attempt, and automation resumes only after successful publication, so failures cannot cause unattended replay. Daily scheduler checks retain the full fortnightly completion-based gate to avoid weekly scheduling drift.
 - Public briefings share a safe text-and-reference renderer, so stored research stays unchanged while web sources and numbered citations remain navigable.
 - App inquiry emails share an email-safe layout and style tokens; admin mail bodies use an escaped plain-text paragraph renderer so formatting never changes stored correspondence.
+- Ads dashboard reads Google Ads live via the connector gateway in an admin-checked server function; credentials never reach the browser and missing data shows as unavailable, not zero.

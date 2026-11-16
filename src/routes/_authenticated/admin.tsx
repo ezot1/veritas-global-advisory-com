@@ -212,6 +212,7 @@ function AdminPage() {
             >
               {generatingArticle ? "Generating..." : articlePaused ? "Retry paused article" : "Generate article"}
             </Button>
+            <Link to="/ads-dashboard" className="px-3 py-2 text-xs uppercase tracking-wider text-white/70 hover:text-white transition">Ads</Link>
             <button onClick={signOut} className="px-3 py-2 text-xs uppercase tracking-wider text-white/70 hover:text-white transition">
               Sign out
             </button>
