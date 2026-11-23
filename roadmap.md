@@ -1,4 +1,5 @@
 # Trust updates
+- [x] Remove animated networks, glow effects, repeated image strips and oversized decorative profiles; preserve pages and verify public navigation, briefing search and application access on desktop/mobile. Six publication/citation tests passed. Requires publishing.
 - [x] Fix article pause recovery with admin-approved single attempts; resume only after successful publication. Verified database recovery, failure/lease guards, strict 14-day gate, active daily checks, five automated tests and signed-in admin control. No live article generated; recovery controls require publishing.
 - [x] Tidy email bodies, conversation headers and outgoing inquiry emails; checked real inbox messages and rendered all three email templates on desktop and mobile without overflow or runtime errors. Future outgoing emails require publishing; existing sent emails remain unchanged.
 - [x] Make article source URLs clickable and organize references with citation navigation; preserve stored research.

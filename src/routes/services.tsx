@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
-import { ImageStrip } from "@/components/site/ImageStrip";
 import { Briefcase, Landmark, Shield, Activity, Scale, Search } from "lucide-react";
 
 const SERVICE_ITEMS = [
@@ -16,6 +15,8 @@ const SERVICE_ITEMS = [
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Services | Veritas Global Advisory" },
       { name: "description", content: "Strategic intelligence, business consulting, governance, political risk, security advisory, human rights, and research services." },
       { property: "og:title", content: "Advisory Services - Veritas Global Advisory" },
@@ -63,7 +64,7 @@ function ServicesPage() {
             <div key={s.title} className="bg-background grid lg:grid-cols-[260px_1fr_1fr] gap-10 p-10">
               <div>
                 <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">0{idx + 1} · Practice</div>
-                <span className="grid place-items-center h-14 w-14 bg-[var(--navy-deep)] text-[var(--gold)] mt-5">
+                <span className="grid place-items-center h-11 w-11 border border-border text-[var(--navy-deep)] mt-5">
                   <s.icon className="h-6 w-6" />
                 </span>
               </div>
@@ -76,7 +77,7 @@ function ServicesPage() {
               <ul className="space-y-3 text-sm">
                 {s.items.map((i) => (
                   <li key={i} className="flex items-start gap-3 border-b border-border pb-3 last:border-0">
-                    <span className="text-[var(--gold)]">◆</span>{i}
+                    {i}
                   </li>
                 ))}
               </ul>
@@ -84,7 +85,6 @@ function ServicesPage() {
           ))}
         </div>
       </Section>
-      <ImageStrip start={1} eyebrow="Practice Areas" title="Six disciplines, one global perspective." />
     </>
   );
 }

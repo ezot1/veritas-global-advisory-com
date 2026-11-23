@@ -15,7 +15,7 @@ export function LatestBriefing({ article }: { article: Article }) {
             src={article.img}
             alt={article.title}
             loading="eager"
-            className="w-full aspect-[16/10] object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-105"
+            className="w-full aspect-[16/10] object-cover"
           />
           <span className="absolute left-0 top-0 bg-[var(--navy-deep)] text-white text-[10px] uppercase tracking-[0.28em] px-4 py-2">
             Latest Briefing

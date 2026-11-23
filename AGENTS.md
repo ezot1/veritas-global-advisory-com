@@ -17,3 +17,5 @@
 - Public briefings share a safe text-and-reference renderer, so stored research stays unchanged while web sources and numbered citations remain navigable.
 - App inquiry emails share an email-safe layout and style tokens; admin mail bodies use an escaped plain-text paragraph renderer so formatting never changes stored correspondence.
 - Ads dashboard reads Google Ads live via the connector gateway in an admin-checked server function; credentials never reach the browser and missing data shows as unavailable, not zero.
+
+- Public presentation uses immediate, static editorial headers and sections; remove ornamental networks, scroll entrances and repeated image strips so research and navigation stay primary.
