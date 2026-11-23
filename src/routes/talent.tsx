@@ -1,14 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { useState } from "react";
 import { submitForm, uploadResume } from "@/lib/forms/submit";
 
 export const Route = createFileRoute("/talent")({
   head: () => ({
     meta: [
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
       { title: "Global Talent Network | Veritas Global Advisory" },
       { name: "description", content: "Join the Veritas Global Advisory expert network of researchers, policy analysts, economists, and practitioners worldwide." },
       { property: "og:title", content: "Global Talent Network - Veritas Global Advisory" },
@@ -118,6 +117,7 @@ function TalentPage() {
           </div>
         </form>
       </Section>
+      <ImageStrip start={4} eyebrow="The Network" title="Experts working across continents." />
     </>
   );
 }

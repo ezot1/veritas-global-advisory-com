@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { useRef, useState } from "react";
 import { submitForm, uploadAttachment } from "@/lib/forms/submit";
 import {
@@ -261,6 +262,7 @@ function ContactPage() {
           </form>
         </div>
       </Section>
+      <ImageStrip start={5} eyebrow="Our Presence" title="Miami headquarters and global reach." />
     </>
   );
 }

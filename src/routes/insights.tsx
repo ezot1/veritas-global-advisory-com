@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { PageHeader } from "@/components/site/PageHeader";
 import { Section } from "@/components/site/Section";
+import { ImageStrip } from "@/components/site/ImageStrip";
 import { useMemo, useState } from "react";
 import { Search, ChevronLeft, ChevronRight, LoaderCircle, RotateCw } from "lucide-react";
 import { articles as staticArticles } from "@/data/articles";
@@ -141,7 +142,7 @@ function InsightsPage() {
           {paged.map((a) => (
             <Link key={a.slug} to="/insights/$slug" params={{ slug: a.slug }} className="card-elevated block group">
               <div className="aspect-[4/3] overflow-hidden">
-                <img src={a.img} alt="" loading="lazy" className="w-full h-full object-cover " />
+                <img src={a.img} alt="" loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
               </div>
               <div className="p-7">
                 <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
@@ -205,6 +206,8 @@ function InsightsPage() {
           </p>
         )}
       </Section>
+
+      <ImageStrip start={0} eyebrow="Editorial Desks" title="Where our research is produced." />
     </>
   );
 }

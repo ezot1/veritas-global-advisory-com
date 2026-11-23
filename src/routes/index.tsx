@@ -1,11 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import heroWorld from "@/assets/hero-world.jpg";
+import heroAnimation from "@/assets/hero-animation.jpg";
+import talentNetworkBg from "@/assets/talent-network-bg.jpg";
+import globeImg from "@/assets/globe.jpg";
+import sceneBoardroom from "@/assets/scene-boardroom.jpg";
+import sceneMiami from "@/assets/scene-miami.jpg";
+import sceneIntelligence from "@/assets/scene-intelligence.jpg";
+import sceneAssembly from "@/assets/scene-assembly.jpg";
 import { Section } from "@/components/site/Section";
+import { StatCounter } from "@/components/site/StatCounter";
 import { LiftoffHero } from "@/components/site/LiftoffHero";
+import { Globe3D } from "@/components/site/Globe3D";
 import { Reveal } from "@/components/site/Reveal";
+import { listGlobeMarkers } from "@/lib/globe-markers.functions";
 import { listGeneratedArticles } from "@/lib/articles.functions";
 import { articles as staticArticles } from "@/data/articles";
 import { countPublishedBriefings } from "@/lib/publication-count";
 import { LatestBriefing } from "@/components/site/LatestBriefing";
+import { useQuery } from "@tanstack/react-query";
 import {
   Briefcase, Landmark, Shield, Activity, Scale, Search,
 } from "lucide-react";
@@ -24,8 +36,13 @@ export const Route = createFileRoute("/")({
     links: [{ rel: "canonical", href: "https://veritasglobaladvisory.org/" }],
   }),
   loader: async ({ context }) => {
-    void context;
-    const generated = await listGeneratedArticles().catch(() => []);
+    const [, generated] = await Promise.all([
+      context.queryClient.ensureQueryData({
+        queryKey: ["globe-markers"],
+        queryFn: () => listGlobeMarkers(),
+      }),
+      listGeneratedArticles().catch(() => []),
+    ]);
     return { generated };
   },
   errorComponent: ({ error }) => (
@@ -47,11 +64,11 @@ const services = [
 ];
 
 const regions = [
-  { name: "Africa", experts: "10 experts" },
-  { name: "Asia-Pacific", experts: "13 experts" },
-  { name: "Europe", experts: "12 experts" },
-  { name: "Middle East", experts: "8 experts" },
-  { name: "Americas", experts: "9 experts" },
+  { name: "Africa", experts: "10 experts", reports: "20 reports" },
+  { name: "Asia-Pacific", experts: "13 experts", reports: "24 reports" },
+  { name: "Europe", experts: "12 experts", reports: "22 reports" },
+  { name: "Middle East", experts: "8 experts", reports: "16 reports" },
+  { name: "Americas", experts: "9 experts", reports: "18 reports" },
 ];
 
 function Index() {
@@ -61,9 +78,34 @@ function Index() {
   );
   const latest = sorted[0];
   const insights = sorted.slice(1, 5);
+  const { data: markers = [] } = useQuery({
+    queryKey: ["globe-markers"],
+    queryFn: () => listGlobeMarkers(),
+  });
 
   return (
     <>
+      {/* ANIMATED TOP BANNER */}
+      <div className="relative h-28 md:h-36 overflow-hidden bg-[var(--navy-deep)]">
+        <img
+          src={heroAnimation}
+          alt="Global advisory network"
+          width={1920}
+          height={768}
+          className="absolute inset-0 h-full w-full object-cover opacity-80 animate-[kenburns_28s_ease-in-out_infinite_alternate]"
+          style={{ transformOrigin: "center" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[var(--navy-deep)] via-transparent to-[var(--navy-deep)]" />
+        <div className="container-x relative h-full flex items-center justify-between text-white/85 text-[11px] md:text-xs uppercase tracking-[0.28em]">
+          <span className="flex items-center gap-2 text-[var(--gold)]">
+            <span className="inline-block h-2 w-2 rounded-full bg-[var(--gold)] animate-pulse" />
+            Live
+          </span>
+          <span className="hidden md:inline">Miami · London · Singapore · Beijing · Nairobi · Dubai · São Paulo · Melbourne</span>
+        </div>
+        <style>{`@keyframes kenburns{0%{transform:scale(1) translateX(0)}100%{transform:scale(1.12) translateX(-3%)}}`}</style>
+      </div>
+
       {/* HERO */}
       <LiftoffHero publicationCount={countPublishedBriefings(staticArticles, generated)} />
 
@@ -81,7 +123,7 @@ function Index() {
             <ul className="space-y-3 text-foreground">
               {["Integrity", "Professionalism", "Evidence-Based Analysis", "Global Perspective", "Confidentiality", "Excellence", "Diversity & Inclusion"].map((v) => (
                 <li key={v} className="flex items-start gap-3 border-b border-border pb-3">
-
+                  <span className="text-[var(--gold)] mt-1">◆</span>
                   <span>{v}</span>
                 </li>
               ))}
@@ -90,14 +132,47 @@ function Index() {
         </div>
       </Section>
 
+      {/* STATS */}
+      <section className="border-y border-border bg-[var(--secondary)]">
+        <div className="container-x py-20 grid grid-cols-2 md:grid-cols-4 gap-10">
+          <StatCounter value={12} label="Countries Covered" />
+          <StatCounter value={52} label="Experts Worldwide" />
+          <StatCounter value={countPublishedBriefings(staticArticles, generated)} label="Published Briefings" />
+          <StatCounter value={5} label="Regional Divisions" />
+        </div>
+      </section>
+
+      {/* IN THE FIELD */}
+      <Section eyebrow="In the Field" title="Where our analysts work."
+        intro="From boardrooms in Miami to multilateral forums and intelligence operations centers worldwide.">
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { img: sceneBoardroom, cap: "Executive Briefings" },
+            { img: sceneIntelligence, cap: "Intelligence Operations" },
+            { img: sceneAssembly, cap: "Multilateral Forums" },
+          ].map((s, i) => (
+            <Reveal key={s.cap} delay={i * 0.12} as="figure" className="relative group overflow-hidden">
+              <img src={s.img} alt={s.cap} loading="lazy" className="w-full aspect-[4/3] object-cover transition-transform duration-[1400ms] ease-out group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--navy-deep)] via-transparent to-transparent opacity-90 group-hover:opacity-60 transition-opacity duration-700" />
+              <div aria-hidden className="absolute inset-x-0 bottom-0 h-[2px] bg-[var(--gold)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+              <figcaption className="absolute inset-x-0 bottom-0 text-white p-5 text-xs uppercase tracking-[0.2em] flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-[var(--gold)] animate-pulse" />
+                {s.cap}
+              </figcaption>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+
       {/* SERVICES */}
       <Section eyebrow="Practices" title="Six interconnected disciplines. One global perspective." intro="Our advisory practices bring together rigorous analysis, cross-regional expertise, and field experience to support decisions of consequence.">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
           {services.map((s, idx) => (
-            <div key={s.title}>
-              <div className="bg-card p-9 h-full">
+            <Reveal key={s.title} delay={idx * 0.08}>
+              <div className="card-elevated p-9 group h-full">
                 <div className="flex items-start justify-between mb-8">
-                  <span className="grid place-items-center h-10 w-10 border border-border text-[var(--navy-deep)]">
+                  <span className="grid place-items-center h-12 w-12 bg-[var(--navy-deep)] text-[var(--gold)] transition-transform duration-500 group-hover:rotate-[8deg] group-hover:scale-110">
                     <s.icon className="h-5 w-5" />
                   </span>
                   <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">0{idx + 1}</span>
@@ -108,20 +183,30 @@ function Index() {
                 </ul>
                 <Link to="/services" className="link-arrow mt-8">Explore</Link>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </Section>
 
       {/* GLOBAL COVERAGE */}
-      <Section eyebrow="Global Coverage" title="Five regional divisions." className="bg-[var(--secondary)]">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 border-t border-border">
-          {regions.map((r) => (
-            <div key={r.name} className="py-6 pr-6 border-b border-border lg:border-b-0">
-              <div className="text-lg font-semibold">{r.name}</div>
-              <div className="mt-1 text-sm text-muted-foreground">{r.experts}</div>
-            </div>
-          ))}
+      <Section eyebrow="Global Coverage" title="Five regions. One integrated intelligence network." className="bg-[var(--secondary)]" backdrop backdropVariant="meridian">
+        <div className="grid lg:grid-cols-[1.1fr_1fr] gap-14 items-center">
+          <div className="relative aspect-square max-w-xl mx-auto w-full">
+            <Globe3D markers={markers} />
+          </div>
+          <div className="space-y-px bg-border">
+            {regions.map((r, i) => (
+              <Reveal key={r.name} delay={i * 0.08}>
+                <div className="bg-card p-6 flex items-center justify-between group hover:bg-[var(--navy-deep)] hover:text-white transition-all duration-500 cursor-default">
+                  <div>
+                    <div className="text-lg font-semibold">{r.name}</div>
+                    <div className="text-xs uppercase tracking-[0.16em] text-muted-foreground group-hover:text-white/65 mt-1 transition-colors">{r.experts} · {r.reports}</div>
+                  </div>
+                  <span className="text-[var(--gold)] text-xl transition-transform duration-500 group-hover:translate-x-2">→</span>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </Section>
 
@@ -141,12 +226,16 @@ function Index() {
       </Section>
 
       {/* TALENT CTA */}
-      <Section dark eyebrow="Global Talent Network" title="Join a network of analysts, scholars, and practitioners shaping global solutions." intro="Veritas continuously seeks highly qualified professionals from diverse disciplines and geographic regions.">
+      <Section dark eyebrow="Global Talent Network" title="Join a network of analysts, scholars, and practitioners shaping global solutions." intro="Veritas continuously seeks highly qualified professionals from diverse disciplines and geographic regions." backdropVariant="orbit" image={talentNetworkBg} imageAlt="Global network of connected cities">
         <div className="grid md:grid-cols-3 gap-px bg-white/10">
           {["Policy Analysts", "Researchers", "Economists", "Security Analysts", "Legal Experts", "Business Consultants"].map((c, i) => (
             <Reveal key={c} delay={i * 0.07}>
-              <div className="bg-[var(--navy-deep)] p-6">
-                <div className="text-lg font-medium">{c}</div>
+              <div className="bg-[var(--navy-deep)]/45 backdrop-blur-sm p-6 border border-white/10 group hover:border-[var(--gold)]/60 transition-colors">
+                <div className="text-sm uppercase tracking-[0.16em] text-[var(--gold)] flex items-center gap-2">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--gold)] animate-pulse" />
+                  Open
+                </div>
+                <div className="mt-3 text-lg font-medium group-hover:translate-x-1 transition-transform">{c}</div>
               </div>
             </Reveal>
           ))}
@@ -172,7 +261,7 @@ function FeaturedInsight({ item }: { item: { slug: string; img: string; tag: str
   return (
     <Link to="/insights/$slug" params={{ slug: item.slug }} className="card-elevated block group">
       <div className="aspect-[4/3] overflow-hidden">
-        <img src={item.img} alt="" loading="lazy" className="w-full h-full object-cover " />
+        <img src={item.img} alt="" loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
       </div>
       <div className="p-8">
         <div className="flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-muted-foreground">

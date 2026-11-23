@@ -50,16 +50,16 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-background border-b border-border">
+    <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
       <div className="container-x flex items-center justify-between gap-3 h-20">
         <BrandLockup onClick={() => setOpen(false)} />
 
-        <nav className="hidden lg:flex items-center gap-5">
+        <nav className="hidden lg:flex items-center gap-7">
           {nav.map((n) => (
             <Link
               key={n.to}
               to={n.to}
-              className="whitespace-nowrap text-[13px] font-medium text-foreground hover:text-[var(--navy-deep)] transition-colors"
+              className="text-[13px] font-medium tracking-wide text-foreground hover:text-[var(--navy-deep)] transition-colors"
               activeProps={{ className: "text-[var(--navy-deep)] font-semibold" }}
             >
               {n.label}
