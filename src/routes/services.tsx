@@ -44,12 +44,42 @@ export const Route = createFileRoute("/services")({
 });
 
 const services = [
-  { icon: Briefcase, title: "International Business Consulting", items: ["Market Entry Strategy", "Business Expansion Advisory", "Investment Facilitation", "Trade Advisory", "International Partnerships"] },
-  { icon: Landmark, title: "Public Policy & Governance", items: ["Policy Analysis", "Governance Assessments", "Institutional Development", "Public Sector Reform", "Stakeholder Engagement"] },
-  { icon: Activity, title: "Political Risk Analysis", items: ["Country Risk Reports", "Election Monitoring Assessments", "Political Economy Analysis", "Regulatory Forecasting", "Geopolitical Briefings"] },
-  { icon: Shield, title: "Security & Risk Advisory", items: ["Regional Security Assessments", "Conflict Analysis", "Crisis Monitoring", "Security Environment Reporting", "Risk Management Support"] },
-  { icon: Scale, title: "Human Rights & Social Impact", items: ["Human Rights Assessments", "Social Impact Evaluations", "Community Engagement Studies", "ESG Advisory Support"] },
-  { icon: Search, title: "Research & Intelligence Services", items: ["Country Studies", "Due Diligence Research", "Strategic Reports", "Sector Analysis", "Trend Forecasting"] },
+  {
+    icon: Briefcase,
+    title: "International Business Consulting",
+    summary: "Commercial entry planning, partner vetting, and cross-border expansion support for organizations entering unfamiliar regulatory markets.",
+    items: ["Market Entry Strategy", "Business Expansion Advisory", "Investment Facilitation", "Trade Advisory", "International Partnerships"],
+  },
+  {
+    icon: Landmark,
+    title: "Public Policy & Governance",
+    summary: "Institutional assessments, regulatory design, and reform support for ministries, public agencies, and multilateral partners.",
+    items: ["Policy Analysis", "Governance Assessments", "Institutional Development", "Public Sector Reform", "Stakeholder Engagement"],
+  },
+  {
+    icon: Activity,
+    title: "Political Risk Analysis",
+    summary: "Country-level political economy analysis covering election cycles, coalition stability, sanctions exposure, and policy shifts.",
+    items: ["Country Risk Reports", "Election Monitoring Assessments", "Political Economy Analysis", "Regulatory Forecasting", "Geopolitical Briefings"],
+  },
+  {
+    icon: Shield,
+    title: "Security & Risk Advisory",
+    summary: "Regional conflict reporting, operating-environment reviews, and contingency planning for teams working in fragile or contested areas.",
+    items: ["Regional Security Assessments", "Conflict Analysis", "Crisis Monitoring", "Security Environment Reporting", "Risk Management Support"],
+  },
+  {
+    icon: Scale,
+    title: "Human Rights & Social Impact",
+    summary: "Independent rights reviews, stakeholder impact studies, and ESG due diligence grounded in field verification.",
+    items: ["Human Rights Assessments", "Social Impact Evaluations", "Community Engagement Studies", "ESG Advisory Support"],
+  },
+  {
+    icon: Search,
+    title: "Research & Intelligence Services",
+    summary: "Commissioned country dossiers, counterparty due diligence, and sector-specific trend reports built from primary and open-source evidence.",
+    items: ["Country Studies", "Due Diligence Research", "Strategic Reports", "Sector Analysis", "Trend Forecasting"],
+  },
 ];
 
 function ServicesPage() {
@@ -70,13 +100,13 @@ function ServicesPage() {
               <div>
                 <h3 className="text-2xl md:text-3xl font-semibold text-[var(--navy-deep)] leading-tight">{s.title}</h3>
                 <p className="mt-5 text-muted-foreground leading-relaxed">
-                  Integrated advisory drawing on our regional networks, primary research, and proprietary intelligence frameworks.
+                  {s.summary}
                 </p>
               </div>
               <ul className="space-y-3 text-sm">
                 {s.items.map((i) => (
-                  <li key={i} className="flex items-start gap-3 border-b border-border pb-3 last:border-0">
-                    <span className="text-[var(--gold)]">◆</span>{i}
+                  <li key={i} className="border-b border-border pb-3 last:border-0">
+                    {i}
                   </li>
                 ))}
               </ul>

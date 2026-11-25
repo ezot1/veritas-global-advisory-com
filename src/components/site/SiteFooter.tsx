@@ -3,7 +3,7 @@ import { LogoMark } from "./Logo";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[var(--navy-deep)] text-white/85 mt-24">
+    <footer className="bg-[var(--navy-deep)] text-white/85 border-t border-white/10">
       <div className="container-x py-20 grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3 mb-5">

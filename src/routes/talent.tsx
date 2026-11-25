@@ -74,8 +74,7 @@ function TalentPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
           {categories.map((c) => (
             <div key={c} className="bg-background p-6">
-              <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--gold)]">Discipline</div>
-              <div className="mt-3 font-medium text-[var(--navy-deep)]">{c}</div>
+              <div className="font-medium text-[var(--navy-deep)]">{c}</div>
             </div>
           ))}
         </div>
